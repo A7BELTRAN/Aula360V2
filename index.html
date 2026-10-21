@@ -141,6 +141,48 @@
             margin-bottom: 12px;
         }
 
+        .btn-inicio-ruleta {
+            background: #db2777;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(219, 39, 119, 0.2);
+            margin-bottom: 12px;
+        }
+
+        .btn-inicio-tareas {
+            background: #0284c7;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.2);
+            margin-bottom: 12px;
+        }
+
+        .btn-inicio-examenes {
+            background: #059669;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(5, 150, 105, 0.2);
+            margin-bottom: 12px;
+        }
+
         .backup-section {
             margin-top: 25px;
             padding-top: 20px;
@@ -162,7 +204,7 @@
         }
 
         /* Vistas de pantallas */
-        #pantallaApp, #pantallaAsistencia, #pantallaReporteAsistencia, #pantallaAlumnos {
+        #pantallaApp, #pantallaAsistencia, #pantallaReporteAsistencia, #pantallaAlumnos, #pantallaRuleta, #pantallaTareas, #pantallaExamenes {
             display: none;
         }
 
@@ -238,7 +280,7 @@
             color: #115e59;
         }
 
-        input[type="text"], textarea, input[type="date"] {
+        input[type="text"], textarea, input[type="date"], select {
             width: 100%;
             padding: 12px;
             border: 2px solid #e2e8f0;
@@ -247,9 +289,10 @@
             margin-top: 5px;
             box-sizing: border-box;
             outline: none;
+            background: white;
         }
 
-        input[type="text"]:focus, textarea:focus, input[type="date"]:focus {
+        input[type="text"]:focus, textarea:focus, input[type="date"]:focus, select:focus {
             border-color: var(--primary);
         }
 
@@ -412,6 +455,10 @@
 
         .btn-pdf {
             background: var(--secondary);
+        }
+
+        .btn-excel {
+            background: #059669;
         }
 
         .btn-lista {
@@ -588,6 +635,20 @@
         .btn-asis.retardo { background: #fef9c3; border-color: #eab308; color: #a16207; }
         .btn-asis.falta { background: #fee2e2; border-color: #ef4444; color: #b91c1c; }
 
+        /* Botones específicos para Tareas */
+        .btn-tarea {
+            padding: 6px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 11px;
+            cursor: pointer;
+            background: #f8fafc;
+            color: #64748b;
+        }
+        .btn-tarea.entregado { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+        .btn-tarea.pendiente { background: #fee2e2; border-color: #ef4444; color: #b91c1c; }
+
         .btn-expediente {
             background: #7c3aed;
             color: white;
@@ -621,6 +682,46 @@
             padding: 20px;
             border-radius: 14px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        /* Estilos de la Ruleta Interactiva */
+        .ruleta-display-box {
+            background: linear-gradient(135deg, #fdf2f8, #fce7f3);
+            border: 3px solid #db2777;
+            border-radius: 16px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(219, 39, 119, 0.15);
+        }
+
+        .ruleta-nombre-salida {
+            font-size: 26px;
+            font-weight: 800;
+            color: #be185d;
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            word-break: break-word;
+        }
+
+        .btn-girar-ruleta {
+            background: #db2777;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 18px;
+            border-radius: 14px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(219, 39, 119, 0.3);
+            transition: transform 0.1s ease;
+        }
+
+        .btn-girar-ruleta:active {
+            transform: scale(0.98);
         }
 
         /* Reglas de impresión estrictas para cada módulo */
@@ -666,6 +767,28 @@
                 top: 0;
                 width: 100%;
             }
+
+            body.imprimiendo-tareas #seccionImprimirTareas,
+            body.imprimiendo-tareas #seccionImprimirTareas * {
+                visibility: visible;
+            }
+            body.imprimiendo-tareas #seccionImprimirTareas {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+
+            body.imprimiendo-examen #areaExamenImpresion,
+            body.imprimiendo-examen #areaExamenImpresion * {
+                visibility: visible;
+            }
+            body.imprimiendo-examen #areaExamenImpresion {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -682,17 +805,20 @@
             <div class="hero-features">
                 <div class="hero-feature-card">
                     <b>✨ IA Avanzada</b>
-                    Genera planeaciones y fichas descriptivas con IA.
+                    Genera planeaciones, fichas y exámenes con IA.
                 </div>
                 <div class="hero-feature-card">
                     <b>👥 Gestión y Asistencia</b>
-                    Expediente, WhatsApp a papás y reportes.
+                    Expediente, Excel, WhatsApp y reportes.
                 </div>
             </div>
 
             <button class="btn-inicio-principal" id="btnIrCrear">🚀 Crear Nueva Planeación</button>
+            <button class="btn-inicio-examenes" id="btnInicioExamenes">📝 Generador de Exámenes con IA</button>
             <button class="btn-inicio-lista" id="btnInicioAsistencia">📱 Pase de Lista Diario / Histórico</button>
             <button class="btn-inicio-alumnos" id="btnInicioAlumnos">👥 Lista de Grupo y Expedientes</button>
+            <button class="btn-inicio-tareas" id="btnInicioTareas">📋 Control de Tareas e Investigaciones</button>
+            <button class="btn-inicio-ruleta" id="btnInicioRuleta">🎲 Ruleta de Participación</button>
             <button class="btn-inicio-lista" id="btnInicioReporte" style="background: #0284c7;">📊 Reporte de Asistencia Mensual</button>
             <button class="btn-inicio-secundario" id="btnIrHistorial">📂 Ver Historial Guardado</button>
 
@@ -704,11 +830,137 @@
             </div>
         </div>
 
+        <!-- PANTALLA DE GENERADOR DE EXÁMENES CON IA -->
+        <div id="pantallaExamenes">
+            <button class="btn-volver-app" id="btnCerrarExamenes">⬅️ Volver al Inicio</button>
+            <h1>📝 Generador de Exámenes</h1>
+            <div class="subtitle">Crea evaluaciones objetivas de opción múltiple y hoja de respuestas con IA</div>
+
+            <div class="step-title">1. Grado Escolar</div>
+            <select id="selectGradoExamen" style="margin-top: 0;">
+                <option value="1º Grado Primaria">1º Grado</option>
+                <option value="2º Grado Primaria">2º Grado</option>
+                <option value="3º Grado Primaria">3º Grado</option>
+                <option value="4º Grado Primaria">4º Grado</option>
+                <option value="5º Grado Primaria">5º Grado</option>
+                <option value="6º Grado Primaria">6º Grado</option>
+            </select>
+
+            <div class="step-title">2. Escribe el Tema o Contenido a Evaluar</div>
+            <textarea id="inputTemaExamen" rows="3" placeholder="Ej. Las fracciones y suma de decimales, Los ecosistemas de México, La Revolución Mexicana..."></textarea>
+
+            <button class="btn-generate" id="btnGenerarExamenAI" style="background: var(--primary);">🤖 Generar Examen con IA</button>
+
+            <div id="resultadoExamen" class="result-box">
+                <div id="areaExamenImpresion" class="formal-card" style="padding: 16px;">
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <b style="font-size: 15px; color: var(--primary); display: block;" id="resExamenTituloEscuela">ESCUELA PRIMARIA</b>
+                        <span style="font-size: 13px; font-weight: bold; color: var(--secondary);" id="resExamenTituloTema">EVALUACIÓN FORMATIVA</span>
+                    </div>
+                    <div style="font-size: 12px; margin-bottom: 15px; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;">
+                        <b>Alumno(a):</b> _________________________________________________ <b>Fecha:</b> _______________
+                    </div>
+                    <div id="resExamenContenido" style="font-size: 12px; line-height: 1.5; white-space: pre-line; color: #334155;">
+                        <!-- Generado por IA -->
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn-action btn-pdf" id="btnImprimirExamen">🖨️ PDF Examen</button>
+                    <button class="btn-action" id="btnCopiarExamen" style="background: var(--secondary);">📋 Copiar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA DE CONTROL DE TAREAS Y TRABAJOS -->
+        <div id="pantallaTareas">
+            <button class="btn-volver-app" id="btnCerrarTareas">⬅️ Volver al Inicio</button>
+            <h1>📋 Control de Tareas</h1>
+            <div class="subtitle">Registra y consulta el cumplimiento por cada trabajo escolar</div>
+
+            <div style="margin-bottom: 12px; background: #f1f5f9; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <label for="selectTareaActual" style="font-size: 12px; font-weight: bold; color: var(--primary);">📂 Seleccionar o Cambiar Tarea:</label>
+                    <button class="btn-action" id="btnNuevaTareaPrompt" style="padding: 4px 8px; font-size: 10px; flex: 0; background: var(--secondary);">➕ Nueva Tarea</button>
+                </div>
+                <select id="selectTareaActual" style="margin-top: 0;">
+                    <!-- Generado dinámicamente -->
+                </select>
+            </div>
+
+            <div class="asistencia-stats" style="grid-template-columns: 1fr 1fr;">
+                <div class="stat-card" style="color: #15803d;">Entregas <span id="statEntregas">0</span></div>
+                <div class="stat-card" style="color: #b91c1c;">Pendientes <span id="statPendientes">0</span></div>
+            </div>
+
+            <div id="seccionImprimirTareas">
+                <h3 style="text-align: center; color: #1e3a8a; margin-bottom: 2px;" id="tituloImpresionTarea">CONTROL DE TAREAS</h3>
+                <p style="text-align: center; font-size: 13px; font-weight: bold; color: #0d9488; margin-bottom: 10px;" id="etiquetaGradoGrupoTarea">Grado y Grupo: -</p>
+                <table class="tabla-asistencia-digital">
+                    <thead>
+                        <tr>
+                            <th style="width: 30px;">#</th>
+                            <th>Nombre del Alumno(a)</th>
+                            <th style="width: 130px;">Estatus</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaTareasCuerpo">
+                        <!-- Generado dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-action btn-pdf" id="btnImprimirTareasPDF">🖨️ PDF Tareas</button>
+                <button class="btn-action btn-excel" id="btnExcelTareas">📊 Exportar Excel</button>
+                <button class="btn-reset" id="btnCerrarTareasBtn" style="width: 60px;">⬅️ Volver</button>
+            </div>
+        </div>
+
+        <!-- PANTALLA DE RULETA DE PARTICIPACIÓN -->
+        <div id="pantallaRuleta">
+            <button class="btn-volver-app" id="btnCerrarRuleta">⬅️ Volver al Inicio</button>
+            <h1>🎲 Ruleta Escolar</h1>
+            <div class="subtitle">Selector aleatorio transparente para participación y exposiciones</div>
+
+            <div class="ruleta-display-box">
+                <div style="font-size: 12px; font-weight: bold; color: #db2777; text-transform: uppercase; margin-bottom: 8px;">✨ Alumno Seleccionado:</div>
+                <div class="ruleta-nombre-salida" id="nombreSeleccionadoRuleta">¡Listo para girar!</div>
+            </div>
+
+            <button class="btn-girar-ruleta" id="btnGirarRuleta">🎯 ¡Girar Ruleta!</button>
+
+            <div style="margin-top: 20px; background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 12px; color: #64748b; text-align: center;">
+                💡 La ruleta elige directamente entre los alumnos activos registrados en tu <b>Lista de Grupo</b>.
+            </div>
+
+            <button class="btn-reset" id="btnCerrarRuletaBtn" style="width: 100%; margin-top: 20px;">⬅️ Volver al Inicio</button>
+        </div>
+
         <!-- PANTALLA DE GESTIÓN DE ALUMNOS (EXPEDIENTES Y FICHAS IA) -->
         <div id="pantallaAlumnos">
             <button class="btn-volver-app" id="btnCerrarAlumnos">⬅️ Volver al Inicio</button>
             <h1>👥 Gestión del Grupo</h1>
             <div class="subtitle">Administra tu lista, números de WhatsApp y fichas descriptivas</div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; background: #f1f5f9; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1;">
+                <div>
+                    <label style="font-size: 11px; font-weight: bold; color: var(--primary); display: block; margin-bottom: 2px;">Grado:</label>
+                    <input type="text" id="inputGradoGrupo" placeholder="Ej. 5° Grado" style="margin-top: 0; background: white; padding: 8px; font-size: 12px;">
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: bold; color: var(--primary); display: block; margin-bottom: 2px;">Grupo:</label>
+                    <input type="text" id="inputGrupoSalon" placeholder="Ej. Grupo B" style="margin-top: 0; background: white; padding: 8px; font-size: 12px;">
+                </div>
+            </div>
+
+            <!-- Botón de Importación con Foto (IA) -->
+            <div style="margin-bottom: 15px; background: #faf5ff; border: 2px dashed #7c3aed; padding: 12px; border-radius: 10px; text-align: center;">
+                <b style="color: #7c3aed; font-size: 13px; display: block; margin-bottom: 4px;">📸 Importar Alumnos desde Foto o Imagen</b>
+                <p style="font-size: 11px; color: #64748b; margin-bottom: 8px;">Sube una foto de tu lista escolar impresa o manuscrita y la IA extraerá todos los nombres automáticamente.</p>
+                <input type="file" id="inputFotoLista" accept="image/*" style="display: none;">
+                <button class="btn-action" id="btnSubirFotoLista" style="background: #7c3aed; width: auto; padding: 10px 20px;">🤖 Leer Lista con IA</button>
+            </div>
 
             <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;">
                 <input type="text" id="inputNuevoAlumno" placeholder="Nombre completo del alumno(a)..." style="margin-top: 0; flex: 2; min-width: 150px;">
@@ -716,7 +968,7 @@
                 <button class="btn-action" id="btnAgregarAlumno" style="flex: 0 0 90px; margin-top: 0;">➕ Añadir</button>
             </div>
 
-            <div style="max-height: 400px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 10px;">
+            <div style="max-height: 350px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 10px;">
                 <table class="tabla-asistencia-digital" style="margin-bottom: 0;">
                     <thead>
                         <tr>
@@ -743,7 +995,8 @@
             <div class="subtitle">Resumen acumulado de asistencias, retardos y faltas del grupo</div>
 
             <div id="seccionImprimirMensual">
-                <h3 style="text-align: center; color: #1e3a8a; margin-bottom: 10px;">REPORTE MENSUAL DE ASISTENCIA</h3>
+                <h3 style="text-align: center; color: #1e3a8a; margin-bottom: 4px;">REPORTE MENSUAL DE ASISTENCIA</h3>
+                <p style="text-align: center; font-size: 13px; font-weight: bold; color: #0d9488; margin-bottom: 10px;" id="etiquetaGradoGrupoMensual">Grado y Grupo: -</p>
                 <table class="tabla-asistencia-digital" id="tablaReporteAcumulado">
                     <thead>
                         <tr>
@@ -761,8 +1014,9 @@
             </div>
 
             <div class="btn-group">
-                <button class="btn-action btn-pdf" id="btnImprimirMensual">🖨️ PDF Asistencia Mensual</button>
-                <button class="btn-reset" id="btnCerrarReporteBtn" style="width: 100%;">⬅️ Volver al Inicio</button>
+                <button class="btn-action btn-pdf" id="btnImprimirMensual">🖨️ PDF Mensual</button>
+                <button class="btn-action btn-excel" id="btnExcelMensual">📊 Exportar Excel</button>
+                <button class="btn-reset" id="btnCerrarReporteBtn" style="width: 60px;">⬅️ Volver</button>
             </div>
         </div>
 
@@ -784,7 +1038,8 @@
             </div>
 
             <div id="seccionImprimirLista">
-                <h3 style="text-align: center; color: #1e3a8a; margin-bottom: 10px;" id="tituloImpresionLista">LISTA DE ASISTENCIA</h3>
+                <h3 style="text-align: center; color: #1e3a8a; margin-bottom: 2px;" id="tituloImpresionLista">LISTA DE ASISTENCIA</h3>
+                <p style="text-align: center; font-size: 13px; font-weight: bold; color: #0d9488; margin-bottom: 10px;" id="etiquetaGradoGrupoLista">Grado y Grupo: -</p>
                 <table class="tabla-asistencia-digital">
                     <thead>
                         <tr>
@@ -800,8 +1055,9 @@
             </div>
 
             <div class="btn-group">
-                <button class="btn-action btn-pdf" id="btnImprimirListaDiaria">🖨️ PDF Lista de Asistencia</button>
-                <button class="btn-reset" id="btnCerrarAsistenciaBotton" style="width: 100%;">⬅️ Volver al Inicio</button>
+                <button class="btn-action btn-pdf" id="btnImprimirListaDiaria">🖨️ PDF Lista</button>
+                <button class="btn-action btn-excel" id="btnExcelLista">📊 Exportar Excel</button>
+                <button class="btn-reset" id="btnCerrarAsistenciaBotton" style="width: 60px;">⬅️ Volver</button>
             </div>
         </div>
 
@@ -1043,12 +1299,31 @@
         let ejesSeleccionados = [];
         let tabActiva = 'recientes';
         let alumnoEditandoIndex = null;
+        let tareaActivaId = null;
 
         document.addEventListener("DOMContentLoaded", function() {
             renderizarHistorial();
             cargarSugerenciasTemporada();
             inicializarAsistenciaDigital();
             renderizarGestionAlumnos();
+            inicializarControlTareas();
+
+            // Cargar grado y grupo guardados
+            const gradoGrupoGuardado = localStorage.getItem('aula360_grado_grupo') || '';
+            const grupoSalonGuardado = localStorage.getItem('aula360_grupo_salon') || '';
+            document.getElementById('inputGradoGrupo').value = gradoGrupoGuardado;
+            document.getElementById('inputGrupoSalon').value = grupoSalonGuardado;
+            actualizarTextosGradoGrupo();
+
+            document.getElementById('inputGradoGrupo').addEventListener('input', function() {
+                localStorage.setItem('aula360_grado_grupo', this.value);
+                actualizarTextosGradoGrupo();
+            });
+
+            document.getElementById('inputGrupoSalon').addEventListener('input', function() {
+                localStorage.setItem('aula360_grupo_salon', this.value);
+                actualizarTextosGradoGrupo();
+            });
 
             // Navegación de pantallas
             document.getElementById('btnIrCrear').addEventListener('click', function() {
@@ -1073,6 +1348,24 @@
                 document.getElementById('pantallaInicio').style.display = 'none';
                 document.getElementById('pantallaAlumnos').style.display = 'block';
                 renderizarGestionAlumnos();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('btnInicioTareas').addEventListener('click', function() {
+                document.getElementById('pantallaInicio').style.display = 'none';
+                document.getElementById('pantallaTareas').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('btnInicioExamenes').addEventListener('click', function() {
+                document.getElementById('pantallaInicio').style.display = 'none';
+                document.getElementById('pantallaExamenes').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('btnInicioRuleta').addEventListener('click', function() {
+                document.getElementById('pantallaInicio').style.display = 'none';
+                document.getElementById('pantallaRuleta').style.display = 'block';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
@@ -1107,6 +1400,36 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
+            document.getElementById('btnCerrarTareas').addEventListener('click', function() {
+                document.getElementById('pantallaTareas').style.display = 'none';
+                document.getElementById('pantallaInicio').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('btnCerrarTareasBtn').addEventListener('click', function() {
+                document.getElementById('pantallaTareas').style.display = 'none';
+                document.getElementById('pantallaInicio').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('btnCerrarExamenes').addEventListener('click', function() {
+                document.getElementById('pantallaExamenes').style.display = 'none';
+                document.getElementById('pantallaInicio').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('btnCerrarRuleta').addEventListener('click', function() {
+                document.getElementById('pantallaRuleta').style.display = 'none';
+                document.getElementById('pantallaInicio').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('btnCerrarRuletaBtn').addEventListener('click', function() {
+                document.getElementById('pantallaRuleta').style.display = 'none';
+                document.getElementById('pantallaInicio').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
             document.getElementById('btnCerrarReporte').addEventListener('click', function() {
                 document.getElementById('pantallaReporteAsistencia').style.display = 'none';
                 document.getElementById('pantallaInicio').style.display = 'block';
@@ -1136,6 +1459,144 @@
                 document.getElementById('pantallaApp').style.display = 'none';
                 document.getElementById('pantallaInicio').style.display = 'block';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // --- IMPORTAR ALUMNOS DESDE FOTO CON IA ---
+            document.getElementById('btnSubirFotoLista').addEventListener('click', function() {
+                document.getElementById('inputFotoLista').click();
+            });
+
+            document.getElementById('inputFotoLista').addEventListener('change', async function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const btnSubir = document.getElementById('btnSubirFotoLista');
+                btnSubir.innerText = "🤖 Leyendo lista en la foto...";
+                btnSubir.disabled = true;
+
+                try {
+                    // Convertir imagen a Base64
+                    const reader = new FileReader();
+                    reader.onload = async function(e) {
+                        const base64Data = e.target.result.split(',')[1];
+                        const mimeType = file.type;
+
+                        const promptVision = `Analiza esta imagen que contiene una lista de alumnos de una escuela primaria.
+Extrae únicamente los nombres completos de los alumnos que aparecen en la lista.
+Responde ÚNICAMENTE con un objeto JSON válido (sin formato markdown ni texto adicional) con la siguiente estructura:
+{
+  "alumnos": ["Nombre del Alumno 1", "Nombre del Alumno 2", "Nombre del Alumno 3"]
+}`;
+
+                        try {
+                            const response = await ai.models.generateContent({
+                                model: 'gemini-3.8-flash',
+                                contents: [
+                                    {
+                                        inlineData: {
+                                            data: base64Data,
+                                            mimeType: mimeType
+                                        }
+                                    },
+                                    promptVision
+                                ]
+                            });
+
+                            let textResponse = response.text;
+                            textResponse = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+                            const datosJson = JSON.parse(textResponse);
+
+                            if (datosJson.alumnos && Array.isArray(datosJson.alumnos) && datosJson.alumnos.length > 0) {
+                                let alumnosActuales = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
+                                
+                                // Añadir los nuevos alumnos detectados
+                                datosJson.alumnos.forEach(nombre => {
+                                    if(nombre && nombre.trim() !== "") {
+                                        alumnosActuales.push(nombre.trim());
+                                    }
+                                });
+
+                                localStorage.setItem('aula360_alumnos', JSON.stringify(alumnosActuales));
+                                renderizarGestionAlumnos();
+                                alert(`¡Se han importado ${datosJson.alumnos.length} alumnos con éxito desde la foto!`);
+                            } else {
+                                alert("No se pudieron detectar nombres claros en la imagen. Intenta con otra foto más iluminada.");
+                            }
+
+                        } catch (err) {
+                            console.error(err);
+                            alert("Error al procesar la imagen con la IA: " + err.message);
+                        } finally {
+                            btnSubir.innerText = "🤖 Leer Lista con IA";
+                            btnSubir.disabled = false;
+                            event.target.value = "";
+                        }
+                    };
+                    reader.readAsDataURL(file);
+
+                } catch (error) {
+                    console.error(error);
+                    alert("Error al leer el archivo de imagen.");
+                    btnSubir.innerText = "🤖 Leer Lista con IA";
+                    btnSubir.disabled = false;
+                }
+            });
+
+            // --- EXPORTAR A EXCEL (CSV) ---
+            document.getElementById('btnExcelLista').addEventListener('click', function() {
+                exportarTablaACSV('tablaAlumnosCuerpo', ['#', 'Nombre del Alumno(a)', 'Asistencia'], 'lista_asistencia');
+            });
+
+            document.getElementById('btnExcelMensual').addEventListener('click', function() {
+                exportarTablaACSV('tablaReporteCuerpo', ['#', 'Nombre del Alumno(a)', 'Asistencias', 'Retardos', 'Faltas'], 'reporte_mensual');
+            });
+
+            document.getElementById('btnExcelTareas').addEventListener('click', function() {
+                exportarTablaACSV('tablaTareasCuerpo', ['#', 'Nombre del Alumno(a)', 'Estatus Tarea'], 'control_tareas');
+            });
+
+            // --- GENERAR EXAMEN CON IA ---
+            document.getElementById('btnGenerarExamenAI').addEventListener('click', generarExamenConIA);
+            document.getElementById('btnImprimirExamen').addEventListener('click', function() {
+                imprimirReporteEspecifico('imprimiendo-examen');
+            });
+            document.getElementById('btnCopiarExamen').addEventListener('click', function() {
+                const texto = document.getElementById('areaExamenImpresion').innerText;
+                navigator.clipboard.writeText(texto).then(() => alert("¡Examen copiado al portapapeles!"));
+            });
+
+            // --- LÓGICA DE LA RULETA DE PARTICIPACIÓN ---
+            document.getElementById('btnGirarRuleta').addEventListener('click', function() {
+                let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
+                if (alumnos.length === 0) {
+                    alert("No hay alumnos registrados en la lista. Agrégalos primero en 'Lista de Grupo y Expedientes'.");
+                    return;
+                }
+
+                const displayBox = document.getElementById('nombreSeleccionadoRuleta');
+                const btnGirar = document.getElementById('btnGirarRuleta');
+                btnGirar.disabled = true;
+
+                let contador = 0;
+                let ciclosMax = 25;
+                let velocidad = 50;
+
+                function animarGiro() {
+                    let randomIndex = Math.floor(Math.random() * alumnos.length);
+                    displayBox.innerText = alumnos[randomIndex];
+                    contador++;
+
+                    if (contador < ciclosMax) {
+                        velocidad += 15;
+                        setTimeout(animarGiro, velocidad);
+                    } else {
+                        let ganadorIndex = Math.floor(Math.random() * alumnos.length);
+                        displayBox.innerText = "🎉 " + alumnos[ganadorIndex] + " 🎉";
+                        btnGirar.disabled = false;
+                    }
+                }
+
+                animarGiro();
             });
 
             // --- SISTEMA DE RESPALDO Y RESTAURACIÓN ---
@@ -1277,6 +1738,38 @@
                 cargarTablaAsistenciaPorFecha(this.value);
             });
 
+            // Selector de tareas cambia el registro activo
+            document.getElementById('selectTareaActual').addEventListener('change', function() {
+                tareaActivaId = this.value;
+                localStorage.setItem('aula360_tarea_activa_id', tareaActivaId);
+                
+                let listaTareas = JSON.parse(localStorage.getItem('aula360_lista_tareas')) || [];
+                let tareaEncontrada = listaTareas.find(t => t.id == tareaActivaId);
+                let nombreTarea = tareaEncontrada ? tareaEncontrada.nombre : "Control de Tareas";
+                
+                document.getElementById('tituloImpresionTarea').innerText = "TAREA: " + nombreTarea;
+                cargarTablaTareas();
+            });
+
+            // Botón para crear nueva tarea
+            document.getElementById('btnNuevaTareaPrompt').addEventListener('click', function() {
+                let nombreNuevo = prompt("Escribe el nombre de la nueva tarea o proyecto (ej. Maqueta del Sistema Solar):");
+                if (nombreNuevo && nombreNuevo.trim() !== "") {
+                    let listaTareas = JSON.parse(localStorage.getItem('aula360_lista_tareas')) || [];
+                    let nuevoId = 'tarea_' + Date.now();
+                    
+                    listaTareas.push({ id: nuevoId, nombre: nombreNuevo.trim() });
+                    localStorage.setItem('aula360_lista_tareas', JSON.stringify(listaTareas));
+                    
+                    tareaActivaId = nuevoId;
+                    localStorage.setItem('aula360_tarea_activa_id', tareaActivaId);
+                    
+                    poblarSelectTareas();
+                    document.getElementById('tituloImpresionTarea').innerText = "TAREA: " + nombreNuevo.trim();
+                    cargarTablaTareas();
+                }
+            });
+
             // Botones de impresión dedicados
             document.getElementById('btnImprimir').addEventListener('click', function() {
                 imprimirReporteEspecifico('imprimiendo-planeacion');
@@ -1288,6 +1781,10 @@
 
             document.getElementById('btnImprimirMensual').addEventListener('click', function() {
                 imprimirReporteEspecifico('imprimiendo-mensual');
+            });
+
+            document.getElementById('btnImprimirTareasPDF').addEventListener('click', function() {
+                imprimirReporteEspecifico('imprimiendo-tareas');
             });
 
             document.getElementById('btnGenerarAI').addEventListener('click', generarPlaneacionConIA);
@@ -1311,6 +1808,200 @@
                 });
             });
         });
+
+        // --- FUNCIÓN PARA EXPORTAR TABLAS A EXCEL (CSV) ---
+        function exportarTablaACSV(tbodyId, cabeceras, nombreArchivo) {
+            const tbody = document.getElementById(tbodyId);
+            const filas = tbody.querySelectorAll('tr');
+            
+            let csvContent = "\uFEFF" + cabeceras.join(",") + "\n";
+
+            filas.forEach(fila => {
+                const celdas = fila.querySelectorAll('td');
+                if (celdas.length > 0) {
+                    let filaDatos = [];
+                    celdas.forEach((celda, i) => {
+                        let texto = "";
+                        const input = celda.querySelector('input');
+                        const btn = celda.querySelector('button');
+                        if (input) {
+                            texto = input.value;
+                        } else if (btn) {
+                            texto = btn.innerText;
+                        } else {
+                            texto = celda.innerText;
+                        }
+                        texto = texto.replace(/"/g, '""').replace(/[\n\r]+/g, ' ');
+                        filaDatos.push(`"${texto}"`);
+                    });
+                    csvContent += filaDatos.join(",") + "\n";
+                }
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `${nombreArchivo}_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // --- GENERADOR DE EXÁMENES CON IA ---
+        async function generarExamenConIA() {
+            const grado = document.getElementById('selectGradoExamen').value;
+            const tema = document.getElementById('inputTemaExamen').value.trim();
+            const escuela = localStorage.getItem('aula360_escuela') || "Escuela Primaria";
+
+            if (!tema) {
+                alert("Por favor escribe el tema o contenido a evaluar.");
+                return;
+            }
+
+            const btnGen = document.getElementById('btnGenerarExamenAI');
+            const resBox = document.getElementById('resultadoExamen');
+            const contExamen = document.getElementById('resExamenContenido');
+
+            btnGen.innerText = "🤖 Redactando examen...";
+            resBox.style.display = "block";
+            document.getElementById('resExamenTituloEscuela').innerText = escuela.toUpperCase();
+            document.getElementById('resExamenTituloTema').innerText = "EVALUACIÓN: " + tema.toUpperCase();
+            contExamen.innerText = "La IA está diseñando las preguntas y opciones de respuesta...";
+
+            const promptExamen = `Actúa como un experto docente de educación primaria en México especialista en evaluación formativa. 
+Diseña un examen de opción múltiple formal y riguroso para ${grado} sobre el siguiente tema: "${tema}".
+El examen debe constar de 5 preguntas claras con 4 opciones de respuesta cada una (A, B, C, D).
+Al final, incluye una sección clara titulada "HOJA DE RESPUESTAS" indicando la respuesta correcta de cada pregunta.
+Utiliza formato de texto limpio, sin bloques de código markdown ni saludos iniciales.`;
+
+            try {
+                const response = await ai.models.generateContent({
+                    model: 'gemini-3.8-flash',
+                    contents: promptExamen
+                });
+
+                let textoExamen = response.text ? response.text.trim() : "";
+                if (!textoExamen) throw new Error("Respuesta vacía");
+
+                contExamen.innerText = textoExamen;
+                btnGen.innerText = "🤖 Generar Examen con IA";
+
+            } catch (error) {
+                console.error(error);
+                alert("Error al generar el examen: " + error.message);
+                contExamen.innerText = "Error en la generación. Intenta de nuevo.";
+                btnGen.innerText = "🤖 Generar Examen con IA";
+            }
+        }
+
+        function actualizarTextosGradoGrupo() {
+            let g = document.getElementById('inputGradoGrupo').value.trim();
+            let grp = document.getElementById('inputGrupoSalon').value.trim();
+            let textoCompleto = (g || grp) ? `${g} ${grp}`.trim() : "Grado y Grupo no especificado";
+            
+            const elLista = document.getElementById('etiquetaGradoGrupoLista');
+            const elMensual = document.getElementById('etiquetaGradoGrupoMensual');
+            const elTarea = document.getElementById('etiquetaGradoGrupoTarea');
+            if(elLista) elLista.innerText = "Grado y Grupo: " + textoCompleto;
+            if(elMensual) elMensual.innerText = "Grado y Grupo: " + textoCompleto;
+            if(elTarea) elTarea.innerText = "Grado y Grupo: " + textoCompleto;
+        }
+
+        function inicializarControlTareas() {
+            let listaTareas = JSON.parse(localStorage.getItem('aula360_lista_tareas')) || [];
+            if (listaTareas.length === 0) {
+                let tareaInicialId = 'tarea_' + Date.now();
+                listaTareas = [{ id: tareaInicialId, nombre: 'Primera Tarea / Actividad' }];
+                localStorage.setItem('aula360_lista_tareas', JSON.stringify(listaTareas));
+                tareaActivaId = tareaInicialId;
+            } else {
+                tareaActivaId = localStorage.getItem('aula360_tarea_activa_id') || listaTareas[0].id;
+            }
+            localStorage.setItem('aula360_tarea_activa_id', tareaActivaId);
+
+            poblarSelectTareas();
+            
+            let tareaEncontrada = listaTareas.find(t => t.id == tareaActivaId);
+            let nombreTarea = tareaEncontrada ? tareaEncontrada.nombre : "Control de Tareas";
+            document.getElementById('tituloImpresionTarea').innerText = "TAREA: " + nombreTarea;
+            
+            cargarTablaTareas();
+        }
+
+        function poblarSelectTareas() {
+            let listaTareas = JSON.parse(localStorage.getItem('aula360_lista_tareas')) || [];
+            const select = document.getElementById('selectTareaActual');
+            select.innerHTML = "";
+
+            listaTareas.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t.id;
+                opt.innerText = t.nombre;
+                if (t.id == tareaActivaId) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function cargarTablaTareas() {
+            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, (_, i) => `Alumno(a) ${i + 1}`);
+            let tareaKey = 'aula360_reg_' + tareaActivaId;
+            let registroTareas = JSON.parse(localStorage.getItem(tareaKey)) || {};
+
+            const tbody = document.getElementById('tablaTareasCuerpo');
+            tbody.innerHTML = "";
+
+            alumnos.forEach((nombre, index) => {
+                let estado = registroTareas[index] || 'E';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td style="text-align: left; font-weight: 500;">${nombre}</td>
+                    <td>
+                        <button class="btn-tarea ${estado === 'E' ? 'entregado' : 'pendiente'}" data-index="${index}" onclick="cambiarEstadoTarea(this)">
+                            ${estado === 'E' ? '✅ Entregó' : '❌ Pendiente'}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            actualizarEstadisticasTareas();
+        }
+
+        window.cambiarEstadoTarea = function(btn) {
+            let idx = btn.getAttribute('data-index');
+            let tareaKey = 'aula360_reg_' + tareaActivaId;
+            let registroTareas = JSON.parse(localStorage.getItem(tareaKey)) || {};
+
+            let actual = registroTareas[idx] || 'E';
+            let siguiente = actual === 'E' ? 'P' : 'E';
+
+            registroTareas[idx] = siguiente;
+            localStorage.setItem(tareaKey, JSON.stringify(registroTareas));
+
+            btn.className = `btn-tarea ${siguiente === 'E' ? 'entregado' : 'pendiente'}`;
+            btn.innerText = siguiente === 'E' ? '✅ Entregó' : '❌ Pendiente';
+
+            actualizarEstadisticasTareas();
+        };
+
+        function actualizarEstadisticasTareas() {
+            let tareaKey = 'aula360_reg_' + tareaActivaId;
+            let registroTareas = JSON.parse(localStorage.getItem(tareaKey)) || {};
+            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, () => "");
+
+            let entregas = 0, pendientes = 0;
+            alumnos.forEach((_, index) => {
+                let est = registroTareas[index] || 'E';
+                if(est === 'E') entregas++;
+                if(est === 'P') pendientes++;
+            });
+
+            document.getElementById('statEntregas').innerText = entregas;
+            document.getElementById('statPendientes').innerText = pendientes;
+        }
 
         async function generarFichaDescriptivaAI() {
             let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
@@ -1459,6 +2150,7 @@ Utiliza un tono empático, técnico pedagógico y constructivo. Ve directo al co
                 localStorage.setItem('aula360_alumnos', JSON.stringify(alumnos));
                 renderizarGestionAlumnos();
                 cargarTablaAsistenciaPorFecha(document.getElementById('inputFechaAsistencia').value);
+                cargarTablaTareas();
             }
         };
 
