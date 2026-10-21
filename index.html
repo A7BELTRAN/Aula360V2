@@ -483,7 +483,7 @@
             margin-top: 10px;
         }
 
-        /* Estilos para la tabla de Asistencia y Reporte */
+        /* Estilos para las tablas de Asistencia y Reportes */
         .asistencia-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -548,16 +548,55 @@
         .btn-asis.retardo { background: #fef9c3; border-color: #eab308; color: #a16207; }
         .btn-asis.falta { background: #fee2e2; border-color: #ef4444; color: #b91c1c; }
 
+        /* Reglas de impresión estrictas: ocultan todo el documento por defecto y solo muestran el bloque exacto */
         @media print {
             body { background: white; padding: 0; }
             .container { max-width: 100%; box-shadow: none; padding: 0; }
-            #pantallaInicio, #pantallaApp, #pantallaAsistencia, .step-title, .btn-group, h1, .subtitle, .asistencia-stats button, .btn-volver-app { display: none !important; }
-            #pantallaReporteAsistencia { display: block !important; }
-            .tabla-asistencia-digital input { border: none; }
+            
+            /* Ocultar absolutamente todo de la app por defecto */
+            body * {
+                visibility: hidden;
+            }
+
+            /* Mostrar únicamente el contenedor específico según el reporte activo */
+            body.imprimiendo-planeacion #areaImpresion,
+            body.imprimiendo-planeacion #areaImpresion * {
+                visibility: visible;
+            }
+            body.imprimiendo-planeacion #areaImpresion {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                border: none !important;
+                box-shadow: none !important;
+            }
+
+            body.imprimiendo-lista #seccionImprimirLista,
+            body.imprimiendo-lista #seccionImprimirLista * {
+                visibility: visible;
+            }
+            body.imprimiendo-lista #seccionImprimirLista {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+
+            body.imprimiendo-mensual #seccionImprimirMensual,
+            body.imprimiendo-mensual #seccionImprimirMensual * {
+                visibility: visible;
+            }
+            body.imprimiendo-mensual #seccionImprimirMensual {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
         }
     </style>
 </head>
-<body>
+<body id="cuerpoApp">
 
     <div class="container">
         
@@ -579,34 +618,37 @@
             </div>
 
             <button class="btn-inicio-principal" id="btnIrCrear">🚀 Crear Nueva Planeación</button>
-            <button class="btn-inicio-lista" id="btnInicioAsistencia">📱 Pase de Lista Digital</button>
-            <button class="btn-inicio-lista" id="btnInicioReporte" style="background: #0284c7;">📊 Reporte Estadístico Acumulado</button>
+            <button class="btn-inicio-lista" id="btnInicioAsistencia">📱 Pase de Lista Diario</button>
+            <button class="btn-inicio-lista" id="btnInicioReporte" style="background: #0284c7;">📊 Reporte de Asistencia Mensual</button>
             <button class="btn-inicio-secundario" id="btnIrHistorial">📂 Ver Historial Guardado</button>
         </div>
 
-        <!-- PANTALLA DE REPORTE ESTADÍSTICO ACUMULADO -->
+        <!-- PANTALLA DE REPORTE ESTADÍSTICO ACUMULADO (MENSUAL) -->
         <div id="pantallaReporteAsistencia">
             <button class="btn-volver-app" id="btnCerrarReporte">⬅️ Volver al Inicio</button>
-            <h1>📊 Reporte Estadístico Acumulado</h1>
-            <div class="subtitle">Resumen histórico de asistencias, retardos y faltas registradas</div>
+            <h1>📊 Reporte de Asistencia Mensual</h1>
+            <div class="subtitle">Resumen acumulado de asistencias, retardos y faltas del grupo</div>
 
-            <table class="tabla-asistencia-digital" id="tablaReporteAcumulado">
-                <thead>
-                    <tr>
-                        <th style="width: 30px;">#</th>
-                        <th>Nombre del Alumno(a)</th>
-                        <th style="width: 60px; background: #15803d;">Asist.</th>
-                        <th style="width: 60px; background: #a16207;">Ret.</th>
-                        <th style="width: 60px; background: #b91c1c;">Faltas</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaReporteCuerpo">
-                    <!-- Generado dinámicamente -->
-                </tbody>
-            </table>
+            <div id="seccionImprimirMensual">
+                <h3 style="text-align: center; color: #1e3a8a; margin-bottom: 10px;">REPORTE MENSUAL DE ASISTENCIA</h3>
+                <table class="tabla-asistencia-digital" id="tablaReporteAcumulado">
+                    <thead>
+                        <tr>
+                            <th style="width: 30px;">#</th>
+                            <th>Nombre del Alumno(a)</th>
+                            <th style="width: 60px; background: #15803d;">Asist.</th>
+                            <th style="width: 60px; background: #a16207;">Ret.</th>
+                            <th style="width: 60px; background: #b91c1c;">Faltas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaReporteCuerpo">
+                        <!-- Generado dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
 
             <div class="btn-group">
-                <button class="btn-action" onclick="window.print()">🖨️ Imprimir Reporte</button>
+                <button class="btn-action btn-pdf" id="btnImprimirMensual">🖨️ PDF Asistencia Mensual</button>
                 <button class="btn-reset" id="btnCerrarReporteBtn" style="width: 100%;">⬅️ Volver al Inicio</button>
             </div>
         </div>
@@ -614,7 +656,7 @@
         <!-- PANTALLA DE PASE DE LISTA DIGITAL -->
         <div id="pantallaAsistencia">
             <button class="btn-volver-app" id="btnCerrarAsistencia">⬅️ Volver al Inicio</button>
-            <h1 id="volverDesdeAsistencia">📋 Pase de Lista Digital</h1>
+            <h1 id="volverDesdeAsistencia">📋 Pase de Lista Diario</h1>
             <div class="subtitle" id="fechaHoySub">-</div>
 
             <div class="asistencia-stats">
@@ -623,26 +665,29 @@
                 <div class="stat-card" style="color: #b91c1c;">Faltas <span id="statFaltas">0</span></div>
             </div>
 
-            <table class="tabla-asistencia-digital">
-                <thead>
-                    <tr>
-                        <th style="width: 30px;">#</th>
-                        <th>Nombre del Alumno(a)</th>
-                        <th style="width: 90px;">Asistencia</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaAlumnosCuerpo">
-                    <!-- Generado dinámicamente -->
-                </tbody>
-            </table>
+            <div id="seccionImprimirLista">
+                <h3 style="text-align: center; color: #1e3a8a; margin-bottom: 10px;" id="tituloImpresionLista">LISTA DE ASISTENCIA DIARIA</h3>
+                <table class="tabla-asistencia-digital">
+                    <thead>
+                        <tr>
+                            <th style="width: 30px;">#</th>
+                            <th>Nombre del Alumno(a)</th>
+                            <th style="width: 90px;">Asistencia</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaAlumnosCuerpo">
+                        <!-- Generado dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
 
             <div class="btn-group">
-                <button class="btn-action" onclick="window.print()">🖨️ Imprimir Reporte</button>
+                <button class="btn-action btn-pdf" id="btnImprimirListaDiaria">🖨️ PDF Lista de Asistencia</button>
                 <button class="btn-reset" id="btnCerrarAsistenciaBotton" style="width: 100%;">⬅️ Volver al Inicio</button>
             </div>
         </div>
 
-        <!-- PANTALLA PRINCIPAL DE LA APLICACIÓN -->
+        <!-- PANTALLA PRINCIPAL DE LA APLICACIÓN (PLANEACIÓN) -->
         <div id="pantallaApp">
             <button class="btn-volver-app" id="btnVolverInicioApp">⬅️ Volver al Inicio</button>
             <h1 id="tituloVolverInicio">📚 Aula360</h1>
@@ -817,8 +862,7 @@
                 <div class="btn-group">
                     <button id="btnCopiar" class="btn-action">📋 Copiar</button>
                     <button id="btnWhatsapp" class="btn-action btn-whatsapp">💬 WhatsApp</button>
-                    <button id="btnImprimir" class="btn-action btn-pdf">🖨️ PDF</button>
-                    <button id="btnListaImprimible" class="btn-action btn-lista" style="display:none;">📝 Lista</button>
+                    <button id="btnImprimir" class="btn-action btn-pdf">🖨️ PDF Planeación</button>
                     <button class="btn-reset" id="btnNuevaPlan">🔄 Nueva</button>
                 </div>
             </div>
@@ -927,11 +971,23 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
+            // Botones de impresión dedicados
+            document.getElementById('btnImprimir').addEventListener('click', function() {
+                imprimirReporteEspecifico('imprimiendo-planeacion');
+            });
+
+            document.getElementById('btnImprimirListaDiaria').addEventListener('click', function() {
+                imprimirReporteEspecifico('imprimiendo-lista');
+            });
+
+            document.getElementById('btnImprimirMensual').addEventListener('click', function() {
+                imprimirReporteEspecifico('imprimiendo-mensual');
+            });
+
             document.getElementById('btnGenerarAI').addEventListener('click', generarPlaneacionConIA);
             document.getElementById('btnGenerarRubrica').addEventListener('click', generarRubricaAI);
             document.getElementById('btnCopiar').addEventListener('click', copiarContenido);
             document.getElementById('btnWhatsapp').addEventListener('click', compartirWhatsApp);
-            document.getElementById('btnImprimir').addEventListener('click', imprimirConGuardado);
             document.getElementById('btnNuevaPlan').addEventListener('click', nuevaPlaneacion);
             document.getElementById('btnClearHistory').addEventListener('click', limpiarHistorial);
 
@@ -949,6 +1005,35 @@
                 });
             });
         });
+
+        function imprimirReporteEspecifico(claseImpresion) {
+            const cuerpo = document.getElementById('cuerpoApp');
+            cuerpo.className = claseImpresion;
+
+            if (claseImpresion === 'imprimiendo-planeacion') {
+                const textoRubricaEl = document.getElementById('textoRubrica');
+                const seccionRubricaImpresion = document.getElementById('seccionRubricaImpresion');
+                const resRubrica = document.getElementById('resRubrica');
+
+                if (textoRubricaEl) {
+                    const textoRubricaActual = textoRubricaEl.innerText;
+                    if (textoRubricaActual && textoRubricaActual.trim() !== '' && textoRubricaActual !== '🤖 La IA está diseñando la rúbrica personalizada para este proyecto...') {
+                        if(resRubrica) resRubrica.innerText = textoRubricaActual;
+                        if(seccionRubricaImpresion) seccionRubricaImpresion.style.display = 'block';
+                    }
+                }
+            }
+
+            if (claseImpresion === 'imprimiendo-lista') {
+                const fechaHoy = new Date().toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                document.getElementById('tituloImpresionLista').innerText = "LISTA DE ASISTENCIA DIARIA - " + fechaHoy.toUpperCase();
+            }
+
+            setTimeout(() => {
+                window.print();
+                cuerpo.className = "";
+            }, 250);
+        }
 
         // --- SISTEMA DE ASISTENCIA DIGITAL INTERACTIVA Y REPORTE ---
         function inicializarAsistenciaDigital() {
@@ -1028,7 +1113,6 @@
         function generarReporteAcumulado() {
             let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, (_, i) => `Alumno(a) ${i + 1}`);
             
-            // Recorrer todas las llaves de localStorage buscando registros de asistencia (aula360_asis_*)
             let acumulado = {};
             alumnos.forEach((_, idx) => { acumulado[idx] = { P: 0, R: 0, F: 0 }; });
 
@@ -1403,7 +1487,7 @@ Formatea el resultado de manera clara utilizando viñetas y negritas. No incluya
                     document.getElementById('pantallaInicio').style.display = 'none';
                     document.getElementById('pantallaApp').style.display = 'block';
                     cargarItemHistorial(item);
-                    setTimeout(() => imprimirConGuardado(), 300);
+                    setTimeout(() => imprimirReporteEspecifico('imprimiendo-planeacion'), 300);
                 });
 
                 divActions.appendChild(btnFav);
@@ -1439,27 +1523,6 @@ Formatea el resultado de manera clara utilizando viñetas y negritas. No incluya
 
             document.getElementById('resultado').style.display = 'block';
             window.scrollTo({ top: document.getElementById('resultado').offsetTop, behavior: 'smooth' });
-        }
-
-        function imprimirConGuardado() {
-            const textoRubricaEl = document.getElementById('textoRubrica');
-            const seccionRubricaImpresion = document.getElementById('seccionRubricaImpresion');
-            const resRubrica = document.getElementById('resRubrica');
-
-            if (textoRubricaEl) {
-                const textoRubricaActual = textoRubricaEl.innerText;
-                if (textoRubricaActual && textoRubricaActual.trim() !== '' && textoRubricaActual !== '🤖 La IA está diseñando la rúbrica personalizada para este proyecto...') {
-                    if(resRubrica) resRubrica.innerText = textoRubricaActual;
-                    if(seccionRubricaImpresion) {
-                        seccionRubricaImpresion.style.display = 'block';
-                        seccionRubricaImpresion.style.setProperty('display', 'block', 'important');
-                    }
-                }
-            }
-
-            setTimeout(() => {
-                window.print();
-            }, 200);
         }
 
         function compartirWhatsApp() {
