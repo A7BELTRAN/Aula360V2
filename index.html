@@ -127,8 +127,42 @@
             margin-bottom: 12px;
         }
 
+        .btn-inicio-alumnos {
+            background: #7c3aed;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(124, 58, 237, 0.2);
+            margin-bottom: 12px;
+        }
+
+        .backup-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px dashed #cbd5e1;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-backup {
+            background: #475569;
+            color: white;
+            border: none;
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
         /* Vistas de pantallas */
-        #pantallaApp, #pantallaAsistencia, #pantallaReporteAsistencia {
+        #pantallaApp, #pantallaAsistencia, #pantallaReporteAsistencia, #pantallaAlumnos {
             display: none;
         }
 
@@ -204,7 +238,7 @@
             color: #115e59;
         }
 
-        input[type="text"], textarea {
+        input[type="text"], textarea, input[type="date"] {
             width: 100%;
             padding: 12px;
             border: 2px solid #e2e8f0;
@@ -215,7 +249,7 @@
             outline: none;
         }
 
-        input[type="text"]:focus, textarea:focus {
+        input[type="text"]:focus, textarea:focus, input[type="date"]:focus {
             border-color: var(--primary);
         }
 
@@ -524,13 +558,19 @@
             color: white;
         }
 
-        .input-nombre-alumno {
+        .input-nombre-alumno, .input-tel-alumno {
             width: 100%;
             border: none;
             background: transparent;
             font-size: 12px;
             outline: none;
             padding: 2px;
+        }
+
+        .input-tel-alumno {
+            text-align: center;
+            color: #0d9488;
+            font-weight: bold;
         }
 
         .btn-asis {
@@ -548,17 +588,50 @@
         .btn-asis.retardo { background: #fef9c3; border-color: #eab308; color: #a16207; }
         .btn-asis.falta { background: #fee2e2; border-color: #ef4444; color: #b91c1c; }
 
-        /* Reglas de impresión estrictas: ocultan todo el documento por defecto y solo muestran el bloque exacto */
+        .btn-expediente {
+            background: #7c3aed;
+            color: white;
+            border: none;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Modal / Tarjeta de Expediente de Alumno */
+        #modalExpediente {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 450px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        /* Reglas de impresión estrictas para cada módulo */
         @media print {
             body { background: white; padding: 0; }
             .container { max-width: 100%; box-shadow: none; padding: 0; }
             
-            /* Ocultar absolutamente todo de la app por defecto */
             body * {
                 visibility: hidden;
             }
 
-            /* Mostrar únicamente el contenedor específico según el reporte activo */
             body.imprimiendo-planeacion #areaImpresion,
             body.imprimiendo-planeacion #areaImpresion * {
                 visibility: visible;
@@ -609,18 +682,58 @@
             <div class="hero-features">
                 <div class="hero-feature-card">
                     <b>✨ IA Avanzada</b>
-                    Genera secuencias y rúbricas ajustadas a tu tono pedagógico.
+                    Genera planeaciones y fichas descriptivas con IA.
                 </div>
                 <div class="hero-feature-card">
-                    <b>📊 Asistencia y Reportes</b>
-                    Pase de lista diario y estadísticas acumuladas.
+                    <b>👥 Gestión y Asistencia</b>
+                    Expediente, WhatsApp a papás y reportes.
                 </div>
             </div>
 
             <button class="btn-inicio-principal" id="btnIrCrear">🚀 Crear Nueva Planeación</button>
-            <button class="btn-inicio-lista" id="btnInicioAsistencia">📱 Pase de Lista Diario</button>
+            <button class="btn-inicio-lista" id="btnInicioAsistencia">📱 Pase de Lista Diario / Histórico</button>
+            <button class="btn-inicio-alumnos" id="btnInicioAlumnos">👥 Lista de Grupo y Expedientes</button>
             <button class="btn-inicio-lista" id="btnInicioReporte" style="background: #0284c7;">📊 Reporte de Asistencia Mensual</button>
             <button class="btn-inicio-secundario" id="btnIrHistorial">📂 Ver Historial Guardado</button>
+
+            <!-- Sección de Respaldo y Restauración -->
+            <div class="backup-section">
+                <button class="btn-backup" id="btnExportarRespaldo">📥 Exportar Respaldo</button>
+                <button class="btn-backup" id="btnImportarRespaldo">📤 Importar Respaldo</button>
+                <input type="file" id="inputArchivoRespaldo" accept=".json" style="display: none;">
+            </div>
+        </div>
+
+        <!-- PANTALLA DE GESTIÓN DE ALUMNOS (EXPEDIENTES Y FICHAS IA) -->
+        <div id="pantallaAlumnos">
+            <button class="btn-volver-app" id="btnCerrarAlumnos">⬅️ Volver al Inicio</button>
+            <h1>👥 Gestión del Grupo</h1>
+            <div class="subtitle">Administra tu lista, números de WhatsApp y fichas descriptivas</div>
+
+            <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;">
+                <input type="text" id="inputNuevoAlumno" placeholder="Nombre completo del alumno(a)..." style="margin-top: 0; flex: 2; min-width: 150px;">
+                <input type="text" id="inputNuevoTel" placeholder="WhatsApp (Ej. 521...)" style="margin-top: 0; flex: 1; min-width: 110px;">
+                <button class="btn-action" id="btnAgregarAlumno" style="flex: 0 0 90px; margin-top: 0;">➕ Añadir</button>
+            </div>
+
+            <div style="max-height: 400px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 10px;">
+                <table class="tabla-asistencia-digital" style="margin-bottom: 0;">
+                    <thead>
+                        <tr>
+                            <th style="width: 30px;">#</th>
+                            <th>Nombre del Alumno(a)</th>
+                            <th style="width: 110px;">WhatsApp Tut.</th>
+                            <th style="width: 90px;">Expediente</th>
+                            <th style="width: 50px;">🗑️</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaGestionAlumnosCuerpo">
+                        <!-- Generado dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <button class="btn-reset" id="btnCerrarAlumnosBtn" style="width: 100%; margin-top: 15px;">⬅️ Volver al Inicio</button>
         </div>
 
         <!-- PANTALLA DE REPORTE ESTADÍSTICO ACUMULADO (MENSUAL) -->
@@ -653,11 +766,16 @@
             </div>
         </div>
 
-        <!-- PANTALLA DE PASE DE LISTA DIGITAL -->
+        <!-- PANTALLA DE PASE DE LISTA DIGITAL CON SELECTOR DE FECHA -->
         <div id="pantallaAsistencia">
             <button class="btn-volver-app" id="btnCerrarAsistencia">⬅️ Volver al Inicio</button>
-            <h1 id="volverDesdeAsistencia">📋 Pase de Lista Diario</h1>
-            <div class="subtitle" id="fechaHoySub">-</div>
+            <h1 id="volverDesdeAsistencia">📋 Pase de Lista</h1>
+            <div class="subtitle">Selecciona la fecha para pasar o consultar asistencia</div>
+
+            <div style="margin-bottom: 15px; background: #f1f5f9; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1;">
+                <label for="inputFechaAsistencia" style="font-size: 12px; font-weight: bold; color: var(--primary); display: block; margin-bottom: 4px;">📅 Fecha de Pase de Lista:</label>
+                <input type="date" id="inputFechaAsistencia" style="margin-top: 0; background: white;">
+            </div>
 
             <div class="asistencia-stats">
                 <div class="stat-card" style="color: #15803d;">Presentes <span id="statPresentes">0</span></div>
@@ -666,13 +784,13 @@
             </div>
 
             <div id="seccionImprimirLista">
-                <h3 style="text-align: center; color: #1e3a8a; margin-bottom: 10px;" id="tituloImpresionLista">LISTA DE ASISTENCIA DIARIA</h3>
+                <h3 style="text-align: center; color: #1e3a8a; margin-bottom: 10px;" id="tituloImpresionLista">LISTA DE ASISTENCIA</h3>
                 <table class="tabla-asistencia-digital">
                     <thead>
                         <tr>
                             <th style="width: 30px;">#</th>
                             <th>Nombre del Alumno(a)</th>
-                            <th style="width: 90px;">Asistencia</th>
+                            <th style="width: 120px;">Asistencia</th>
                         </tr>
                     </thead>
                     <tbody id="tablaAlumnosCuerpo">
@@ -882,6 +1000,34 @@
 
     </div>
 
+    <!-- MODAL DE EXPEDIENTE, WHATSAPP Y FICHA DESCRIPTIVA IA -->
+    <div id="modalExpediente">
+        <div class="modal-content">
+            <h3 id="modalNombreAlumno" style="color: var(--primary); margin-top: 0; margin-bottom: 4px;">Expediente de Alumno</h3>
+            <p style="font-size: 11px; color: #64748b; margin-bottom: 8px;">Notas de seguimiento y observaciones del trimestre:</p>
+            <textarea id="modalNotasExpediente" rows="3" placeholder="Escribe aquí las observaciones..."></textarea>
+            
+            <div style="margin-top: 10px;">
+                <label style="font-size: 11px; font-weight: bold; color: var(--primary); display: block; margin-bottom: 2px;">📱 WhatsApp del Tutor:</label>
+                <input type="text" id="modalTelTutor" placeholder="Ej. 521XXXXXXXXXX" style="margin-top: 0; font-size: 12px; padding: 8px;">
+            </div>
+
+            <!-- Sección de Ficha Descriptiva IA -->
+            <div style="margin-top: 15px; background: #faf5ff; border: 2px dashed #7c3aed; padding: 12px; border-radius: 8px;">
+                <b style="color: #7c3aed; font-size: 12px; display: block; margin-bottom: 4px;">✨ Ficha Descriptiva Trimestral (NEM)</b>
+                <p style="font-size: 11px; color: #64748b; margin-bottom: 8px;">Genera un informe formal estructurado (Fortalezas, Áreas de mejora y Sugerencias) basado en las notas anteriores.</p>
+                <button class="btn-action" id="btnGenerarFichaAI" style="background: #7c3aed; width: 100%; margin-bottom: 8px;">🤖 Redactar Ficha con IA</button>
+                <textarea id="modalFichaDescriptiva" rows="6" placeholder="La ficha descriptiva generada aparecerá aquí..." style="font-size: 11px; background: white;"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 6px; margin-top: 15px; flex-wrap: wrap;">
+                <button class="btn-action" id="btnGuardarExpediente" style="flex: 1;">💾 Guardar Todo</button>
+                <button class="btn-action btn-whatsapp" id="btnEnviarWpAlumno" style="flex: 1;">💬 Enviar WhatsApp</button>
+            </div>
+            <button class="btn-reset" id="btnCerrarModal" style="width: 100%; margin-top: 8px;">❌ Cerrar Ventana</button>
+        </div>
+    </div>
+
     <script type="module">
         import { GoogleGenAI } from "@google/genai";
 
@@ -896,11 +1042,13 @@
         let tonoSeleccionado = "Formal / Rigurosa SEP";
         let ejesSeleccionados = [];
         let tabActiva = 'recientes';
+        let alumnoEditandoIndex = null;
 
         document.addEventListener("DOMContentLoaded", function() {
             renderizarHistorial();
             cargarSugerenciasTemporada();
             inicializarAsistenciaDigital();
+            renderizarGestionAlumnos();
 
             // Navegación de pantallas
             document.getElementById('btnIrCrear').addEventListener('click', function() {
@@ -921,6 +1069,13 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
+            document.getElementById('btnInicioAlumnos').addEventListener('click', function() {
+                document.getElementById('pantallaInicio').style.display = 'none';
+                document.getElementById('pantallaAlumnos').style.display = 'block';
+                renderizarGestionAlumnos();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
             document.getElementById('btnInicioReporte').addEventListener('click', function() {
                 document.getElementById('pantallaInicio').style.display = 'none';
                 document.getElementById('pantallaReporteAsistencia').style.display = 'block';
@@ -936,6 +1091,18 @@
 
             document.getElementById('btnCerrarAsistenciaBotton').addEventListener('click', function() {
                 document.getElementById('pantallaAsistencia').style.display = 'none';
+                document.getElementById('pantallaInicio').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('btnCerrarAlumnos').addEventListener('click', function() {
+                document.getElementById('pantallaAlumnos').style.display = 'none';
+                document.getElementById('pantallaInicio').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('btnCerrarAlumnosBtn').addEventListener('click', function() {
+                document.getElementById('pantallaAlumnos').style.display = 'none';
                 document.getElementById('pantallaInicio').style.display = 'block';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
@@ -969,6 +1136,145 @@
                 document.getElementById('pantallaApp').style.display = 'none';
                 document.getElementById('pantallaInicio').style.display = 'block';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // --- SISTEMA DE RESPALDO Y RESTAURACIÓN ---
+            document.getElementById('btnExportarRespaldo').addEventListener('click', function() {
+                let backupData = {};
+                for (let i = 0; i < localStorage.length; i++) {
+                    let key = localStorage.key(i);
+                    if (key && key.startsWith('aula360_')) {
+                        backupData[key] = localStorage.getItem(key);
+                    }
+                }
+
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
+                const fechaHoy = new Date().toISOString().split('T')[0];
+                const downloadAnchor = document.createElement('a');
+                downloadAnchor.setAttribute("href", dataStr);
+                downloadAnchor.setAttribute("download", `respaldo_aula360_${fechaHoy}.json`);
+                document.body.appendChild(downloadAnchor);
+                downloadAnchor.click();
+                downloadAnchor.remove();
+            });
+
+            document.getElementById('btnImportarRespaldo').addEventListener('click', function() {
+                document.getElementById('inputArchivoRespaldo').click();
+            });
+
+            document.getElementById('inputArchivoRespaldo').addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const backupData = JSON.parse(e.target.result);
+                        if (confirm("⚠️ ¿Estás seguro de restaurar este respaldo? Se sobrescribirán los datos actuales en este dispositivo.")) {
+                            for (let key in backupData) {
+                                if (key.startsWith('aula360_')) {
+                                    localStorage.setItem(key, backupData[key]);
+                                }
+                            }
+                            alert("¡Respaldo restaurado con éxito!");
+                            location.reload();
+                        }
+                    } catch (error) {
+                        alert("El archivo seleccionado no es un respaldo válido de Aula360.");
+                    }
+                };
+                reader.readAsText(file);
+            });
+
+            // Agregar nuevo alumno con nombre y teléfono
+            document.getElementById('btnAgregarAlumno').addEventListener('click', function() {
+                const nombreInput = document.getElementById('inputNuevoAlumno');
+                const telInput = document.getElementById('inputNuevoTel');
+                const nombre = nombreInput.value.trim();
+                const tel = telInput.value.trim();
+
+                if(!nombre) {
+                    alert("Escribe el nombre del alumno.");
+                    return;
+                }
+
+                let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
+                let telefonos = JSON.parse(localStorage.getItem('aula360_telefonos')) || {};
+                
+                let nuevoIndex = alumnos.length;
+                alumnos.push(nombre);
+                telefonos[nuevoIndex] = tel;
+
+                localStorage.setItem('aula360_alumnos', JSON.stringify(alumnos));
+                localStorage.setItem('aula360_telefonos', JSON.stringify(telefonos));
+
+                nombreInput.value = "";
+                telInput.value = "";
+                renderizarGestionAlumnos();
+                cargarTablaAsistenciaPorFecha(document.getElementById('inputFechaAsistencia').value);
+            });
+
+            // Modal de Expediente
+            document.getElementById('btnCerrarModal').addEventListener('click', function() {
+                document.getElementById('modalExpediente').style.display = 'none';
+            });
+
+            document.getElementById('btnGuardarExpediente').addEventListener('click', function() {
+                if (alumnoEditandoIndex !== null) {
+                    let expedientes = JSON.parse(localStorage.getItem('aula360_expedientes')) || {};
+                    let fichas = JSON.parse(localStorage.getItem('aula360_fichas')) || {};
+                    let telefonos = JSON.parse(localStorage.getItem('aula360_telefonos')) || {};
+
+                    expedientes[alumnoEditandoIndex] = document.getElementById('modalNotasExpediente').value;
+                    fichas[alumnoEditandoIndex] = document.getElementById('modalFichaDescriptiva').value;
+                    telefonos[alumnoEditandoIndex] = document.getElementById('modalTelTutor').value.trim();
+
+                    localStorage.setItem('aula360_expedientes', JSON.stringify(expedientes));
+                    localStorage.setItem('aula360_fichas', JSON.stringify(fichas));
+                    localStorage.setItem('aula360_telefonos', JSON.stringify(telefonos));
+
+                    document.getElementById('modalExpediente').style.display = 'none';
+                    renderizarGestionAlumnos();
+                    alert("¡Expediente y ficha descriptiva guardados correctamente!");
+                }
+            });
+
+            // Generar Ficha Descriptiva con IA
+            document.getElementById('btnGenerarFichaAI').addEventListener('click', generarFichaDescriptivaAI);
+
+            // Enviar WhatsApp directo al tutor desde el modal
+            document.getElementById('btnEnviarWpAlumno').addEventListener('click', function() {
+                if (alumnoEditandoIndex !== null) {
+                    let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
+                    let nota = document.getElementById('modalNotasExpediente').value.trim();
+                    let ficha = document.getElementById('modalFichaDescriptiva').value.trim();
+                    let tel = document.getElementById('modalTelTutor').value.trim();
+                    let nombreAlumno = alumnos[alumnoEditandoIndex] || "Alumno";
+
+                    if (!tel) {
+                        alert("Por favor ingresa un número de teléfono de WhatsApp válido.");
+                        return;
+                    }
+
+                    let contenidoEnvio = ficha ? ficha : nota;
+                    if (!contenidoEnvio) {
+                        alert("No hay notas ni ficha descriptiva para enviar.");
+                        return;
+                    }
+
+                    let mensaje = `🏫 *REPORTE ESCOLAR - AULA360* 🇲🇽\n`;
+                    mensaje += `Estimado tutor de: *${nombreAlumno}*\n\n`;
+                    mensaje += `${contenidoEnvio}\n\n`;
+                    mensaje += `_Atentamente, Docente de Grupo._`;
+
+                    const urlWp = `https://api.whatsapp.com/send?phone=${encodeURIComponent(tel)}&text=${encodeURIComponent(mensaje)}`;
+                    window.open(urlWp, '_blank');
+                }
+            });
+
+            // Selector de fecha cambia la vista del pase de lista
+            document.getElementById('inputFechaAsistencia').addEventListener('change', function() {
+                cargarTablaAsistenciaPorFecha(this.value);
             });
 
             // Botones de impresión dedicados
@@ -1006,6 +1312,53 @@
             });
         });
 
+        async function generarFichaDescriptivaAI() {
+            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
+            let nombreAlumno = alumnos[alumnoEditandoIndex] || "Alumno";
+            let notasTrimestre = document.getElementById('modalNotasExpediente').value.trim();
+
+            if (!notasTrimestre) {
+                alert("Por favor escribe algunas notas previas en el expediente para que la IA tenga base en qué redactar.");
+                return;
+            }
+
+            const btnFicha = document.getElementById('btnGenerarFichaAI');
+            const textareaFicha = document.getElementById('modalFichaDescriptiva');
+            
+            btnFicha.innerText = "🤖 Redactando ficha...";
+            textareaFicha.value = "La IA está procesando las observaciones pedagógicas...";
+
+            const promptFicha = `Actúa como un experto docente de educación primaria en México alineado a la Nueva Escuela Mexicana (NEM). 
+A partir de las siguientes observaciones y notas de seguimiento del alumno "${nombreAlumno}":
+"${notasTrimestre}"
+
+Redacta una Ficha Descriptiva Trimestral formal y profesional estructurada exactamente en las siguientes 3 secciones:
+1. Fortalezas y Logros de Aprendizaje
+2. Áreas de Mejora u Obstáculos (incluyendo si aplica aspectos BAP o atención al rezago)
+3. Sugerencias de Apoyo para el Hogar y la Escuela
+
+Utiliza un tono empático, técnico pedagógico y constructivo. Ve directo al contenido sin saludos iniciales.`;
+
+            try {
+                const response = await ai.models.generateContent({
+                    model: 'gemini-3.8-flash',
+                    contents: promptFicha
+                });
+
+                let resultadoFicha = response.text ? response.text.trim() : "";
+                if(!resultadoFicha) throw new Error("Respuesta vacía");
+
+                textareaFicha.value = resultadoFicha;
+                btnFicha.innerText = "✨ Redactar Ficha con IA";
+
+            } catch (error) {
+                console.error(error);
+                alert("Error al generar la ficha descriptiva: " + error.message);
+                textareaFicha.value = "Error en la generación. Intenta de nuevo.";
+                btnFicha.innerText = "✨ Redactar Ficha con IA";
+            }
+        }
+
         function imprimirReporteEspecifico(claseImpresion) {
             const cuerpo = document.getElementById('cuerpoApp');
             cuerpo.className = claseImpresion;
@@ -1025,8 +1378,8 @@
             }
 
             if (claseImpresion === 'imprimiendo-lista') {
-                const fechaHoy = new Date().toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                document.getElementById('tituloImpresionLista').innerText = "LISTA DE ASISTENCIA DIARIA - " + fechaHoy.toUpperCase();
+                const fechaVal = document.getElementById('inputFechaAsistencia').value;
+                document.getElementById('tituloImpresionLista').innerText = "LISTA DE ASISTENCIA - " + fechaVal;
             }
 
             setTimeout(() => {
@@ -1035,20 +1388,18 @@
             }, 250);
         }
 
-        // --- SISTEMA DE ASISTENCIA DIGITAL INTERACTIVA Y REPORTE ---
-        function inicializarAsistenciaDigital() {
-            const fechaHoy = new Date().toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            document.getElementById('fechaHoySub').innerText = "Fecha: " + fechaHoy.charAt(0).toUpperCase() + fechaHoy.slice(1);
-
+        function renderizarGestionAlumnos() {
             let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, (_, i) => `Alumno(a) ${i + 1}`);
-            let asistenciaHoy = JSON.parse(localStorage.getItem('aula360_asis_' + new Date().toDateString())) || {};
+            let expedientes = JSON.parse(localStorage.getItem('aula360_expedientes')) || {};
+            let fichas = JSON.parse(localStorage.getItem('aula360_fichas')) || {};
+            let telefonos = JSON.parse(localStorage.getItem('aula360_telefonos')) || {};
 
-            const tbody = document.getElementById('tablaAlumnosCuerpo');
+            const tbody = document.getElementById('tablaGestionAlumnosCuerpo');
             tbody.innerHTML = "";
 
             alumnos.forEach((nombre, index) => {
-                let estado = asistenciaHoy[index] || 'P';
-
+                let tieneNota = (expedientes[index] && expedientes[index].trim() !== "") || (fichas[index] && fichas[index].trim() !== "");
+                let tel = telefonos[index] || "";
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${index + 1}</td>
@@ -1056,9 +1407,15 @@
                         <input type="text" class="input-nombre-alumno" value="${nombre}" data-index="${index}">
                     </td>
                     <td>
-                        <button class="btn-asis ${estado === 'P' ? 'presente' : estado === 'R' ? 'retardo' : 'falta'}" data-index="${index}" onclick="cambiarEstadoAsistencia(this)">
-                            ${estado === 'P' ? 'Presente' : estado === 'R' ? 'Retardo' : 'Falta'}
+                        <input type="text" class="input-tel-alumno" value="${tel}" data-index="${index}" placeholder="S/N">
+                    </td>
+                    <td>
+                        <button class="btn-expediente" onclick="abrirExpediente(${index})">
+                            ${tieneNota ? '📝 Ver Expediente' : '➕ Agregar'}
                         </button>
+                    </td>
+                    <td>
+                        <button class="btn-reset" style="width: auto; padding: 4px 6px; background: #fee2e2; color: #b91c1c;" onclick="eliminarAlumno(${index})">🗑️</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -1072,34 +1429,99 @@
                 });
             });
 
-            actualizarEstadisticasAsistencia();
+            document.querySelectorAll('.input-tel-alumno').forEach(input => {
+                input.addEventListener('input', function() {
+                    let idx = this.getAttribute('data-index');
+                    telefonos[idx] = this.value;
+                    localStorage.setItem('aula360_telefonos', JSON.stringify(telefonos));
+                });
+            });
         }
 
-        window.cambiarEstadoAsistencia = function(btn) {
-            let idx = btn.getAttribute('data-index');
-            let fechaKey = 'aula360_asis_' + new Date().toDateString();
-            let asistenciaHoy = JSON.parse(localStorage.getItem(fechaKey)) || {};
+        window.abrirExpediente = function(index) {
+            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
+            let expedientes = JSON.parse(localStorage.getItem('aula360_expedientes')) || {};
+            let fichas = JSON.parse(localStorage.getItem('aula360_fichas')) || {};
+            let telefonos = JSON.parse(localStorage.getItem('aula360_telefonos')) || {};
+            
+            alumnoEditandoIndex = index;
+            document.getElementById('modalNombreAlumno').innerText = "Expediente de: " + (alumnos[index] || `Alumno ${index + 1}`);
+            document.getElementById('modalNotasExpediente').value = expedientes[index] || "";
+            document.getElementById('modalFichaDescriptiva').value = fichas[index] || "";
+            document.getElementById('modalTelTutor').value = telefonos[index] || "";
+            document.getElementById('modalExpediente').style.display = 'flex';
+        };
 
-            let actual = asistenciaHoy[idx] || 'P';
+        window.eliminarAlumno = function(index) {
+            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
+            if (confirm(`¿Estás seguro de eliminar a ${alumnos[index]} de la lista?`)) {
+                alumnos.splice(index, 1);
+                localStorage.setItem('aula360_alumnos', JSON.stringify(alumnos));
+                renderizarGestionAlumnos();
+                cargarTablaAsistenciaPorFecha(document.getElementById('inputFechaAsistencia').value);
+            }
+        };
+
+        function inicializarAsistenciaDigital() {
+            const hoyIso = new Date().toISOString().split('T')[0];
+            const inputFecha = document.getElementById('inputFechaAsistencia');
+            inputFecha.value = hoyIso;
+            cargarTablaAsistenciaPorFecha(hoyIso);
+        }
+
+        function cargarTablaAsistenciaPorFecha(fechaStr) {
+            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, (_, i) => `Alumno(a) ${i + 1}`);
+            let fechaKey = 'aula360_asis_' + fechaStr;
+            let asistenciaDia = JSON.parse(localStorage.getItem(fechaKey)) || {};
+
+            const tbody = document.getElementById('tablaAlumnosCuerpo');
+            tbody.innerHTML = "";
+
+            alumnos.forEach((nombre, index) => {
+                let estado = asistenciaDia[index] || 'P';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td style="text-align: left; font-weight: 500;">${nombre}</td>
+                    <td>
+                        <button class="btn-asis ${estado === 'P' ? 'presente' : estado === 'R' ? 'retardo' : 'falta'}" data-index="${index}" data-fecha="${fechaStr}" onclick="cambiarEstadoAsistenciaHistorial(this)">
+                            ${estado === 'P' ? 'Presente' : estado === 'R' ? 'Retardo' : 'Falta'}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            actualizarEstadisticasAsistenciaFecha(fechaStr);
+        }
+
+        window.cambiarEstadoAsistenciaHistorial = function(btn) {
+            let idx = btn.getAttribute('data-index');
+            let fechaStr = document.getElementById('inputFechaAsistencia').value;
+            let fechaKey = 'aula360_asis_' + fechaStr;
+            let asistenciaDia = JSON.parse(localStorage.getItem(fechaKey)) || {};
+
+            let actual = asistenciaDia[idx] || 'P';
             let siguiente = actual === 'P' ? 'R' : actual === 'R' ? 'F' : 'P';
 
-            asistenciaHoy[idx] = siguiente;
-            localStorage.setItem(fechaKey, JSON.stringify(asistenciaHoy));
+            asistenciaDia[idx] = siguiente;
+            localStorage.setItem(fechaKey, JSON.stringify(asistenciaDia));
 
             btn.className = `btn-asis ${siguiente === 'P' ? 'presente' : siguiente === 'R' ? 'retardo' : 'falta'}`;
             btn.innerText = siguiente === 'P' ? 'Presente' : siguiente === 'R' ? 'Retardo' : 'Falta';
 
-            actualizarEstadisticasAsistencia();
+            actualizarEstadisticasAsistenciaFecha(fechaStr);
         };
 
-        function actualizarEstadisticasAsistencia() {
-            let fechaKey = 'aula360_asis_' + new Date().toDateString();
-            let asistenciaHoy = JSON.parse(localStorage.getItem(fechaKey)) || {};
+        function actualizarEstadisticasAsistenciaFecha(fechaStr) {
+            let fechaKey = 'aula360_asis_' + fechaStr;
+            let asistenciaDia = JSON.parse(localStorage.getItem(fechaKey)) || {};
             let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, () => "");
 
             let p = 0, r = 0, f = 0;
             alumnos.forEach((_, index) => {
-                let est = asistenciaHoy[index] || 'P';
+                let est = asistenciaDia[index] || 'P';
                 if(est === 'P') p++;
                 if(est === 'R') r++;
                 if(est === 'F') f++;
