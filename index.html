@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula360 - IA NEM</title>
+    <!-- Carga del SDK oficial de Google Gen AI -->
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/genai": "https://esm.run/@google/genai"
+        }
+      }
+    </script>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #0d9488;
+            --bg: #f8fafc;
+            --text: #1e293b;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 16px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        /* Pantalla de Inicio (Landing / Splash) */
+        #pantallaInicio {
+            text-align: center;
+            padding: 30px 10px;
+        }
+
+        .hero-logo {
+            font-size: 56px;
+            margin-bottom: 10px;
+        }
+
+        .hero-title {
+            color: var(--primary);
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .hero-subtitle {
+            color: #64748b;
+            font-size: 15px;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        .hero-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 35px;
+            text-align: left;
+        }
+
+        .hero-feature-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #475569;
+        }
+
+        .hero-feature-card b {
+            color: var(--primary);
+            display: block;
+            margin-bottom: 2px;
+            font-size: 13px;
+        }
+
+        .btn-inicio-principal {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.2);
+            margin-bottom: 12px;
+        }
+
+        .btn-inicio-secundario {
+            background: #f1f5f9;
+            color: var(--primary);
+            border: 2px solid #cbd5e1;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+
+        .btn-inicio-lista {
+            background: #d97706;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(217, 119, 6, 0.2);
+            margin-bottom: 12px;
+        }
+
+        /* Vistas de pantallas */
+        #pantallaApp, #pantallaAsistencia, #pantallaReporteAsistencia {
+            display: none;
+        }
+
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 4px;
+            cursor: pointer;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .btn-volver-app {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        .step-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin: 16px 0 8px 0;
+            color: var(--primary);
+            border-left: 4px solid var(--secondary);
+            padding-left: 8px;
+        }
+
+        .grid-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .grid-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .option-card {
+            background: #f1f5f9;
+            border: 2px solid #e2e8f0;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .option-card.selected {
+            background: #e0f2fe;
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .option-card.multi-selected {
+            background: #ccfbf1;
+            border-color: var(--secondary);
+            color: #115e59;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-top: 5px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .sugerencias-box {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .chip-sugerencia {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            cursor: pointer;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .chip-sugerencia:hover {
+            background: #e0f2fe;
+            border-color: var(--primary);
+        }
+
+        .chip-temporada {
+            background: #ccfbf1;
+            border: 1px solid #0d9488;
+            color: #115e59;
+        }
+
+        .btn-generate {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .formal-card {
+            background: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        .formal-header {
+            background: var(--primary);
+            color: white;
+            padding: 12px 16px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .formal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border-bottom: 1px solid #cbd5e1;
+            font-size: 12px;
+        }
+
+        .formal-cell {
+            padding: 8px 10px;
+            border-right: 1px solid #cbd5e1;
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        .formal-cell:nth-child(2n) {
+            border-right: none;
+        }
+
+        .formal-cell b {
+            color: var(--primary);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .formal-section {
+            padding: 10px 14px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .formal-section:last-of-type {
+            border-bottom: none;
+        }
+
+        .formal-section b {
+            color: var(--secondary);
+            display: block;
+            margin-bottom: 3px;
+            font-size: 13px;
+        }
+
+        .btn-rubrica-container {
+            margin: 15px 0 5px 0;
+        }
+
+        .btn-rubrica {
+            background: #7c3aed;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .rubrica-box {
+            display: none;
+            margin-top: 10px;
+            background: #faf5ff;
+            border: 2px dashed #7c3aed;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 6px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 8px;
+            border-radius: 8px;
+            flex: 1;
+            font-weight: bold;
+            font-size: 11px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-whatsapp {
+            background: #25d366;
+        }
+
+        .btn-pdf {
+            background: var(--secondary);
+        }
+
+        .btn-lista {
+            background: #d97706;
+        }
+
+        .btn-reset {
+            background: #e2e8f0;
+            color: #475569;
+            border: none;
+            padding: 12px 8px;
+            border-radius: 8px;
+            width: 60px;
+            font-weight: bold;
+            font-size: 11px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .history-tabs {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 6px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            font-size: 12px;
+            font-weight: bold;
+            color: #64748b;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .history-item {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-info {
+            flex-grow: 1;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .btn-hist-action {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-hist-action.secondary {
+            background: var(--secondary);
+        }
+
+        .btn-fav {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 0 4px;
+        }
+
+        .history-item span {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .btn-clear {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* Estilos para la tabla de Asistencia y Reporte */
+        .asistencia-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .stat-card {
+            background: #f1f5f9;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .stat-card span {
+            display: block;
+            font-size: 16px;
+            margin-top: 2px;
+        }
+
+        .tabla-asistencia-digital {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+
+        .tabla-asistencia-digital th, .tabla-asistencia-digital td {
+            border: 1px solid #cbd5e1;
+            padding: 6px;
+            text-align: center;
+        }
+
+        .tabla-asistencia-digital th {
+            background: var(--primary);
+            color: white;
+        }
+
+        .input-nombre-alumno {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 12px;
+            outline: none;
+            padding: 2px;
+        }
+
+        .btn-asis {
+            padding: 6px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 11px;
+            cursor: pointer;
+            background: #f8fafc;
+            color: #64748b;
+        }
+
+        .btn-asis.presente { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+        .btn-asis.retardo { background: #fef9c3; border-color: #eab308; color: #a16207; }
+        .btn-asis.falta { background: #fee2e2; border-color: #ef4444; color: #b91c1c; }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { max-width: 100%; box-shadow: none; padding: 0; }
+            #pantallaInicio, #pantallaApp, #pantallaAsistencia, .step-title, .btn-group, h1, .subtitle, .asistencia-stats button, .btn-volver-app { display: none !important; }
+            #pantallaReporteAsistencia { display: block !important; }
+            .tabla-asistencia-digital input { border: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- PANTALLA DE INICIO (SPLASH) -->
+        <div id="pantallaInicio">
+            <div class="hero-logo">📚</div>
+            <div class="hero-title">Aula360</div>
+            <div class="hero-subtitle">Plataforma inteligente de planeación didáctica y evaluación formativa alineada a la Nueva Escuela Mexicana (NEM).</div>
+
+            <div class="hero-features">
+                <div class="hero-feature-card">
+                    <b>✨ IA Avanzada</b>
+                    Genera secuencias y rúbricas ajustadas a tu tono pedagógico.
+                </div>
+                <div class="hero-feature-card">
+                    <b>📊 Asistencia y Reportes</b>
+                    Pase de lista diario y estadísticas acumuladas.
+                </div>
+            </div>
+
+            <button class="btn-inicio-principal" id="btnIrCrear">🚀 Crear Nueva Planeación</button>
+            <button class="btn-inicio-lista" id="btnInicioAsistencia">📱 Pase de Lista Digital</button>
+            <button class="btn-inicio-lista" id="btnInicioReporte" style="background: #0284c7;">📊 Reporte Estadístico Acumulado</button>
+            <button class="btn-inicio-secundario" id="btnIrHistorial">📂 Ver Historial Guardado</button>
+        </div>
+
+        <!-- PANTALLA DE REPORTE ESTADÍSTICO ACUMULADO -->
+        <div id="pantallaReporteAsistencia">
+            <button class="btn-volver-app" id="btnCerrarReporte">⬅️ Volver al Inicio</button>
+            <h1>📊 Reporte Estadístico Acumulado</h1>
+            <div class="subtitle">Resumen histórico de asistencias, retardos y faltas registradas</div>
+
+            <table class="tabla-asistencia-digital" id="tablaReporteAcumulado">
+                <thead>
+                    <tr>
+                        <th style="width: 30px;">#</th>
+                        <th>Nombre del Alumno(a)</th>
+                        <th style="width: 60px; background: #15803d;">Asist.</th>
+                        <th style="width: 60px; background: #a16207;">Ret.</th>
+                        <th style="width: 60px; background: #b91c1c;">Faltas</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaReporteCuerpo">
+                    <!-- Generado dinámicamente -->
+                </tbody>
+            </table>
+
+            <div class="btn-group">
+                <button class="btn-action" onclick="window.print()">🖨️ Imprimir Reporte</button>
+                <button class="btn-reset" id="btnCerrarReporteBtn" style="width: 100%;">⬅️ Volver al Inicio</button>
+            </div>
+        </div>
+
+        <!-- PANTALLA DE PASE DE LISTA DIGITAL -->
+        <div id="pantallaAsistencia">
+            <button class="btn-volver-app" id="btnCerrarAsistencia">⬅️ Volver al Inicio</button>
+            <h1 id="volverDesdeAsistencia">📋 Pase de Lista Digital</h1>
+            <div class="subtitle" id="fechaHoySub">-</div>
+
+            <div class="asistencia-stats">
+                <div class="stat-card" style="color: #15803d;">Presentes <span id="statPresentes">0</span></div>
+                <div class="stat-card" style="color: #a16207;">Retardos <span id="statRetardos">0</span></div>
+                <div class="stat-card" style="color: #b91c1c;">Faltas <span id="statFaltas">0</span></div>
+            </div>
+
+            <table class="tabla-asistencia-digital">
+                <thead>
+                    <tr>
+                        <th style="width: 30px;">#</th>
+                        <th>Nombre del Alumno(a)</th>
+                        <th style="width: 90px;">Asistencia</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaAlumnosCuerpo">
+                    <!-- Generado dinámicamente -->
+                </tbody>
+            </table>
+
+            <div class="btn-group">
+                <button class="btn-action" onclick="window.print()">🖨️ Imprimir Reporte</button>
+                <button class="btn-reset" id="btnCerrarAsistenciaBotton" style="width: 100%;">⬅️ Volver al Inicio</button>
+            </div>
+        </div>
+
+        <!-- PANTALLA PRINCIPAL DE LA APLICACIÓN -->
+        <div id="pantallaApp">
+            <button class="btn-volver-app" id="btnVolverInicioApp">⬅️ Volver al Inicio</button>
+            <h1 id="tituloVolverInicio">📚 Aula360</h1>
+            <div class="subtitle">Planeación Didáctica Inteligente - NEM</div>
+
+            <div class="step-title">0. Datos del Centro de Trabajo (Institucional)</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px;">
+                <input type="text" id="escuelaInput" placeholder="Nombre de la Escuela">
+                <input type="text" id="cctInput" placeholder="C.C.T. (Ej. 25DPR...)">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                <input type="text" id="docenteInput" placeholder="Nombre del Docente">
+                <input type="text" id="zonaInput" placeholder="Zona Escolar (Ej. Zona 012)">
+            </div>
+
+            <div class="step-title">1. Selecciona el Grado Escolar</div>
+            <div class="grid-options grid-3">
+                <div class="option-card" onclick="selectCard(this, 'grado')">1º Grado</div>
+                <div class="option-card" onclick="selectCard(this, 'grado')">2º Grado</div>
+                <div class="option-card" onclick="selectCard(this, 'grado')">3º Grado</div>
+                <div class="option-card" onclick="selectCard(this, 'grado')">4º Grado</div>
+                <div class="option-card" onclick="selectCard(this, 'grado')">5º Grado</div>
+                <div class="option-card" onclick="selectCard(this, 'grado')">6º Grado</div>
+            </div>
+
+            <div class="step-title">2. Campo Formativo</div>
+            <div class="grid-options">
+                <div class="option-card" onclick="selectCard(this, 'campo')">Lenguajes</div>
+                <div class="option-card" onclick="selectCard(this, 'campo')">Saberes y Pens. Científico</div>
+                <div class="option-card" onclick="selectCard(this, 'campo')">Ética, Naturaleza y Soc.</div>
+                <div class="option-card" onclick="selectCard(this, 'campo')">De lo Humano y lo Comunitario</div>
+            </div>
+
+            <div class="step-title">3. Metodología NEM</div>
+            <div class="grid-options">
+                <div class="option-card" onclick="selectCard(this, 'metodologia')">Proyectos Comunitarios</div>
+                <div class="option-card" onclick="selectCard(this, 'metodologia')">STEAM (Indagación)</div>
+                <div class="option-card" onclick="selectCard(this, 'metodologia')">Aprendizaje Basado en Problemas</div>
+                <div class="option-card" onclick="selectCard(this, 'metodologia')">Aprendizaje Servicio</div>
+            </div>
+
+            <div class="step-title">4. Escenario del Proyecto</div>
+            <div class="grid-options grid-3">
+                <div class="option-card" onclick="selectCard(this, 'escenario')">Aula</div>
+                <div class="option-card" onclick="selectCard(this, 'escenario')">Escuela</div>
+                <div class="option-card" onclick="selectCard(this, 'escenario')">Comunidad</div>
+            </div>
+
+            <div class="step-title">5. Duración Estimada</div>
+            <div class="grid-options grid-3">
+                <div class="option-card" onclick="selectCard(this, 'duracion')">3 Días</div>
+                <div class="option-card" onclick="selectCard(this, 'duracion')">1 Semana</div>
+                <div class="option-card" onclick="selectCard(this, 'duracion')">2 Semanas</div>
+            </div>
+
+            <div class="step-title">6. Ejes Articuladores (Selecciona varios)</div>
+            <div class="grid-options">
+                <div class="option-card" onclick="toggleEje(this)">Inclusión</div>
+                <div class="option-card" onclick="toggleEje(this)">Pensamiento Crítico</div>
+                <div class="option-card" onclick="toggleEje(this)">Interculturalidad Crítica</div>
+                <div class="option-card" onclick="toggleEje(this)">Igualdad de Género</div>
+                <div class="option-card" onclick="toggleEje(this)">Vida Saludable</div>
+                <div class="option-card" onclick="toggleEje(this)">Artes y Experiencias Estéticas</div>
+                <div class="option-card" style="grid-column: span 2;" onclick="toggleEje(this)">Apropiación de las culturas a través de la lectura y la escritura</div>
+            </div>
+
+            <div class="step-title">7. Tono / Enfoque Pedagógico de la IA</div>
+            <div class="grid-options">
+                <div class="option-card selected" onclick="selectCard(this, 'tono')">Formal / Rigurosa SEP</div>
+                <div class="option-card" onclick="selectCard(this, 'tono')">Práctica / Dinámica</div>
+                <div class="option-card" style="grid-column: span 2;" onclick="selectCard(this, 'tono')">Inclusiva / Adaptada (BAP)</div>
+            </div>
+
+            <div class="step-title">8. Escribe el Tema o Proyecto (Sugerencias automáticas por temporada)</div>
+            <textarea id="temaInput" rows="2" placeholder="Ej. El cuidado del agua, las fracciones, la alimentación saludable..."></textarea>
+            <div class="sugerencias-box" id="contenedorSugerenciasTemporada"></div>
+
+            <button class="btn-generate" id="btnGenerarAI">✨ Generar Planeación Inteligente</button>
+
+            <div id="resultado" class="result-box">
+                <div id="areaImpresion" class="formal-card">
+                    <div class="formal-header">FORMATO DE PLANEACIÓN DIDÁCTICA - NUEVA ESCUELA MEXICANA</div>
+                    
+                    <div class="formal-grid" style="font-size: 11px; background: #f8fafc;">
+                        <div class="formal-cell">
+                            <b>Institución:</b> <span id="resEscuela">-</span><br>
+                            <b>C.C.T.:</b> <span id="resCct">-</span>
+                        </div>
+                        <div class="formal-cell">
+                            <b>Docente:</b> <span id="resDocente">-</span><br>
+                            <b>Zona Escolar:</b> <span id="resZona">-</span>
+                        </div>
+                    </div>
+
+                    <div class="formal-grid">
+                        <div class="formal-cell">
+                            <b>Grado:</b>
+                            <span id="resGrado">-</span>
+                        </div>
+                        <div class="formal-cell">
+                            <b>Duración:</b>
+                            <span id="resDuracion">-</span>
+                        </div>
+                        <div class="formal-cell">
+                            <b>Escenario:</b>
+                            <span id="resEscenario">-</span>
+                        </div>
+                        <div class="formal-cell">
+                            <b>Campo:</b>
+                            <span id="resCampo" style="font-size: 11px;">-</span>
+                        </div>
+                        <div class="formal-cell" style="grid-column: span 2;">
+                            <b>Metodología:</b>
+                            <span id="resMetodologia">-</span>
+                        </div>
+                    </div>
+
+                    <div class="formal-section">
+                        <b>Tema / Proyecto:</b>
+                        <span id="resTema">-</span>
+                    </div>
+
+                    <div class="formal-section">
+                        <b>Libro de Texto Gratuito Sugerido (SEP):</b>
+                        <span id="resLibro" style="color: #0d9488; font-weight: bold;">-</span>
+                    </div>
+
+                    <div class="formal-section">
+                        <b>1. Propósito del Proyecto:</b>
+                        <p id="resProposito" style="margin: 0; color: #475569;">-</p>
+                    </div>
+
+                    <div class="formal-section">
+                        <b>2. Preguntas Guía y Reto Detonante:</b>
+                        <p id="resReto" style="margin: 0; color: #475569; font-style: italic;">-</p>
+                    </div>
+
+                    <div class="formal-section">
+                        <b>3. Ejes Articuladores:</b>
+                        <p id="resEjes" style="margin: 0; color: #475569;">-</p>
+                    </div>
+
+                    <div class="formal-section">
+                        <b>4. Materiales y Recursos Didácticos:</b>
+                        <p id="resMateriales" style="margin: 0; color: #475569;">-</p>
+                    </div>
+
+                    <div class="formal-section">
+                        <b>5. Secuencia Didáctica (Actividades):</b>
+                        <div id="resSecuencia" style="color: #475569;">-</div>
+                    </div>
+
+                    <div class="formal-section">
+                        <b>6. Evaluación Formativa:</b>
+                        <p id="resEvaluacion" style="margin: 0; color: #475569;">-</p>
+                    </div>
+
+                    <div class="formal-section" id="seccionRubricaImpresion" style="display:none;">
+                        <b>7. Rúbrica / Lista de Cotejo de Evaluación Formativa:</b>
+                        <div id="resRubrica" style="margin: 0; color: #475569; white-space: pre-line;">-</div>
+                    </div>
+                </div>
+
+                <div class="btn-rubrica-container">
+                    <button id="btnGenerarRubrica" class="btn-rubrica">📊 Generar Rúbrica o Lista de Cotejo con IA</button>
+                    <div id="rubricaBox" class="rubrica-box">
+                        <b style="color: #7c3aed; margin-bottom: 4px; display: block;">Matriz de Evaluación Formativa:</b>
+                        <span id="textoRubrica">Generando instrumento de evaluación...</span>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button id="btnCopiar" class="btn-action">📋 Copiar</button>
+                    <button id="btnWhatsapp" class="btn-action btn-whatsapp">💬 WhatsApp</button>
+                    <button id="btnImprimir" class="btn-action btn-pdf">🖨️ PDF</button>
+                    <button id="btnListaImprimible" class="btn-action btn-lista" style="display:none;">📝 Lista</button>
+                    <button class="btn-reset" id="btnNuevaPlan">🔄 Nueva</button>
+                </div>
+            </div>
+
+            <div class="history-container">
+                <div class="step-title" style="margin-top: 30px;">📂 Historial y Favoritos</div>
+                <div class="history-tabs">
+                    <button class="tab-btn active" id="tabRecientes" onclick="cambiarTab('recientes')">⏱️ Recientes</button>
+                    <button class="tab-btn" id="tabFavoritos" onclick="cambiarTab('favoritos')">⭐ Favoritos</button>
+                </div>
+                <div id="historialLista" style="margin-top: 8px;">
+                    <p style="font-size: 12px; color: #64748b; text-align: center;">Cargando historial...</p>
+                </div>
+                <button id="btnClearHistory" class="btn-clear" style="display:none;">🗑️ Borrar Historial</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { GoogleGenAI } from "@google/genai";
+
+        const GEMINI_API_KEY = "AQ.Ab8RN6JgUT8G3H7-BUNxUr_muyOF9VlC5syHn3uM_Gi6UPkwRA";
+        const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+
+        let gradoSeleccionado = "";
+        let campoSeleccionado = "";
+        let metodologiaSeleccionada = "";
+        let escenarioSeleccionado = "";
+        let duracionSeleccionada = "";
+        let tonoSeleccionado = "Formal / Rigurosa SEP";
+        let ejesSeleccionados = [];
+        let tabActiva = 'recientes';
+
+        document.addEventListener("DOMContentLoaded", function() {
+            renderizarHistorial();
+            cargarSugerenciasTemporada();
+            inicializarAsistenciaDigital();
+
+            // Navegación de pantallas
+            document.getElementById('btnIrCrear').addEventListener('click', function() {
+                document.getElementById('pantallaInicio').style.display = 'none';
+                document.getElementById('pantallaApp').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('btnVolverInicioApp').addEventListener('click', function() {
+                document.getElementById('pantallaApp').style.display = 'none';
+                document.getElementById('pantallaInicio').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('btnInicioAsistencia').addEventListener('click', function() {
+                document.getElementById('pantallaInicio').style.display = 'none';
+                document.getElementById('pantallaAsistencia').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('btnInicioReporte').addEventListener('click', function() {
+                document.getElementById('pantallaInicio').style.display = 'none';
+                document.getElementById('pantallaReporteAsistencia').style.display = 'block';
+                generarReporteAcumulado();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('btnCerrarAsistencia').addEventListener('click', function() {
+                document.getElementById('pantallaAsistencia').style.display = 'none';
+                document.getElementById('pantallaInicio').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('btnCerrarAsistenciaBotton').addEventListener('click', function() {
+                document.getElementById('pantallaAsistencia').style.display = 'none';
+                document.getElementById('pantallaInicio').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('btnCerrarReporte').addEventListener('click', function() {
+                document.getElementById('pantallaReporteAsistencia').style.display = 'none';
+                document.getElementById('pantallaInicio').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('btnCerrarReporteBtn').addEventListener('click', function() {
+                document.getElementById('pantallaReporteAsistencia').style.display = 'none';
+                document.getElementById('pantallaInicio').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('volverDesdeAsistencia').addEventListener('click', function() {
+                document.getElementById('pantallaAsistencia').style.display = 'none';
+                document.getElementById('pantallaInicio').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('btnIrHistorial').addEventListener('click', function() {
+                document.getElementById('pantallaInicio').style.display = 'none';
+                document.getElementById('pantallaApp').style.display = 'block';
+                const hist = document.querySelector('.history-container');
+                if(hist) hist.scrollIntoView({ behavior: 'smooth' });
+            });
+
+            document.getElementById('tituloVolverInicio').addEventListener('click', function() {
+                document.getElementById('pantallaApp').style.display = 'none';
+                document.getElementById('pantallaInicio').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('btnGenerarAI').addEventListener('click', generarPlaneacionConIA);
+            document.getElementById('btnGenerarRubrica').addEventListener('click', generarRubricaAI);
+            document.getElementById('btnCopiar').addEventListener('click', copiarContenido);
+            document.getElementById('btnWhatsapp').addEventListener('click', compartirWhatsApp);
+            document.getElementById('btnImprimir').addEventListener('click', imprimirConGuardado);
+            document.getElementById('btnNuevaPlan').addEventListener('click', nuevaPlaneacion);
+            document.getElementById('btnClearHistory').addEventListener('click', limpiarHistorial);
+
+            document.getElementById('escuelaInput').value = localStorage.getItem('aula360_escuela') || '';
+            document.getElementById('cctInput').value = localStorage.getItem('aula360_cct') || '';
+            document.getElementById('docenteInput').value = localStorage.getItem('aula360_docente') || '';
+            document.getElementById('zonaInput').value = localStorage.getItem('aula360_zona') || '';
+
+            ['escuelaInput', 'cctInput', 'docenteInput', 'zonaInput'].forEach(id => {
+                document.getElementById(id).addEventListener('input', function() {
+                    localStorage.setItem('aula360_escuela', document.getElementById('escuelaInput').value);
+                    localStorage.setItem('aula360_cct', document.getElementById('cctInput').value);
+                    localStorage.setItem('aula360_docente', document.getElementById('docenteInput').value);
+                    localStorage.setItem('aula360_zona', document.getElementById('zonaInput').value);
+                });
+            });
+        });
+
+        // --- SISTEMA DE ASISTENCIA DIGITAL INTERACTIVA Y REPORTE ---
+        function inicializarAsistenciaDigital() {
+            const fechaHoy = new Date().toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('fechaHoySub').innerText = "Fecha: " + fechaHoy.charAt(0).toUpperCase() + fechaHoy.slice(1);
+
+            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, (_, i) => `Alumno(a) ${i + 1}`);
+            let asistenciaHoy = JSON.parse(localStorage.getItem('aula360_asis_' + new Date().toDateString())) || {};
+
+            const tbody = document.getElementById('tablaAlumnosCuerpo');
+            tbody.innerHTML = "";
+
+            alumnos.forEach((nombre, index) => {
+                let estado = asistenciaHoy[index] || 'P';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td style="text-align: left;">
+                        <input type="text" class="input-nombre-alumno" value="${nombre}" data-index="${index}">
+                    </td>
+                    <td>
+                        <button class="btn-asis ${estado === 'P' ? 'presente' : estado === 'R' ? 'retardo' : 'falta'}" data-index="${index}" onclick="cambiarEstadoAsistencia(this)">
+                            ${estado === 'P' ? 'Presente' : estado === 'R' ? 'Retardo' : 'Falta'}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.querySelectorAll('.input-nombre-alumno').forEach(input => {
+                input.addEventListener('input', function() {
+                    let idx = this.getAttribute('data-index');
+                    alumnos[idx] = this.value;
+                    localStorage.setItem('aula360_alumnos', JSON.stringify(alumnos));
+                });
+            });
+
+            actualizarEstadisticasAsistencia();
+        }
+
+        window.cambiarEstadoAsistencia = function(btn) {
+            let idx = btn.getAttribute('data-index');
+            let fechaKey = 'aula360_asis_' + new Date().toDateString();
+            let asistenciaHoy = JSON.parse(localStorage.getItem(fechaKey)) || {};
+
+            let actual = asistenciaHoy[idx] || 'P';
+            let siguiente = actual === 'P' ? 'R' : actual === 'R' ? 'F' : 'P';
+
+            asistenciaHoy[idx] = siguiente;
+            localStorage.setItem(fechaKey, JSON.stringify(asistenciaHoy));
+
+            btn.className = `btn-asis ${siguiente === 'P' ? 'presente' : siguiente === 'R' ? 'retardo' : 'falta'}`;
+            btn.innerText = siguiente === 'P' ? 'Presente' : siguiente === 'R' ? 'Retardo' : 'Falta';
+
+            actualizarEstadisticasAsistencia();
+        };
+
+        function actualizarEstadisticasAsistencia() {
+            let fechaKey = 'aula360_asis_' + new Date().toDateString();
+            let asistenciaHoy = JSON.parse(localStorage.getItem(fechaKey)) || {};
+            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, () => "");
+
+            let p = 0, r = 0, f = 0;
+            alumnos.forEach((_, index) => {
+                let est = asistenciaHoy[index] || 'P';
+                if(est === 'P') p++;
+                if(est === 'R') r++;
+                if(est === 'F') f++;
+            });
+
+            document.getElementById('statPresentes').innerText = p;
+            document.getElementById('statRetardos').innerText = r;
+            document.getElementById('statFaltas').innerText = f;
+        }
+
+        function generarReporteAcumulado() {
+            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, (_, i) => `Alumno(a) ${i + 1}`);
+            
+            // Recorrer todas las llaves de localStorage buscando registros de asistencia (aula360_asis_*)
+            let acumulado = {};
+            alumnos.forEach((_, idx) => { acumulado[idx] = { P: 0, R: 0, F: 0 }; });
+
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key && key.startsWith('aula360_asis_')) {
+                    let registroDia = JSON.parse(localStorage.getItem(key)) || {};
+                    alumnos.forEach((_, idx) => {
+                        let estado = registroDia[idx] || 'P';
+                        if (acumulado[idx][estado] !== undefined) {
+                            acumulado[idx][estado]++;
+                        }
+                    });
+                }
+            }
+
+            const tbody = document.getElementById('tablaReporteCuerpo');
+            tbody.innerHTML = "";
+
+            alumnos.forEach((nombre, index) => {
+                let datos = acumulado[index];
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td style="text-align: left; font-weight: 500;">${nombre}</td>
+                    <td style="color: #15803d; font-weight: bold;">${datos.P}</td>
+                    <td style="color: #a16207; font-weight: bold;">${datos.R}</td>
+                    <td style="color: #b91c1c; font-weight: bold;">${datos.F}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function cargarSugerenciasTemporada() {
+            const mesActual = new Date().getMonth();
+            const contenedor = document.getElementById('contenedorSugerenciasTemporada');
+            let sugerencias = [];
+
+            switch (mesActual) {
+                case 8:
+                    sugerencias = [
+                        { texto: "Nuestra identidad y orgullo: Rescate de las raíces históricas y culturales de México", label: "🇲🇽 Fiestas Patrias" },
+                        { texto: "El respeto a los símbolos patrios y la convivencia pacífica en la escuela", label: "🤝 Convivencia Escolar" }
+                    ];
+                    break;
+                case 9:
+                    sugerencias = [
+                        { texto: "Nuestras voces y raíces: Rescate y difusión de mitos, leyendas y ofrendas tradicionales", label: "🎃 Tradiciones de Día de Muertos" },
+                        { texto: "Alimentación saludable y el consumo de productos locales frente al cambio de estación", label: "🥗 Salud Estacional" },
+                        { texto: "El cuidado y rescate del agua en la comunidad escolar y el hogar", label: "💧 Cuidado del Agua" }
+                    ];
+                    break;
+                case 10:
+                    sugerencias = [
+                        { texto: "Cosmovisión, altares y ofrendas: Valorando el significado histórico y cultural del Día de Muertos", label: "🕯️ Día de Muertos" },
+                        { texto: "La Revolución Mexicana: Personajes, derechos sociales y transformaciones comunitarias", label: "🚂 Revolución Mexicana" }
+                    ];
+                    break;
+                case 11:
+                    sugerencias = [
+                        { texto: "La importancia de la empatía, la solidaridad y la convivencia armónica decembrina", label: "⭐ Empatía y Solidaridad" },
+                        { texto: "Uso responsable de recursos y festejo sustentable en nuestra comunidad", label: "♻️ Consumo Sustentable" }
+                    ];
+                    break;
+                case 1:
+                    sugerencias = [
+                        { texto: "La salud emocional y física: Prevención de enfermedades respiratorias y hábitos de higiene", label: "🩺 Salud e Higiene" },
+                        { texto: "Nuestra Constitución y la importancia de las leyes para una convivencia justa", label: "⚖️ Constitución Mexicana" }
+                    ];
+                    break;
+                case 2:
+                    sugerencias = [
+                        { texto: "Igualdad de género y reconocimiento de los derechos y aportaciones de las mujeres en la historia", label: "♀️ Igualdad de Género" },
+                        { texto: "El cuidado del medio ambiente y el Día Mundial del Agua en nuestra localidad", label: "💧 Día Mundial del Agua" }
+                    ];
+                    break;
+                case 4:
+                    sugerencias = [
+                        { texto: "La biodiversidad de nuestra región y el cuidado de los ecosistemas locales", label: "🌱 Ecosistemas y Biodiversidad" },
+                        { texto: "Reconocimiento y valoración del trabajo de las familias y la comunidad escolar", label: "👨‍👩‍👧‍👦 Comunidad" }
+                    ];
+                    break;
+                default:
+                    sugerencias = [
+                        { texto: "Proyecto comunitario para la solución de problemas ambientales locales", label: "🌍 Cuidado Ambiental" },
+                        { texto: "Fomento a la lectura de textos literarios regionales y escritura creativa", label: "📖 Fomento a la Lectura" },
+                        { texto: "Resolución pacífica de conflictos cotidianos en el aula", label: "🕊️ Cultura de Paz" }
+                    ];
+                    break;
+            }
+
+            contenedor.innerHTML = "";
+            sugerencias.forEach(sug => {
+                const chip = document.createElement('span');
+                chip.className = "chip-sugerencia chip-temporada";
+                chip.innerHTML = `${sug.label}`;
+                chip.title = sug.texto;
+                chip.addEventListener('click', function() {
+                    document.getElementById('temaInput').value = sug.texto;
+                });
+                contenedor.appendChild(chip);
+            });
+        }
+
+        window.selectCard = function(element, grupo) {
+            const cards = element.parentNode.getElementsByClassName('option-card');
+            for (let i = 0; i < cards.length; i++) {
+                cards[i].classList.remove('selected');
+            }
+            element.classList.add('selected');
+            
+            if (grupo === 'grado') gradoSeleccionado = element.innerText;
+            if (grupo === 'campo') campoSeleccionado = element.innerText;
+            if (grupo === 'metodologia') metodologiaSeleccionada = element.innerText;
+            if (grupo === 'escenario') escenarioSeleccionado = element.innerText;
+            if (grupo === 'duracion') duracionSeleccionada = element.innerText;
+            if (grupo === 'tono') tonoSeleccionado = element.innerText;
+        };
+
+        window.toggleEje = function(element) {
+            element.classList.toggle('multi-selected');
+            const textoEje = element.innerText;
+            const index = ejesSeleccionados.indexOf(textoEje);
+            if (index > -1) {
+                ejesSeleccionados.splice(index, 1);
+            } else {
+                ejesSeleccionados.push(textoEje);
+            }
+        };
+
+        async function generarPlaneacionConIA() {
+            const tema = document.getElementById('temaInput').value.trim();
+            const resultadoBox = document.getElementById('resultado');
+            const escuela = document.getElementById('escuelaInput').value.trim() || "Escuela Primaria";
+            const cct = document.getElementById('cctInput').value.trim() || "S/C";
+            const docente = document.getElementById('docenteInput').value.trim() || "Docente de Grupo";
+            const zona = document.getElementById('zonaInput').value.trim() || "S/Z";
+
+            if (!gradoSeleccionado || !campoSeleccionado || !metodologiaSeleccionada || !escenarioSeleccionado || !duracionSeleccionada || !tema) {
+                alert("Por favor completa todas las opciones y escribe un tema.");
+                return;
+            }
+
+            document.getElementById('resEscuela').innerText = escuela;
+            document.getElementById('resCct').innerText = cct;
+            document.getElementById('resDocente').innerText = docente;
+            document.getElementById('resZona').innerText = zona;
+
+            resultadoBox.style.display = "block";
+            const rubricaBox = document.getElementById('rubricaBox');
+            const seccionRubricaImpresion = document.getElementById('seccionRubricaImpresion');
+            if(rubricaBox) rubricaBox.style.display = "none";
+            if(seccionRubricaImpresion) seccionRubricaImpresion.style.display = "none";
+            document.getElementById('resRubrica').innerText = "-";
+
+            document.getElementById('resGrado').innerText = gradoSeleccionado;
+            document.getElementById('resDuracion').innerText = duracionSeleccionada;
+            document.getElementById('resEscenario').innerText = escenarioSeleccionado;
+            document.getElementById('resCampo').innerText = campoSeleccionado;
+            document.getElementById('resMetodologia').innerText = metodologiaSeleccionada;
+            document.getElementById('resTema').innerText = tema;
+            
+            document.getElementById('resLibro').innerText = "La IA está analizando los datos y redactando...";
+            document.getElementById('resProposito').innerText = "Generando propósito...";
+            document.getElementById('resReto').innerText = "Preguntas guía...";
+            document.getElementById('resEjes').innerText = "Ejes articuladores...";
+            document.getElementById('resMateriales').innerText = "Materiales...";
+            document.getElementById('resSecuencia').innerHTML = "<b>Secuencia didáctica...</b>";
+            document.getElementById('resEvaluacion').innerText = "Evaluación...";
+
+            const ejesTexto = ejesSeleccionados.length > 0 ? ejesSeleccionados.join(", ") : "Pensamiento Crítico, Inclusión";
+
+            let instruccionesTono = "";
+            if (tonoSeleccionado.includes("Formal")) {
+                instruccionesTono = "Utiliza un lenguaje técnico administrativo formal y riguroso de la SEP, ideal para revisión de supervisión escolar.";
+            } else if (tonoSeleccionado.includes("Práctica")) {
+                instruccionesTono = "Enfoca la planeación en actividades lúdicas, dinámicas y de manipulación directa de materiales por parte de los alumnos.";
+            } else {
+                instruccionesTono = "Enfoca la planeación de manera inclusiva, integrando sugerencias específicas de adecuaciones para alumnos con rezago o Barreras para el Aprendizaje (BAP).";
+            }
+
+            const prompt = `Actúa como un experto asesor técnico pedagógico de educación primaria en México especialista en la Nueva Escuela Mexicana (NEM). 
+Redacta una planeación didáctica formal con base en los siguientes datos exactos:
+- Grado escolar: ${gradoSeleccionado}
+- Campo formativo: ${campoSeleccionado}
+- Metodología NEM: ${metodologiaSeleccionada}
+- Escenario: ${escenarioSeleccionado}
+- Duración estimada: ${duracionSeleccionada}
+- Ejes articuladores: ${ejesTexto}
+- Tema o Proyecto: ${tema}
+- Estilo / Tono Pedagógico: ${instruccionesTono}
+
+IMPORTANTE: Responde ÚNICAMENTE con un objeto JSON válido (sin código markdown ni explicaciones externas) que contenga la estructura exacta:
+{
+  "libro": "Nombre oficial del libro de texto gratuito de la SEP adecuado para este grado",
+  "proposito": "Propósito pedagógico claro y reflexivo",
+  "reto": "Preguntas guía y reto detonante contextualizado",
+  "materiales": "Lista detallada de materiales y recursos didácticos",
+  "secuencia": "Secuencia didáctica detallada dividida en Inicio, Desarrollo y Cierre utilizando etiquetas HTML básicas como <br> y <b>",
+  "evaluacion": "Descripción de la evaluación formativa"
+}`;
+
+            try {
+                const response = await ai.models.generateContent({
+                    model: 'gemini-3.8-flash',
+                    contents: prompt
+                });
+
+                let textResponse = response.text;
+                textResponse = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+                
+                const planData = JSON.parse(textResponse);
+
+                document.getElementById('resLibro').innerText = planData.libro;
+                document.getElementById('resProposito').innerText = planData.proposito;
+                document.getElementById('resReto').innerText = planData.reto;
+                document.getElementById('resEjes').innerText = "• " + (ejesSeleccionados.length > 0 ? ejesSeleccionados.join("\n• ") : "Pensamiento Crítico\n• Inclusión");
+                document.getElementById('resMateriales').innerText = planData.materiales;
+                document.getElementById('resSecuencia').innerHTML = planData.secuencia;
+                document.getElementById('resEvaluacion').innerText = planData.evaluacion;
+
+                const htmlContenidoCompleto = document.getElementById('areaImpresion').innerHTML;
+                guardarEnHistorial(gradoSeleccionado, campoSeleccionado, tema, duracionSeleccionada, htmlContenidoCompleto, "");
+
+            } catch (error) {
+                console.error(error);
+                alert("Error de conexión con la IA: " + error.message);
+                document.getElementById('resProposito').innerText = "Error en la generación. Inténtalo de nuevo.";
+            }
+        }
+
+        async function generarRubricaAI() {
+            const tema = document.getElementById('resTema').innerText;
+            const grado = document.getElementById('resGrado').innerText;
+
+            if (!tema || tema === '-') {
+                alert("Primero debes generar una planeación didáctica.");
+                return;
+            }
+
+            const rubricaBox = document.getElementById('rubricaBox');
+            const textoRubrica = document.getElementById('textoRubrica');
+            const seccionRubricaImpresion = document.getElementById('seccionRubricaImpresion');
+            const resRubrica = document.getElementById('resRubrica');
+
+            if(rubricaBox) rubricaBox.style.display = "block";
+            if(textoRubrica) textoRubrica.innerText = "🤖 La IA está diseñando la rúbrica personalizada para este proyecto...";
+
+            const promptRubrica = `Actúa como especialista en evaluación formativa de la Nueva Escuela Mexicana (NEM). 
+Diseña una Rúbrica o Lista de Cotejo detallada y específica para ${grado} sobre el proyecto titulado: "${tema}".
+Incluye 3 indicadores de logro clave con sus descriptores por niveles de desempeño (En proceso, Satisfactorio, Sobresaliente).
+Formatea el resultado de manera clara utilizando viñetas y negritas. No incluyas introducción ni saludos, ve directo al instrumento de evaluación.`;
+
+            try {
+                const response = await ai.models.generateContent({
+                    model: 'gemini-3.8-flash',
+                    contents: promptRubrica
+                });
+
+                let resultadoRubrica = response.text ? response.text.trim() : "";
+                
+                if(!resultadoRubrica) {
+                    throw new Error("Respuesta vacía de la IA");
+                }
+
+                if(textoRubrica) textoRubrica.innerText = resultadoRubrica;
+                if(resRubrica) resRubrica.innerText = resultadoRubrica;
+                if(seccionRubricaImpresion) seccionRubricaImpresion.style.display = "block";
+
+                actualizarHistorialRubrica(resultadoRubrica);
+
+            } catch (error) {
+                console.error(error);
+                alert("Error al generar la rúbrica con la IA: " + error.message);
+                if(textoRubrica) textoRubrica.innerText = "Error en la generación. Intenta de nuevo.";
+            }
+        }
+
+        window.cambiarTab = function(tipo) {
+            tabActiva = tipo;
+            document.getElementById('tabRecientes').classList.toggle('active', tipo === 'recientes');
+            document.getElementById('tabFavoritos').classList.toggle('active', tipo === 'favoritos');
+            renderizarHistorial();
+        };
+
+        function guardarEnHistorial(grado, campo, tema, duracion, contenidoHtml, rubricaTexto) {
+            let historial = JSON.parse(localStorage.getItem('aula360_historial')) || [];
+            const nuevaEntrada = {
+                id: Date.now(),
+                titulo: tema + " (" + grado + ")",
+                detalles: campo + " | " + duracion,
+                fecha: new Date().toLocaleDateString(),
+                html: contenidoHtml,
+                rubrica: rubricaTexto,
+                favorito: false
+            };
+
+            historial.unshift(nuevaEntrada);
+            if (historial.length > 15) historial.pop();
+            localStorage.setItem('aula360_historial', JSON.stringify(historial));
+            renderizarHistorial();
+        }
+
+        function actualizarHistorialRubrica(rubricaTexto) {
+            let historial = JSON.parse(localStorage.getItem('aula360_historial')) || [];
+            if (historial.length > 0) {
+                historial[0].html = document.getElementById('areaImpresion').innerHTML;
+                historial[0].rubrica = rubricaTexto;
+                localStorage.setItem('aula360_historial', JSON.stringify(historial));
+            }
+        }
+
+        window.toggleFavorito = function(id) {
+            let historial = JSON.parse(localStorage.getItem('aula360_historial')) || [];
+            historial = historial.map(item => {
+                if (item.id === id) item.favorito = !item.favorito;
+                return item;
+            });
+            localStorage.setItem('aula360_historial', JSON.stringify(historial));
+            renderizarHistorial();
+        };
+
+        function renderizarHistorial() {
+            let historial = JSON.parse(localStorage.getItem('aula360_historial')) || [];
+            const contenedor = document.getElementById('historialLista');
+            const btnLimpiar = document.getElementById('btnClearHistory');
+
+            let listaMostrar = historial;
+            if (tabActiva === 'favoritos') {
+                listaMostrar = historial.filter(item => item.favorito);
+            }
+
+            if (listaMostrar.length === 0) {
+                contenedor.innerHTML = `<p style="font-size: 12px; color: #64748b; text-align: center;">No hay planeaciones ${tabActiva === 'favoritos' ? 'favoritas' : 'guardadas'} aún.</p>`;
+                if(btnLimpiar) btnLimpiar.style.display = historial.length > 0 ? 'block' : 'none';
+                return;
+            }
+
+            contenedor.innerHTML = "";
+
+            listaMostrar.forEach(item => {
+                const divItem = document.createElement('div');
+                divItem.className = 'history-item';
+
+                const divInfo = document.createElement('div');
+                divInfo.className = 'history-info';
+                divInfo.innerHTML = `<span>${item.titulo}</span><br><small style="color: #475569;">${item.detalles} (${item.fecha})</small>`;
+
+                const divActions = document.createElement('div');
+                divActions.className = 'history-actions';
+
+                const btnFav = document.createElement('button');
+                btnFav.className = 'btn-fav';
+                btnFav.innerHTML = item.favorito ? '⭐' : '☆';
+                btnFav.addEventListener('click', function() {
+                    toggleFavorito(item.id);
+                });
+
+                const btnVer = document.createElement('button');
+                btnVer.className = 'btn-hist-action';
+                btnVer.innerText = "👁️ Ver";
+                btnVer.addEventListener('click', function() {
+                    document.getElementById('pantallaInicio').style.display = 'none';
+                    document.getElementById('pantallaApp').style.display = 'block';
+                    cargarItemHistorial(item);
+                });
+
+                const btnPdfHist = document.createElement('button');
+                btnPdfHist.className = 'btn-hist-action secondary';
+                btnPdfHist.innerText = "🖨️ PDF";
+                btnPdfHist.addEventListener('click', function() {
+                    document.getElementById('pantallaInicio').style.display = 'none';
+                    document.getElementById('pantallaApp').style.display = 'block';
+                    cargarItemHistorial(item);
+                    setTimeout(() => imprimirConGuardado(), 300);
+                });
+
+                divActions.appendChild(btnFav);
+                divActions.appendChild(btnVer);
+                divActions.appendChild(btnPdfHist);
+
+                divItem.appendChild(divInfo);
+                divItem.appendChild(divActions);
+
+                contenedor.appendChild(divItem);
+            });
+
+            if(btnLimpiar) btnLimpiar.style.display = 'block';
+        }
+
+        function cargarItemHistorial(item) {
+            document.getElementById('areaImpresion').innerHTML = item.html;
+            
+            const seccionRubrica = document.getElementById('seccionRubricaImpresion');
+            const rubricaBox = document.getElementById('rubricaBox');
+            const resRubrica = document.getElementById('resRubrica');
+            const textoRubrica = document.getElementById('textoRubrica');
+
+            if (item.rubrica && item.rubrica.trim() !== '' && item.rubrica !== '-') {
+                if(resRubrica) resRubrica.innerText = item.rubrica;
+                if(textoRubrica) textoRubrica.innerText = item.rubrica;
+                if(seccionRubrica) seccionRubrica.style.display = 'block';
+                if(rubricaBox) rubricaBox.style.display = 'block';
+            } else {
+                if(seccionRubrica) seccionRubrica.style.display = 'none';
+                if(rubricaBox) rubricaBox.style.display = 'none';
+            }
+
+            document.getElementById('resultado').style.display = 'block';
+            window.scrollTo({ top: document.getElementById('resultado').offsetTop, behavior: 'smooth' });
+        }
+
+        function imprimirConGuardado() {
+            const textoRubricaEl = document.getElementById('textoRubrica');
+            const seccionRubricaImpresion = document.getElementById('seccionRubricaImpresion');
+            const resRubrica = document.getElementById('resRubrica');
+
+            if (textoRubricaEl) {
+                const textoRubricaActual = textoRubricaEl.innerText;
+                if (textoRubricaActual && textoRubricaActual.trim() !== '' && textoRubricaActual !== '🤖 La IA está diseñando la rúbrica personalizada para este proyecto...') {
+                    if(resRubrica) resRubrica.innerText = textoRubricaActual;
+                    if(seccionRubricaImpresion) {
+                        seccionRubricaImpresion.style.display = 'block';
+                        seccionRubricaImpresion.style.setProperty('display', 'block', 'important');
+                    }
+                }
+            }
+
+            setTimeout(() => {
+                window.print();
+            }, 200);
+        }
+
+        function compartirWhatsApp() {
+            const escuela = document.getElementById('resEscuela').innerText;
+            const cct = document.getElementById('resCct').innerText;
+            const docente = document.getElementById('resDocente').innerText;
+            const zona = document.getElementById('resZona').innerText;
+            const grado = document.getElementById('resGrado').innerText;
+            const duracion = document.getElementById('resDuracion').innerText;
+            const escenario = document.getElementById('resEscenario').innerText;
+            const campo = document.getElementById('resCampo').innerText;
+            const metodologia = document.getElementById('resMetodologia').innerText;
+            const tema = document.getElementById('resTema').innerText;
+            const libro = document.getElementById('resLibro').innerText;
+            const proposito = document.getElementById('resProposito').innerText;
+            const reto = document.getElementById('resReto').innerText;
+            const ejes = document.getElementById('resEjes').innerText;
+            const materiales = document.getElementById('resMateriales').innerText;
+            
+            const secuenciaHTML = document.getElementById('resSecuencia').innerHTML;
+            const secuenciaLimpia = secuenciaHTML
+                .replace(/<br\s*[\/]?>/gi, '\n')
+                .replace(/<\/b>/gi, '*')
+                .replace(/<b>/gi, '*')
+                .replace(/<[^>]+>/g, '');
+
+            let mensajeWp = `📘 *AULA360 - PLANEACIÓN DIDÁCTICA (NEM)* 🇲🇽\n`;
+            mensajeWp += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+            
+            mensajeWp += `🏫 *DATOS INSTITUCIONALES*\n`;
+            mensajeWp += `• *Escuela:* ${escuela}\n`;
+            mensajeWp += `• *C.C.T.:* ${cct}\n`;
+            mensajeWp += `• *Docente:* ${docente}\n`;
+            mensajeWp += `• *Zona Escolar:* ${zona}\n\n`;
+
+            mensajeWp += `📋 *GENERALIDADES*\n`;
+            mensajeWp += `• *Grado:* ${grado}\n`;
+            mensajeWp += `• *Campo Formativo:* ${campo}\n`;
+            mensajeWp += `• *Metodología:* ${metodologia}\n`;
+            mensajeWp += `• *Escenario:* ${escenario}\n`;
+            mensajeWp += `• *Duración:* ${duracion}\n\n`;
+
+            mensajeWp += `📌 *TEMA / PROYECTO*\n`;
+            mensajeWp += `_${tema}_\n\n`;
+
+            mensajeWp += `📖 *Libro SEP:* ${libro}\n\n`;
+            
+            mensajeWp += `🎯 *1. Propósito del Proyecto:*\n${proposito}\n\n`;
+            
+            mensajeWp += `💡 *2. Preguntas Guía y Reto:*\n_${reto}_\n\n`;
+            
+            mensajeWp += `🔗 *3. Ejes Articuladores:*\n${ejes}\n\n`;
+            
+            mensajeWp += `🛠️ *4. Materiales y Recursos:*\n${materiales}\n\n`;
+            
+            mensajeWp += `📝 *5. Secuencia Didáctica:*\n${secuenciaLimpia}\n\n`;
+
+            const rubricaElem = document.getElementById('resRubrica');
+            const seccionRubrica = document.getElementById('seccionRubricaImpresion');
+            if (rubricaElem && rubricaElem.innerText.trim() !== '-' && seccionRubrica && seccionRubrica.style.display !== 'none') {
+                mensajeWp += `📊 *7. Rúbrica / Lista de Cotejo:*\n${rubricaElem.innerText}\n\n`;
+            }
+
+            mensajeWp += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+            mensajeWp += `_Generado con Aula360 - IA NEM_`;
+
+            const urlWp = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensajeWp)}`;
+            window.open(urlWp, '_blank');
+        }
+
+        function copiarContenido() {
+            const area = document.getElementById('areaImpresion');
+            let texto = area.innerText;
+            
+            const rubricaElem = document.getElementById('resRubrica');
+            const seccionRubrica = document.getElementById('seccionRubricaImpresion');
+            if (rubricaElem && rubricaElem.innerText.trim() !== '-' && seccionRubrica && seccionRubrica.style.display !== 'none') {
+                texto += "\n\n7. RÚBRICA / LISTA DE COTEJO DE EVALUACIÓN FORMATIVA:\n" + rubricaElem.innerText;
+            }
+
+            navigator.clipboard.writeText(texto).then(() => {
+                const btn = document.getElementById('btnCopiar');
+                btn.innerText = "✅ ¡Copiado!";
+                btn.style.background = "#0d9488";
+                setTimeout(() => {
+                    btn.innerText = "📋 Copiar";
+                    btn.style.background = "#1e3a8a";
+                }, 2000);
+            }).catch(err => {
+                alert("Error al copiar al portapapeles");
+            });
+        }
+
+        function limpiarHistorial() {
+            if(confirm("¿Estás seguro de borrar el historial? (Los favoritos se conservarán)")) {
+                let historial = JSON.parse(localStorage.getItem('aula360_historial')) || [];
+                historial = historial.filter(item => item.favorito);
+                localStorage.setItem('aula360_historial', JSON.stringify(historial));
+                renderizarHistorial();
+            }
+        }
+
+        function nuevaPlaneacion() {
+            document.getElementById('resultado').style.display = 'none';
+            const rubricaBox = document.getElementById('rubricaBox');
+            const seccionRubricaImpresion = document.getElementById('seccionRubricaImpresion');
+            if(rubricaBox) rubricaBox.style.display = 'none';
+            if(seccionRubricaImpresion) seccionRubricaImpresion.style.display = 'none';
+            document.getElementById('temaInput').value = '';
+
+            const cards = document.getElementsByClassName('option-card');
+            for (let i = 0; i < cards.length; i++) {
+                cards[i].classList.remove('selected');
+                cards[i].classList.remove('multi-selected');
+            }
+            gradoSeleccionado = "";
+            campoSeleccionado = "";
+            metodologiaSeleccionada = "";
+            escenarioSeleccionado = "";
+            duracionSeleccionada = "";
+            ejesSeleccionados = [];
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
