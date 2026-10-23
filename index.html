@@ -4,791 +4,174 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aula360 - IA NEM</title>
-    <!-- Carga del SDK oficial de Google Gen AI -->
-    <script type="importmap">
-      {
-        "imports": {
-          "@google/genai": "https://esm.run/@google/genai"
-        }
-      }
-    </script>
     <style>
         :root {
             --primary: #1e3a8a;
+            --primary-light: #3b82f6;
             --secondary: #0d9488;
-            --bg: #f8fafc;
+            --bg: #f1f5f9;
+            --card-bg: #ffffff;
             --text: #1e293b;
+            --text-light: #64748b;
+            --radius: 16px;
         }
 
         body {
-            font-family: system-ui, -apple-system, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
             padding: 16px;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        /* Pantalla de Inicio (Landing / Splash) */
-        #pantallaInicio {
-            text-align: center;
-            padding: 30px 10px;
-        }
-
-        .hero-logo {
-            font-size: 56px;
-            margin-bottom: 10px;
-        }
-
-        .hero-title {
-            color: var(--primary);
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .hero-subtitle {
-            color: #64748b;
-            font-size: 15px;
-            line-height: 1.5;
-            margin-bottom: 30px;
-        }
-
-        .hero-features {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 35px;
-            text-align: left;
-        }
-
-        .hero-feature-card {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 12px;
-            color: #475569;
-        }
-
-        .hero-feature-card b {
-            color: var(--primary);
-            display: block;
-            margin-bottom: 2px;
-            font-size: 13px;
-        }
-
-        .btn-inicio-principal {
-            background: var(--primary);
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.2);
-            margin-bottom: 12px;
-        }
-
-        .btn-inicio-secundario {
-            background: #f1f5f9;
-            color: var(--primary);
-            border: 2px solid #cbd5e1;
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 12px;
-        }
-
-        .btn-inicio-lista {
-            background: #d97706;
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(217, 119, 6, 0.2);
-            margin-bottom: 12px;
-        }
-
-        .btn-inicio-alumnos {
-            background: #7c3aed;
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(124, 58, 237, 0.2);
-            margin-bottom: 12px;
-        }
-
-        .btn-inicio-ruleta {
-            background: #db2777;
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(219, 39, 119, 0.2);
-            margin-bottom: 12px;
-        }
-
-        .btn-inicio-tareas {
-            background: #0284c7;
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.2);
-            margin-bottom: 12px;
-        }
-
-        .btn-inicio-examenes {
-            background: #059669;
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(5, 150, 105, 0.2);
-            margin-bottom: 12px;
-        }
-
-        .backup-section {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px dashed #cbd5e1;
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-backup {
-            background: #475569;
-            color: white;
-            border: none;
-            flex: 1;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        /* Vistas de pantallas */
-        #pantallaApp, #pantallaAsistencia, #pantallaReporteAsistencia, #pantallaAlumnos, #pantallaRuleta, #pantallaTareas, #pantallaExamenes {
-            display: none;
-        }
-
-        h1 {
-            color: var(--primary);
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 4px;
-            cursor: pointer;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #64748b;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-
-        .btn-volver-app {
-            background: #f1f5f9;
-            color: #475569;
-            border: 1px solid #cbd5e1;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 15px;
-        }
-
-        .step-title {
-            font-size: 14px;
-            font-weight: bold;
-            margin: 16px 0 8px 0;
-            color: var(--primary);
-            border-left: 4px solid var(--secondary);
-            padding-left: 8px;
-        }
-
-        .grid-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 6px;
-        }
-
-        .grid-3 {
-            grid-template-columns: 1fr 1fr 1fr;
-        }
-
-        .option-card {
-            background: #f1f5f9;
-            border: 2px solid #e2e8f0;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
 
-        .option-card.selected {
-            background: #e0f2fe;
-            border-color: var(--primary);
-            color: var(--primary);
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
         }
 
-        .option-card.multi-selected {
-            background: #ccfbf1;
-            border-color: var(--secondary);
-            color: #115e59;
-        }
+        /* --- PANTALLAS --- */
+        #pantallaInicio { display: block; text-align: center; padding: 10px 0; }
+        .hero-banner { background: linear-gradient(135deg, #1e3a8a, #0d9488); color: white; padding: 24px; border-radius: 14px; margin-bottom: 24px; box-shadow: 0 6px 15px rgba(30, 58, 138, 0.15); }
+        .hero-logo { font-size: 42px; margin-bottom: 6px; }
+        .hero-title { font-size: 26px; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.5px; }
+        .hero-subtitle { font-size: 13px; opacity: 0.9; line-height: 1.4; }
 
-        input[type="text"], textarea, input[type="date"], select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 14px;
-            margin-top: 5px;
-            box-sizing: border-box;
-            outline: none;
-            background: white;
-        }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+        .dash-card { background: #f8fafc; border: 2px solid #e2e8f0; padding: 16px 12px; border-radius: 14px; text-align: center; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; user-select: none; }
+        .dash-card:hover { transform: translateY(-2px); border-color: var(--primary-light); background: #f0fdf4; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .dash-card.featured { grid-column: span 2; background: linear-gradient(135deg, #eff6ff, #e0f2fe); border-color: #bae6fd; }
 
-        input[type="text"]:focus, textarea:focus, input[type="date"]:focus, select:focus {
-            border-color: var(--primary);
-        }
+        .dash-icon { font-size: 28px; margin-bottom: 8px; }
+        .dash-title { font-size: 13px; font-weight: 700; color: var(--primary); }
+        .dash-desc { font-size: 11px; color: var(--text-light); margin-top: 2px; }
 
-        .sugerencias-box {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            margin-top: 8px;
-        }
+        .backup-section { display: flex; gap: 10px; border-top: 1px dashed #cbd5e1; padding-top: 16px; }
+        .btn-backup { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; flex: 1; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .btn-backup:hover { background: #e2e8f0; }
 
-        .chip-sugerencia {
-            background: #f1f5f9;
-            border: 1px solid #cbd5e1;
-            padding: 6px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            cursor: pointer;
-            color: var(--primary);
-            font-weight: 500;
-        }
+        #pantallaApp, #pantallaAsistencia, #pantallaReporteAsistencia, #pantallaAlumnos, #pantallaRuleta, #pantallaTareas, #pantallaExamenes { display: none; }
 
-        .chip-sugerencia:hover {
-            background: #e0f2fe;
-            border-color: var(--primary);
-        }
+        h1 { color: var(--primary); text-align: center; font-size: 22px; margin-bottom: 4px; cursor: pointer; }
+        .subtitle { text-align: center; color: var(--text-light); font-size: 13px; margin-bottom: 20px; }
 
-        .chip-temporada {
-            background: #ccfbf1;
-            border: 1px solid #0d9488;
-            color: #115e59;
-        }
+        .btn-volver-app { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: bold; cursor: pointer; margin-bottom: 15px; display: inline-flex; align-items: center; gap: 6px; }
 
-        .btn-generate {
-            background: var(--secondary);
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-        }
+        .step-title { font-size: 13px; font-weight: bold; margin: 16px 0 8px 0; color: var(--primary); border-left: 4px solid var(--secondary); padding-left: 8px; }
 
-        .result-box {
-            margin-top: 20px;
-            display: none;
-        }
+        .grid-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px; }
+        .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
 
-        .formal-card {
-            background: #ffffff;
-            border: 2px solid #cbd5e1;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-        }
+        .option-card { background: #f8fafc; border: 2px solid #e2e8f0; padding: 10px; border-radius: 10px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; user-select: none; transition: all 0.15s ease; }
+        .option-card:hover { border-color: #cbd5e1; }
+        .option-card.selected { background: #eff6ff; border-color: var(--primary); color: var(--primary); }
+        .option-card.multi-selected { background: #f0fdf4; border-color: var(--secondary); color: #115e59; }
 
-        .formal-header {
-            background: var(--primary);
-            color: white;
-            padding: 12px 16px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 14px;
-        }
+        input[type="text"], input[type="number"], textarea, input[type="date"], select { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 14px; margin-top: 5px; box-sizing: border-box; outline: none; background: white; transition: border-color 0.2s; }
+        input[type="text"]:focus, input[type="number"]:focus, textarea:focus, input[type="date"]:focus, select:focus { border-color: var(--primary); }
 
-        .formal-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            border-bottom: 1px solid #cbd5e1;
-            font-size: 12px;
-        }
+        .sugerencias-box { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+        .chip-sugerencia { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 6px 10px; border-radius: 20px; font-size: 11px; cursor: pointer; color: var(--primary); font-weight: 500; }
+        .chip-sugerencia:hover { background: #e0f2fe; border-color: var(--primary); }
+        .chip-temporada { background: #f0fdf4; border: 1px solid #0d9488; color: #115e59; }
 
-        .formal-cell {
-            padding: 8px 10px;
-            border-right: 1px solid #cbd5e1;
-            border-bottom: 1px solid #cbd5e1;
-        }
+        .btn-generate { background: var(--secondary); color: white; border: none; width: 100%; padding: 16px; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2); }
+        .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; }
+        .result-box { margin-top: 20px; display: none; }
 
-        .formal-cell:nth-child(2n) {
-            border-right: none;
-        }
+        .formal-card { background: #ffffff; border: 2px solid #cbd5e1; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02); text-align: left; }
+        .formal-header { background: var(--primary); color: white; padding: 12px 16px; text-align: center; font-weight: bold; font-size: 13px; }
+        .formal-grid { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #cbd5e1; font-size: 12px; }
+        .formal-cell { padding: 8px 10px; border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; }
+        .formal-cell:nth-child(2n) { border-right: none; }
+        .formal-cell b { color: var(--primary); display: block; margin-bottom: 2px; }
+        .formal-section { padding: 10px 14px; border-bottom: 1px solid #e2e8f0; font-size: 12px; line-height: 1.4; }
+        .formal-section:last-of-type { border-bottom: none; }
+        .formal-section b { color: var(--secondary); display: block; margin-bottom: 3px; font-size: 13px; }
 
-        .formal-cell b {
-            color: var(--primary);
-            display: block;
-            margin-bottom: 2px;
-        }
-
-        .formal-section {
-            padding: 10px 14px;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 12px;
-            line-height: 1.4;
-        }
-
-        .formal-section:last-of-type {
-            border-bottom: none;
-        }
-
-        .formal-section b {
-            color: var(--secondary);
-            display: block;
-            margin-bottom: 3px;
-            font-size: 13px;
-        }
-
-        .btn-rubrica-container {
-            margin: 15px 0 5px 0;
-        }
-
-        .btn-rubrica {
-            background: #7c3aed;
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-        }
-
-        .rubrica-box {
-            display: none;
-            margin-top: 10px;
-            background: #faf5ff;
-            border: 2px dashed #7c3aed;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            line-height: 1.4;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 6px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        .btn-action {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 8px;
-            border-radius: 8px;
-            flex: 1;
-            font-weight: bold;
-            font-size: 11px;
-            cursor: pointer;
-            text-align: center;
-        }
-
-        .btn-whatsapp {
-            background: #25d366;
-        }
-
-        .btn-pdf {
-            background: var(--secondary);
-        }
-
-        .btn-excel {
-            background: #059669;
-        }
-
-        .btn-lista {
-            background: #d97706;
-        }
-
-        .btn-reset {
-            background: #e2e8f0;
-            color: #475569;
-            border: none;
-            padding: 12px 8px;
-            border-radius: 8px;
-            width: 60px;
-            font-weight: bold;
-            font-size: 11px;
-            cursor: pointer;
-            text-align: center;
-        }
-
-        .history-tabs {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 6px;
-        }
-
-        .tab-btn {
-            background: none;
-            border: none;
-            font-size: 12px;
-            font-weight: bold;
-            color: #64748b;
-            cursor: pointer;
-            padding: 4px 8px;
-        }
-
-        .tab-btn.active {
-            color: var(--primary);
-            border-bottom: 2px solid var(--primary);
-        }
-
-        .history-item {
-            background: #f1f5f9;
-            border: 1px solid #cbd5e1;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            margin-top: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .history-info {
-            flex-grow: 1;
-        }
-
-        .history-actions {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-
-        .btn-hist-action {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 6px 10px;
+        /* Estilo cuando está en modo edición directa */
+        .editando-activo {
+            outline: 2px dashed #f59e0b !important;
+            background: #fffbeb !important;
+            padding: 4px;
             border-radius: 6px;
-            font-size: 11px;
-            cursor: pointer;
-            font-weight: bold;
         }
 
-        .btn-hist-action.secondary {
-            background: var(--secondary);
-        }
+        .btn-rubrica-container { margin: 15px 0 5px 0; }
+        .btn-rubrica { background: #7c3aed; color: white; border: none; width: 100%; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: bold; cursor: pointer; text-align: center; transition: all 0.2s ease; }
+        .btn-rubrica:disabled { background: #a78bfa; cursor: not-allowed; opacity: 0.8; }
+        .rubrica-box { display: none; margin-top: 10px; background: #faf5ff; border: 2px dashed #7c3aed; padding: 12px; border-radius: 10px; font-size: 12px; line-height: 1.4; text-align: left; overflow-x: auto; }
+        .rubrica-box table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11px; }
+        .rubrica-box th, .rubrica-box td { border: 1px solid #cbd5e1; padding: 6px; text-align: left; }
+        .rubrica-box th { background: #7c3aed; color: white; }
 
-        .btn-fav {
-            background: none;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            padding: 0 4px;
-        }
+        .btn-group { display: flex; gap: 6px; margin-top: 15px; flex-wrap: wrap; }
+        .btn-action { background: var(--primary); color: white; border: none; padding: 12px 8px; border-radius: 10px; flex: 1; font-weight: bold; font-size: 11px; cursor: pointer; text-align: center; }
+        .btn-whatsapp { background: #16a34a; }
+        .btn-pdf { background: var(--secondary); }
+        .btn-excel { background: #059669; }
 
-        .history-item span {
-            font-weight: bold;
-            color: var(--primary);
-        }
+        .btn-reset { background: #e2e8f0; color: #475569; border: none; padding: 12px 8px; border-radius: 10px; width: 60px; font-weight: bold; font-size: 11px; cursor: pointer; text-align: center; }
 
-        .btn-clear {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-        }
+        .history-tabs { display: flex; gap: 10px; margin-top: 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; }
+        .tab-btn { background: none; border: none; font-size: 12px; font-weight: bold; color: var(--text-light); cursor: pointer; padding: 4px 8px; }
+        .tab-btn.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
 
-        /* Estilos para las tablas de Asistencia y Reportes */
-        .asistencia-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
+        .history-item { background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; font-size: 12px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .history-info { flex-grow: 1; text-align: left; }
+        .history-actions { display: flex; gap: 6px; align-items: center; }
+        .btn-hist-action { background: var(--primary); color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: bold; }
+        .btn-fav { background: none; border: none; font-size: 16px; cursor: pointer; padding: 0 4px; }
+        .btn-clear { background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
 
-        .stat-card {
-            background: #f1f5f9;
-            padding: 8px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: bold;
-        }
+        .asistencia-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; text-align: center; }
+        .stat-card { background: #f1f5f9; padding: 8px; border-radius: 10px; font-size: 12px; font-weight: bold; }
+        .stat-card span { display: block; font-size: 16px; margin-top: 2px; }
 
-        .stat-card span {
-            display: block;
-            font-size: 16px;
-            margin-top: 2px;
-        }
+        .tabla-asistencia-digital { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 15px; }
+        .tabla-asistencia-digital th, .tabla-asistencia-digital td { border: 1px solid #cbd5e1; padding: 6px; text-align: center; }
+        .tabla-asistencia-digital th { background: var(--primary); color: white; }
 
-        .tabla-asistencia-digital {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
-            margin-bottom: 15px;
-        }
+        .input-nombre-alumno, .input-tel-alumno { width: 100%; border: none; background: transparent; font-size: 12px; outline: none; padding: 2px; }
+        .input-tel-alumno { text-align: center; color: #0d9488; font-weight: bold; }
 
-        .tabla-asistencia-digital th, .tabla-asistencia-digital td {
-            border: 1px solid #cbd5e1;
-            padding: 6px;
-            text-align: center;
-        }
-
-        .tabla-asistencia-digital th {
-            background: var(--primary);
-            color: white;
-        }
-
-        .input-nombre-alumno, .input-tel-alumno {
-            width: 100%;
-            border: none;
-            background: transparent;
-            font-size: 12px;
-            outline: none;
-            padding: 2px;
-        }
-
-        .input-tel-alumno {
-            text-align: center;
-            color: #0d9488;
-            font-weight: bold;
-        }
-
-        .btn-asis {
-            padding: 6px 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 11px;
-            cursor: pointer;
-            background: #f8fafc;
-            color: #64748b;
-        }
-
+        .btn-asis { padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: bold; font-size: 11px; cursor: pointer; background: #f8fafc; color: #64748b; }
         .btn-asis.presente { background: #dcfce7; border-color: #22c55e; color: #15803d; }
         .btn-asis.retardo { background: #fef9c3; border-color: #eab308; color: #a16207; }
         .btn-asis.falta { background: #fee2e2; border-color: #ef4444; color: #b91c1c; }
 
-        /* Botones específicos para Tareas */
-        .btn-tarea {
-            padding: 6px 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 11px;
-            cursor: pointer;
-            background: #f8fafc;
-            color: #64748b;
-        }
+        .btn-tarea { padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: bold; font-size: 11px; cursor: pointer; background: #f8fafc; color: #64748b; }
         .btn-tarea.entregado { background: #dcfce7; border-color: #22c55e; color: #15803d; }
         .btn-tarea.pendiente { background: #fee2e2; border-color: #ef4444; color: #b91c1c; }
 
-        .btn-expediente {
-            background: #7c3aed;
-            color: white;
-            border: none;
-            padding: 6px 8px;
-            border-radius: 6px;
-            font-size: 11px;
-            cursor: pointer;
-            font-weight: bold;
-        }
+        .btn-expediente { background: #7c3aed; color: white; border: none; padding: 6px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: bold; }
 
-        /* Modal / Tarjeta de Expediente de Alumno */
-        #modalExpediente {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 16px;
-            box-sizing: border-box;
-        }
+        #modalExpediente { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; padding: 16px; box-sizing: border-box; }
+        .modal-content { background: white; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; padding: 20px; border-radius: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: left; }
 
-        .modal-content {
-            background: white;
-            width: 100%;
-            max-width: 450px;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 20px;
-            border-radius: 14px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
+        .ruleta-display-box { background: linear-gradient(135deg, #fdf2f8, #fce7f3); border: 3px solid #db2777; border-radius: 16px; padding: 30px 20px; text-align: center; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(219, 39, 119, 0.15); }
+        .ruleta-nombre-salida { font-size: 26px; font-weight: 800; color: #be185d; min-height: 45px; display: flex; align-items: center; justify-content: center; word-break: break-word; }
+        .btn-girar-ruleta { background: #db2777; color: white; border: none; width: 100%; padding: 18px; border-radius: 14px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 6px 15px rgba(219, 39, 119, 0.3); transition: transform 0.1s ease; }
+        .btn-girar-ruleta:active { transform: scale(0.98); }
 
-        /* Estilos de la Ruleta Interactiva */
-        .ruleta-display-box {
-            background: linear-gradient(135deg, #fdf2f8, #fce7f3);
-            border: 3px solid #db2777;
-            border-radius: 16px;
-            padding: 30px 20px;
-            text-align: center;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 20px rgba(219, 39, 119, 0.15);
-        }
-
-        .ruleta-nombre-salida {
-            font-size: 26px;
-            font-weight: 800;
-            color: #be185d;
-            min-height: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            word-break: break-word;
-        }
-
-        .btn-girar-ruleta {
-            background: #db2777;
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 18px;
-            border-radius: 14px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 6px 15px rgba(219, 39, 119, 0.3);
-            transition: transform 0.1s ease;
-        }
-
-        .btn-girar-ruleta:active {
-            transform: scale(0.98);
-        }
-
-        /* Reglas de impresión estrictas para cada módulo */
         @media print {
             body { background: white; padding: 0; }
             .container { max-width: 100%; box-shadow: none; padding: 0; }
-            
-            body * {
-                visibility: hidden;
-            }
-
-            body.imprimiendo-planeacion #areaImpresion,
-            body.imprimiendo-planeacion #areaImpresion * {
-                visibility: visible;
-            }
-            body.imprimiendo-planeacion #areaImpresion {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                border: none !important;
-                box-shadow: none !important;
-            }
-
-            body.imprimiendo-lista #seccionImprimirLista,
-            body.imprimiendo-lista #seccionImprimirLista * {
-                visibility: visible;
-            }
-            body.imprimiendo-lista #seccionImprimirLista {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-            }
-
-            body.imprimiendo-mensual #seccionImprimirMensual,
-            body.imprimiendo-mensual #seccionImprimirMensual * {
-                visibility: visible;
-            }
-            body.imprimiendo-mensual #seccionImprimirMensual {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-            }
-
-            body.imprimiendo-tareas #seccionImprimirTareas,
-            body.imprimiendo-tareas #seccionImprimirTareas * {
-                visibility: visible;
-            }
-            body.imprimiendo-tareas #seccionImprimirTareas {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-            }
-
-            body.imprimiendo-examen #areaExamenImpresion,
-            body.imprimiendo-examen #areaExamenImpresion * {
-                visibility: visible;
-            }
-            body.imprimiendo-examen #areaExamenImpresion {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-            }
+            body * { visibility: hidden; }
+            body.imprimiendo-planeacion #areaImpresion, body.imprimiendo-planeacion #areaImpresion * { visibility: visible; }
+            body.imprimiendo-planeacion #areaImpresion { position: absolute; left: 0; top: 0; width: 100%; border: none !important; box-shadow: none !important; }
+            body.imprimiendo-lista #seccionImprimirLista, body.imprimiendo-lista #seccionImprimirLista * { visibility: visible; }
+            body.imprimiendo-lista #seccionImprimirLista { position: absolute; left: 0; top: 0; width: 100%; }
+            body.imprimiendo-mensual #seccionImprimirMensual, body.imprimiendo-mensual #seccionImprimirMensual * { visibility: visible; }
+            body.imprimiendo-mensual #seccionImprimirMensual { position: absolute; left: 0; top: 0; width: 100%; }
+            body.imprimiendo-tareas #seccionImprimirTareas, body.imprimiendo-tareas #seccionImprimirTareas * { visibility: visible; }
+            body.imprimiendo-tareas #seccionImprimirTareas { position: absolute; left: 0; top: 0; width: 100%; }
+            body.imprimiendo-examen #areaExamenImpresion, body.imprimiendo-examen #areaExamenImpresion * { visibility: visible; }
+            body.imprimiendo-examen #areaExamenImpresion { position: absolute; left: 0; top: 0; width: 100%; }
         }
     </style>
 </head>
@@ -796,45 +179,76 @@
 
     <div class="container">
         
-        <!-- PANTALLA DE INICIO (SPLASH) -->
+        <!-- PANTALLA DE INICIO (DASHBOARD) -->
         <div id="pantallaInicio">
-            <div class="hero-logo">📚</div>
-            <div class="hero-title">Aula360</div>
-            <div class="hero-subtitle">Plataforma inteligente de planeación didáctica y evaluación formativa alineada a la Nueva Escuela Mexicana (NEM).</div>
+            <div class="hero-banner">
+                <div class="hero-logo">📚</div>
+                <div class="hero-title">Aula360</div>
+                <div class="hero-subtitle">Plataforma inteligente de gestión, planeación y evaluación formativa alineada a la Nueva Escuela Mexicana (NEM).</div>
+            </div>
 
-            <div class="hero-features">
-                <div class="hero-feature-card">
-                    <b>✨ IA Avanzada</b>
-                    Genera planeaciones, fichas y exámenes con IA.
+            <div class="dashboard-grid">
+                <div class="dash-card featured" id="btnIrCrear">
+                    <div class="dash-icon">🚀</div>
+                    <div class="dash-title">Crear Nueva Planeación Didáctica</div>
+                    <div class="dash-desc">Asistente IA con campos, metodologías y libros SEP</div>
                 </div>
-                <div class="hero-feature-card">
-                    <b>👥 Gestión y Asistencia</b>
-                    Expediente, Excel, WhatsApp y reportes.
+
+                <div class="dash-card" id="btnInicioExamenes">
+                    <div class="dash-icon">📝</div>
+                    <div class="dash-title">Exámenes IA</div>
+                    <div class="dash-desc">Opción múltiple, abiertas y respuestas</div>
+                </div>
+
+                <div class="dash-card" id="btnInicioAsistencia">
+                    <div class="dash-icon">📱</div>
+                    <div class="dash-title">Pase de Lista</div>
+                    <div class="dash-desc">Control diario e histórico</div>
+                </div>
+
+                <div class="dash-card" id="btnInicioAlumnos">
+                    <div class="dash-icon">👥</div>
+                    <div class="dash-title">Grupo y Alumnos</div>
+                    <div class="dash-desc">Lista, WhatsApp y expedientes</div>
+                </div>
+
+                <div class="dash-card" id="btnInicioTareas">
+                    <div class="dash-icon">📋</div>
+                    <div class="dash-title">Tareas</div>
+                    <div class="dash-desc">Seguimiento por actividad</div>
+                </div>
+
+                <div class="dash-card" id="btnInicioRuleta">
+                    <div class="dash-icon">🎲</div>
+                    <div class="dash-title">Ruleta Escolar</div>
+                    <div class="dash-desc">Selector de participación</div>
+                </div>
+
+                <div class="dash-card" id="btnInicioReporte">
+                    <div class="dash-icon">📊</div>
+                    <div class="dash-title">Reporte Mensual</div>
+                    <div class="dash-desc">Estadísticas acumuladas</div>
+                </div>
+
+                <div class="dash-card featured" id="btnIrHistorial" style="background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-color: #cbd5e1;">
+                    <div class="dash-icon">📂</div>
+                    <div class="dash-title">Ver Historial de Planeaciones y Favoritos</div>
+                    <div class="dash-desc">Consulta tus trabajos anteriores guardados</div>
                 </div>
             </div>
 
-            <button class="btn-inicio-principal" id="btnIrCrear">🚀 Crear Nueva Planeación</button>
-            <button class="btn-inicio-examenes" id="btnInicioExamenes">📝 Generador de Exámenes con IA</button>
-            <button class="btn-inicio-lista" id="btnInicioAsistencia">📱 Pase de Lista Diario / Histórico</button>
-            <button class="btn-inicio-alumnos" id="btnInicioAlumnos">👥 Lista de Grupo y Expedientes</button>
-            <button class="btn-inicio-tareas" id="btnInicioTareas">📋 Control de Tareas e Investigaciones</button>
-            <button class="btn-inicio-ruleta" id="btnInicioRuleta">🎲 Ruleta de Participación</button>
-            <button class="btn-inicio-lista" id="btnInicioReporte" style="background: #0284c7;">📊 Reporte de Asistencia Mensual</button>
-            <button class="btn-inicio-secundario" id="btnIrHistorial">📂 Ver Historial Guardado</button>
-
-            <!-- Sección de Respaldo y Restauración -->
             <div class="backup-section">
-                <button class="btn-backup" id="btnExportarRespaldo">📥 Exportar Respaldo</button>
+                <button class="btn-backup" id="btnExportarRespaldo">📥 Exportar Respaldo (.json)</button>
                 <button class="btn-backup" id="btnImportarRespaldo">📤 Importar Respaldo</button>
                 <input type="file" id="inputArchivoRespaldo" accept=".json" style="display: none;">
             </div>
         </div>
 
-        <!-- PANTALLA DE GENERADOR DE EXÁMENES CON IA -->
+        <!-- PANTALLA DE GENERADOR DE EXÁMENES -->
         <div id="pantallaExamenes">
             <button class="btn-volver-app" id="btnCerrarExamenes">⬅️ Volver al Inicio</button>
             <h1>📝 Generador de Exámenes</h1>
-            <div class="subtitle">Crea evaluaciones objetivas de opción múltiple y hoja de respuestas con IA</div>
+            <div class="subtitle">Crea evaluaciones objetivas mixtas con IA</div>
 
             <div class="step-title">1. Grado Escolar</div>
             <select id="selectGradoExamen" style="margin-top: 0;">
@@ -842,12 +256,32 @@
                 <option value="2º Grado Primaria">2º Grado</option>
                 <option value="3º Grado Primaria">3º Grado</option>
                 <option value="4º Grado Primaria">4º Grado</option>
-                <option value="5º Grado Primaria">5º Grado</option>
+                <option value="5º Grado Primaria" selected>5º Grado</option>
                 <option value="6º Grado Primaria">6º Grado</option>
             </select>
 
-            <div class="step-title">2. Escribe el Tema o Contenido a Evaluar</div>
-            <textarea id="inputTemaExamen" rows="3" placeholder="Ej. Las fracciones y suma de decimales, Los ecosistemas de México, La Revolución Mexicana..."></textarea>
+            <div class="step-title">2. Campo Formativo o Asignatura</div>
+            <div class="grid-options" id="grupoCampoExamen">
+                <div class="option-card selected" data-campo="Lenguajes">Lenguajes</div>
+                <div class="option-card" data-campo="Saberes y Pens. Científico">Saberes y Pens. Científico</div>
+                <div class="option-card" data-campo="Ética, Naturaleza y Soc.">Ética, Naturaleza y Soc.</div>
+                <div class="option-card" data-campo="De lo Humano y lo Comunitario">De lo Humano y lo Comunitario</div>
+            </div>
+
+            <div class="step-title">3. Estructura de Preguntas</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px;">
+                <div>
+                    <label style="font-size: 11px; font-weight: bold; color: var(--primary);">Opción Múltiple (0-20):</label>
+                    <input type="number" id="inputOpMultiple" min="0" max="20" value="5" style="margin-top: 2px; font-size: 13px; padding: 10px;">
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: bold; color: var(--primary);">Preguntas Abiertas (0-20):</label>
+                    <input type="number" id="inputAbiertas" min="0" max="20" value="2" style="margin-top: 2px; font-size: 13px; padding: 10px;">
+                </div>
+            </div>
+
+            <div class="step-title">4. Escribe el Tema o Contenido</div>
+            <textarea id="inputTemaExamen" rows="3" placeholder="Ej. Las fracciones, Los ecosistemas..."></textarea>
 
             <button class="btn-generate" id="btnGenerarExamenAI" style="background: var(--primary);">🤖 Generar Examen con IA</button>
 
@@ -860,19 +294,31 @@
                     <div style="font-size: 12px; margin-bottom: 15px; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;">
                         <b>Alumno(a):</b> _________________________________________________ <b>Fecha:</b> _______________
                     </div>
-                    <div id="resExamenContenido" style="font-size: 12px; line-height: 1.5; white-space: pre-line; color: #334155;">
-                        <!-- Generado por IA -->
-                    </div>
+                    <div id="resExamenContenido" style="font-size: 12px; line-height: 1.5; white-space: pre-line; color: #334155;"></div>
                 </div>
 
                 <div class="btn-group">
+                    <button class="btn-action" id="btnEditarExamenToggle" style="background: #f59e0b;">✏️ Editar</button>
                     <button class="btn-action btn-pdf" id="btnImprimirExamen">🖨️ PDF Examen</button>
                     <button class="btn-action" id="btnCopiarExamen" style="background: var(--secondary);">📋 Copiar</button>
                 </div>
             </div>
+
+            <!-- HISTORIAL DE EXÁMENES -->
+            <div class="history-container">
+                <div class="step-title" style="margin-top: 30px;">📂 Historial de Exámenes y Favoritos</div>
+                <div class="history-tabs">
+                    <button class="tab-btn active" id="tabRecientesExamen">⏱️ Recientes</button>
+                    <button class="tab-btn" id="tabFavoritosExamen">⭐ Favoritos</button>
+                </div>
+                <div id="historialExamenLista" style="margin-top: 8px;">
+                    <p style="font-size: 12px; color: #64748b; text-align: center;">Cargando historial...</p>
+                </div>
+                <button id="btnClearHistoryExamen" class="btn-clear" style="display:none;">🗑️ Borrar Historial de Exámenes</button>
+            </div>
         </div>
 
-        <!-- PANTALLA DE CONTROL DE TAREAS Y TRABAJOS -->
+        <!-- TAREAS -->
         <div id="pantallaTareas">
             <button class="btn-volver-app" id="btnCerrarTareas">⬅️ Volver al Inicio</button>
             <h1>📋 Control de Tareas</h1>
@@ -880,12 +326,10 @@
 
             <div style="margin-bottom: 12px; background: #f1f5f9; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                    <label for="selectTareaActual" style="font-size: 12px; font-weight: bold; color: var(--primary);">📂 Seleccionar o Cambiar Tarea:</label>
+                    <label style="font-size: 12px; font-weight: bold; color: var(--primary);">📂 Seleccionar Tarea:</label>
                     <button class="btn-action" id="btnNuevaTareaPrompt" style="padding: 4px 8px; font-size: 10px; flex: 0; background: var(--secondary);">➕ Nueva Tarea</button>
                 </div>
-                <select id="selectTareaActual" style="margin-top: 0;">
-                    <!-- Generado dinámicamente -->
-                </select>
+                <select id="selectTareaActual" style="margin-top: 0;"></select>
             </div>
 
             <div class="asistencia-stats" style="grid-template-columns: 1fr 1fr;">
@@ -904,9 +348,7 @@
                             <th style="width: 130px;">Estatus</th>
                         </tr>
                     </thead>
-                    <tbody id="tablaTareasCuerpo">
-                        <!-- Generado dinámicamente -->
-                    </tbody>
+                    <tbody id="tablaTareasCuerpo"></tbody>
                 </table>
             </div>
 
@@ -917,11 +359,11 @@
             </div>
         </div>
 
-        <!-- PANTALLA DE RULETA DE PARTICIPACIÓN -->
+        <!-- RULETA -->
         <div id="pantallaRuleta">
             <button class="btn-volver-app" id="btnCerrarRuleta">⬅️ Volver al Inicio</button>
             <h1>🎲 Ruleta Escolar</h1>
-            <div class="subtitle">Selector aleatorio transparente para participación y exposiciones</div>
+            <div class="subtitle">Selector aleatorio transparente para participación</div>
 
             <div class="ruleta-display-box">
                 <div style="font-size: 12px; font-weight: bold; color: #db2777; text-transform: uppercase; margin-bottom: 8px;">✨ Alumno Seleccionado:</div>
@@ -929,19 +371,14 @@
             </div>
 
             <button class="btn-girar-ruleta" id="btnGirarRuleta">🎯 ¡Girar Ruleta!</button>
-
-            <div style="margin-top: 20px; background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 12px; color: #64748b; text-align: center;">
-                💡 La ruleta elige directamente entre los alumnos activos registrados en tu <b>Lista de Grupo</b>.
-            </div>
-
             <button class="btn-reset" id="btnCerrarRuletaBtn" style="width: 100%; margin-top: 20px;">⬅️ Volver al Inicio</button>
         </div>
 
-        <!-- PANTALLA DE GESTIÓN DE ALUMNOS (EXPEDIENTES Y FICHAS IA) -->
+        <!-- ALUMNOS -->
         <div id="pantallaAlumnos">
             <button class="btn-volver-app" id="btnCerrarAlumnos">⬅️ Volver al Inicio</button>
             <h1>👥 Gestión del Grupo</h1>
-            <div class="subtitle">Administra tu lista, números de WhatsApp y fichas descriptivas</div>
+            <div class="subtitle">Administra tu lista, números de WhatsApp y expedientes</div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; background: #f1f5f9; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1;">
                 <div>
@@ -954,17 +391,9 @@
                 </div>
             </div>
 
-            <!-- Botón de Importación con Foto (IA) -->
-            <div style="margin-bottom: 15px; background: #faf5ff; border: 2px dashed #7c3aed; padding: 12px; border-radius: 10px; text-align: center;">
-                <b style="color: #7c3aed; font-size: 13px; display: block; margin-bottom: 4px;">📸 Importar Alumnos desde Foto o Imagen</b>
-                <p style="font-size: 11px; color: #64748b; margin-bottom: 8px;">Sube una foto de tu lista escolar impresa o manuscrita y la IA extraerá todos los nombres automáticamente.</p>
-                <input type="file" id="inputFotoLista" accept="image/*" style="display: none;">
-                <button class="btn-action" id="btnSubirFotoLista" style="background: #7c3aed; width: auto; padding: 10px 20px;">🤖 Leer Lista con IA</button>
-            </div>
-
             <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;">
-                <input type="text" id="inputNuevoAlumno" placeholder="Nombre completo del alumno(a)..." style="margin-top: 0; flex: 2; min-width: 150px;">
-                <input type="text" id="inputNuevoTel" placeholder="WhatsApp (Ej. 521...)" style="margin-top: 0; flex: 1; min-width: 110px;">
+                <input type="text" id="inputNuevoAlumno" placeholder="Nombre completo..." style="margin-top: 0; flex: 2; min-width: 150px;">
+                <input type="text" id="inputNuevoTel" placeholder="WhatsApp" style="margin-top: 0; flex: 1; min-width: 110px;">
                 <button class="btn-action" id="btnAgregarAlumno" style="flex: 0 0 90px; margin-top: 0;">➕ Añadir</button>
             </div>
 
@@ -974,30 +403,28 @@
                         <tr>
                             <th style="width: 30px;">#</th>
                             <th>Nombre del Alumno(a)</th>
-                            <th style="width: 110px;">WhatsApp Tut.</th>
+                            <th style="width: 110px;">WhatsApp</th>
                             <th style="width: 90px;">Expediente</th>
                             <th style="width: 50px;">🗑️</th>
                         </tr>
                     </thead>
-                    <tbody id="tablaGestionAlumnosCuerpo">
-                        <!-- Generado dinámicamente -->
-                    </tbody>
+                    <tbody id="tablaGestionAlumnosCuerpo"></tbody>
                 </table>
             </div>
 
             <button class="btn-reset" id="btnCerrarAlumnosBtn" style="width: 100%; margin-top: 15px;">⬅️ Volver al Inicio</button>
         </div>
 
-        <!-- PANTALLA DE REPORTE ESTADÍSTICO ACUMULADO (MENSUAL) -->
+        <!-- REPORTE MENSUAL -->
         <div id="pantallaReporteAsistencia">
             <button class="btn-volver-app" id="btnCerrarReporte">⬅️ Volver al Inicio</button>
             <h1>📊 Reporte de Asistencia Mensual</h1>
-            <div class="subtitle">Resumen acumulado de asistencias, retardos y faltas del grupo</div>
+            <div class="subtitle">Resumen acumulado del grupo</div>
 
             <div id="seccionImprimirMensual">
                 <h3 style="text-align: center; color: #1e3a8a; margin-bottom: 4px;">REPORTE MENSUAL DE ASISTENCIA</h3>
                 <p style="text-align: center; font-size: 13px; font-weight: bold; color: #0d9488; margin-bottom: 10px;" id="etiquetaGradoGrupoMensual">Grado y Grupo: -</p>
-                <table class="tabla-asistencia-digital" id="tablaReporteAcumulado">
+                <table class="tabla-asistencia-digital">
                     <thead>
                         <tr>
                             <th style="width: 30px;">#</th>
@@ -1007,9 +434,7 @@
                             <th style="width: 60px; background: #b91c1c;">Faltas</th>
                         </tr>
                     </thead>
-                    <tbody id="tablaReporteCuerpo">
-                        <!-- Generado dinámicamente -->
-                    </tbody>
+                    <tbody id="tablaReporteCuerpo"></tbody>
                 </table>
             </div>
 
@@ -1020,14 +445,14 @@
             </div>
         </div>
 
-        <!-- PANTALLA DE PASE DE LISTA DIGITAL CON SELECTOR DE FECHA -->
+        <!-- PASE DE LISTA -->
         <div id="pantallaAsistencia">
             <button class="btn-volver-app" id="btnCerrarAsistencia">⬅️ Volver al Inicio</button>
             <h1 id="volverDesdeAsistencia">📋 Pase de Lista</h1>
-            <div class="subtitle">Selecciona la fecha para pasar o consultar asistencia</div>
+            <div class="subtitle">Selecciona la fecha</div>
 
             <div style="margin-bottom: 15px; background: #f1f5f9; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1;">
-                <label for="inputFechaAsistencia" style="font-size: 12px; font-weight: bold; color: var(--primary); display: block; margin-bottom: 4px;">📅 Fecha de Pase de Lista:</label>
+                <label style="font-size: 12px; font-weight: bold; color: var(--primary); display: block; margin-bottom: 4px;">📅 Fecha:</label>
                 <input type="date" id="inputFechaAsistencia" style="margin-top: 0; background: white;">
             </div>
 
@@ -1048,9 +473,7 @@
                             <th style="width: 120px;">Asistencia</th>
                         </tr>
                     </thead>
-                    <tbody id="tablaAlumnosCuerpo">
-                        <!-- Generado dinámicamente -->
-                    </tbody>
+                    <tbody id="tablaAlumnosCuerpo"></tbody>
                 </table>
             </div>
 
@@ -1061,7 +484,7 @@
             </div>
         </div>
 
-        <!-- PANTALLA PRINCIPAL DE LA APLICACIÓN (PLANEACIÓN) -->
+        <!-- PANTALLA PRINCIPAL DE PLANEACIÓN -->
         <div id="pantallaApp">
             <button class="btn-volver-app" id="btnVolverInicioApp">⬅️ Volver al Inicio</button>
             <h1 id="tituloVolverInicio">📚 Aula360</h1>
@@ -1070,73 +493,74 @@
             <div class="step-title">0. Datos del Centro de Trabajo (Institucional)</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px;">
                 <input type="text" id="escuelaInput" placeholder="Nombre de la Escuela">
-                <input type="text" id="cctInput" placeholder="C.C.T. (Ej. 25DPR...)">
+                <input type="text" id="cctInput" placeholder="C.C.T.">
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
                 <input type="text" id="docenteInput" placeholder="Nombre del Docente">
-                <input type="text" id="zonaInput" placeholder="Zona Escolar (Ej. Zona 012)">
+                <input type="text" id="zonaInput" placeholder="Zona Escolar">
             </div>
 
-            <div class="step-title">1. Selecciona el Grado Escolar</div>
-            <div class="grid-options grid-3">
-                <div class="option-card" onclick="selectCard(this, 'grado')">1º Grado</div>
-                <div class="option-card" onclick="selectCard(this, 'grado')">2º Grado</div>
-                <div class="option-card" onclick="selectCard(this, 'grado')">3º Grado</div>
-                <div class="option-card" onclick="selectCard(this, 'grado')">4º Grado</div>
-                <div class="option-card" onclick="selectCard(this, 'grado')">5º Grado</div>
-                <div class="option-card" onclick="selectCard(this, 'grado')">6º Grado</div>
+            <div class="step-title">1. Grado Escolar</div>
+            <div class="grid-options grid-3" id="grupoGrado">
+                <div class="option-card" data-val="1º Grado">1º Grado</div>
+                <div class="option-card" data-val="2º Grado">2º Grado</div>
+                <div class="option-card" data-val="3º Grado">3º Grado</div>
+                <div class="option-card" data-val="4º Grado">4º Grado</div>
+                <div class="option-card" data-val="5º Grado">5º Grado</div>
+                <div class="option-card" data-val="6º Grado">6º Grado</div>
             </div>
 
             <div class="step-title">2. Campo Formativo</div>
-            <div class="grid-options">
-                <div class="option-card" onclick="selectCard(this, 'campo')">Lenguajes</div>
-                <div class="option-card" onclick="selectCard(this, 'campo')">Saberes y Pens. Científico</div>
-                <div class="option-card" onclick="selectCard(this, 'campo')">Ética, Naturaleza y Soc.</div>
-                <div class="option-card" onclick="selectCard(this, 'campo')">De lo Humano y lo Comunitario</div>
+            <div class="grid-options" id="grupoCampo">
+                <div class="option-card" data-val="Lenguajes">Lenguajes</div>
+                <div class="option-card" data-val="Saberes y Pens. Científico">Saberes y Pens. Científico</div>
+                <div class="option-card" data-val="Ética, Naturaleza y Soc.">Ética, Naturaleza y Soc.</div>
+                <div class="option-card" data-val="De lo Humano y lo Comunitario">De lo Humano y lo Comunitario</div>
             </div>
 
             <div class="step-title">3. Metodología NEM</div>
-            <div class="grid-options">
-                <div class="option-card" onclick="selectCard(this, 'metodologia')">Proyectos Comunitarios</div>
-                <div class="option-card" onclick="selectCard(this, 'metodologia')">STEAM (Indagación)</div>
-                <div class="option-card" onclick="selectCard(this, 'metodologia')">Aprendizaje Basado en Problemas</div>
-                <div class="option-card" onclick="selectCard(this, 'metodologia')">Aprendizaje Servicio</div>
+            <div class="grid-options" id="grupoMetodologia">
+                <div class="option-card" data-val="Proyectos Comunitarios">Proyectos Comunitarios</div>
+                <div class="option-card" data-val="STEAM (Indagación)">STEAM (Indagación)</div>
+                <div class="option-card" data-val="Aprendizaje Basado en Problemas">Aprendizaje Basado en Problemas</div>
+                <div class="option-card" data-val="Aprendizaje Servicio">Aprendizaje Servicio</div>
             </div>
 
             <div class="step-title">4. Escenario del Proyecto</div>
-            <div class="grid-options grid-3">
-                <div class="option-card" onclick="selectCard(this, 'escenario')">Aula</div>
-                <div class="option-card" onclick="selectCard(this, 'escenario')">Escuela</div>
-                <div class="option-card" onclick="selectCard(this, 'escenario')">Comunidad</div>
+            <div class="grid-options grid-3" id="grupoEscenario">
+                <div class="option-card" data-val="Aula">Aula</div>
+                <div class="option-card" data-val="Escuela">Escuela</div>
+                <div class="option-card" data-val="Comunidad">Comunidad</div>
             </div>
 
             <div class="step-title">5. Duración Estimada</div>
-            <div class="grid-options grid-3">
-                <div class="option-card" onclick="selectCard(this, 'duracion')">3 Días</div>
-                <div class="option-card" onclick="selectCard(this, 'duracion')">1 Semana</div>
-                <div class="option-card" onclick="selectCard(this, 'duracion')">2 Semanas</div>
+            <div class="grid-options grid-3" id="grupoDuracion">
+                <div class="option-card" data-val="3 Días">3 Días</div>
+                <div class="option-card" data-val="1 Semana">1 Semana</div>
+                <div class="option-card" data-val="2 Semanas">2 Semanas</div>
             </div>
 
-            <div class="step-title">6. Ejes Articuladores (Selecciona varios)</div>
-            <div class="grid-options">
-                <div class="option-card" onclick="toggleEje(this)">Inclusión</div>
-                <div class="option-card" onclick="toggleEje(this)">Pensamiento Crítico</div>
-                <div class="option-card" onclick="toggleEje(this)">Interculturalidad Crítica</div>
-                <div class="option-card" onclick="toggleEje(this)">Igualdad de Género</div>
-                <div class="option-card" onclick="toggleEje(this)">Vida Saludable</div>
-                <div class="option-card" onclick="toggleEje(this)">Artes y Experiencias Estéticas</div>
-                <div class="option-card" style="grid-column: span 2;" onclick="toggleEje(this)">Apropiación de las culturas a través de la lectura y la escritura</div>
+            <div class="step-title">6. Ejes Articuladores</div>
+            <div class="grid-options" id="grupoEjes">
+                <div class="option-card card-eje">Inclusión</div>
+                <div class="option-card card-eje">Pensamiento Crítico</div>
+                <div class="option-card card-eje">Interculturalidad Crítica</div>
+                <div class="option-card card-eje">Igualdad de Género</div>
+                <div class="option-card card-eje">Vida Saludable</div>
+                <div class="option-card card-eje">Artes y Experiencias Estéticas</div>
+                <div class="option-card card-eje" style="grid-column: span 2;">Apropiación de las culturas a través de la lectura y la escritura</div>
             </div>
 
+            <!-- SECCIÓN 7. TONO / ENFOQUE PEDAGÓGICO REAGREGADA -->
             <div class="step-title">7. Tono / Enfoque Pedagógico de la IA</div>
-            <div class="grid-options">
-                <div class="option-card selected" onclick="selectCard(this, 'tono')">Formal / Rigurosa SEP</div>
-                <div class="option-card" onclick="selectCard(this, 'tono')">Práctica / Dinámica</div>
-                <div class="option-card" style="grid-column: span 2;" onclick="selectCard(this, 'tono')">Inclusiva / Adaptada (BAP)</div>
+            <div class="grid-options grid-3" id="grupoEnfoque">
+                <div class="option-card selected" data-val="Formal / Rigurosa SEP">Formal / Rigurosa SEP</div>
+                <div class="option-card" data-val="Práctica / Dinámica">Práctica / Dinámica</div>
+                <div class="option-card" data-val="Inclusiva / Adaptada (BAP)">Inclusiva / Adaptada (BAP)</div>
             </div>
 
-            <div class="step-title">8. Escribe el Tema o Proyecto (Sugerencias automáticas por temporada)</div>
-            <textarea id="temaInput" rows="2" placeholder="Ej. El cuidado del agua, las fracciones, la alimentación saludable..."></textarea>
+            <div class="step-title">8. Tema o Proyecto</div>
+            <textarea id="temaInput" rows="2" placeholder="Ej. El cuidado del agua..."></textarea>
             <div class="sugerencias-box" id="contenedorSugerenciasTemporada"></div>
 
             <button class="btn-generate" id="btnGenerarAI">✨ Generar Planeación Inteligente</button>
@@ -1157,83 +581,34 @@
                     </div>
 
                     <div class="formal-grid">
-                        <div class="formal-cell">
-                            <b>Grado:</b>
-                            <span id="resGrado">-</span>
-                        </div>
-                        <div class="formal-cell">
-                            <b>Duración:</b>
-                            <span id="resDuracion">-</span>
-                        </div>
-                        <div class="formal-cell">
-                            <b>Escenario:</b>
-                            <span id="resEscenario">-</span>
-                        </div>
-                        <div class="formal-cell">
-                            <b>Campo:</b>
-                            <span id="resCampo" style="font-size: 11px;">-</span>
-                        </div>
-                        <div class="formal-cell" style="grid-column: span 2;">
-                            <b>Metodología:</b>
-                            <span id="resMetodologia">-</span>
-                        </div>
+                        <div class="formal-cell"><b>Grado:</b> <span id="resGrado">-</span></div>
+                        <div class="formal-cell"><b>Duración:</b> <span id="resDuracion">-</span></div>
+                        <div class="formal-cell"><b>Escenario:</b> <span id="resEscenario">-</span></div>
+                        <div class="formal-cell"><b>Campo:</b> <span id="resCampo" style="font-size: 11px;">-</span></div>
+                        <div class="formal-cell" style="grid-column: span 2;"><b>Metodología:</b> <span id="resMetodologia">-</span></div>
                     </div>
 
-                    <div class="formal-section">
-                        <b>Tema / Proyecto:</b>
-                        <span id="resTema">-</span>
-                    </div>
-
-                    <div class="formal-section">
-                        <b>Libro de Texto Gratuito Sugerido (SEP):</b>
-                        <span id="resLibro" style="color: #0d9488; font-weight: bold;">-</span>
-                    </div>
-
-                    <div class="formal-section">
-                        <b>1. Propósito del Proyecto:</b>
-                        <p id="resProposito" style="margin: 0; color: #475569;">-</p>
-                    </div>
-
-                    <div class="formal-section">
-                        <b>2. Preguntas Guía y Reto Detonante:</b>
-                        <p id="resReto" style="margin: 0; color: #475569; font-style: italic;">-</p>
-                    </div>
-
-                    <div class="formal-section">
-                        <b>3. Ejes Articuladores:</b>
-                        <p id="resEjes" style="margin: 0; color: #475569;">-</p>
-                    </div>
-
-                    <div class="formal-section">
-                        <b>4. Materiales y Recursos Didácticos:</b>
-                        <p id="resMateriales" style="margin: 0; color: #475569;">-</p>
-                    </div>
-
-                    <div class="formal-section">
-                        <b>5. Secuencia Didáctica (Actividades):</b>
-                        <div id="resSecuencia" style="color: #475569;">-</div>
-                    </div>
-
-                    <div class="formal-section">
-                        <b>6. Evaluación Formativa:</b>
-                        <p id="resEvaluacion" style="margin: 0; color: #475569;">-</p>
-                    </div>
-
-                    <div class="formal-section" id="seccionRubricaImpresion" style="display:none;">
-                        <b>7. Rúbrica / Lista de Cotejo de Evaluación Formativa:</b>
-                        <div id="resRubrica" style="margin: 0; color: #475569; white-space: pre-line;">-</div>
-                    </div>
+                    <div class="formal-section"><b>Tema / Proyecto:</b> <span id="resTema">-</span></div>
+                    <div class="formal-section"><b>Libro SEP Sugerido:</b> <span id="resLibro" style="color: #0d9488; font-weight: bold;">-</span></div>
+                    <div class="formal-section"><b>1. Propósito del Proyecto:</b><p id="resProposito" style="margin: 0; color: #475569;">-</p></div>
+                    <div class="formal-section"><b>2. Preguntas Guía y Reto Detonante:</b><p id="resReto" style="margin: 0; color: #475569; font-style: italic;">-</p></div>
+                    <div class="formal-section"><b>3. Ejes Articuladores:</b><p id="resEjes" style="margin: 0; color: #475569;">-</p></div>
+                    <div class="formal-section"><b>4. Materiales y Recursos:</b><p id="resMateriales" style="margin: 0; color: #475569;">-</p></div>
+                    <div class="formal-section"><b>5. Secuencia Didáctica:</b><div id="resSecuencia" style="color: #475569;">-</div></div>
+                    <div class="formal-section"><b>6. Evaluación Formativa:</b><p id="resEvaluacion" style="margin: 0; color: #475569;">-</p></div>
+                    <div class="formal-section" id="seccionRubricaImpresion" style="display:none;"><b>7. Rúbrica:</b><div id="resRubrica" style="margin: 0; color: #475569;">-</div></div>
                 </div>
 
                 <div class="btn-rubrica-container">
                     <button id="btnGenerarRubrica" class="btn-rubrica">📊 Generar Rúbrica o Lista de Cotejo con IA</button>
                     <div id="rubricaBox" class="rubrica-box">
                         <b style="color: #7c3aed; margin-bottom: 4px; display: block;">Matriz de Evaluación Formativa:</b>
-                        <span id="textoRubrica">Generando instrumento de evaluación...</span>
+                        <div id="textoRubrica">Generando instrumento de evaluación...</div>
                     </div>
                 </div>
 
                 <div class="btn-group">
+                    <button id="btnEditarPlaneacionToggle" class="btn-action" style="background: #f59e0b;">✏️ Editar</button>
                     <button id="btnCopiar" class="btn-action">📋 Copiar</button>
                     <button id="btnWhatsapp" class="btn-action btn-whatsapp">💬 WhatsApp</button>
                     <button id="btnImprimir" class="btn-action btn-pdf">🖨️ PDF Planeación</button>
@@ -1244,8 +619,8 @@
             <div class="history-container">
                 <div class="step-title" style="margin-top: 30px;">📂 Historial y Favoritos</div>
                 <div class="history-tabs">
-                    <button class="tab-btn active" id="tabRecientes" onclick="cambiarTab('recientes')">⏱️ Recientes</button>
-                    <button class="tab-btn" id="tabFavoritos" onclick="cambiarTab('favoritos')">⭐ Favoritos</button>
+                    <button class="tab-btn active" id="tabRecientes">⏱️ Recientes</button>
+                    <button class="tab-btn" id="tabFavoritos">⭐ Favoritos</button>
                 </div>
                 <div id="historialLista" style="margin-top: 8px;">
                     <p style="font-size: 12px; color: #64748b; text-align: center;">Cargando historial...</p>
@@ -1256,59 +631,130 @@
 
     </div>
 
-    <!-- MODAL DE EXPEDIENTE, WHATSAPP Y FICHA DESCRIPTIVA IA -->
+    <!-- MODAL EXPEDIENTE -->
     <div id="modalExpediente">
         <div class="modal-content">
-            <h3 id="modalNombreAlumno" style="color: var(--primary); margin-top: 0; margin-bottom: 4px;">Expediente de Alumno</h3>
-            <p style="font-size: 11px; color: #64748b; margin-bottom: 8px;">Notas de seguimiento y observaciones del trimestre:</p>
-            <textarea id="modalNotasExpediente" rows="3" placeholder="Escribe aquí las observaciones..."></textarea>
-            
+            <h3 id="modalNombreAlumno" style="color: var(--primary); margin-top: 0; margin-bottom: 4px;">Expediente</h3>
+            <textarea id="modalNotasExpediente" rows="3" placeholder="Observaciones..."></textarea>
             <div style="margin-top: 10px;">
-                <label style="font-size: 11px; font-weight: bold; color: var(--primary); display: block; margin-bottom: 2px;">📱 WhatsApp del Tutor:</label>
-                <input type="text" id="modalTelTutor" placeholder="Ej. 521XXXXXXXXXX" style="margin-top: 0; font-size: 12px; padding: 8px;">
+                <label style="font-size: 11px; font-weight: bold; color: var(--primary);">📱 WhatsApp:</label>
+                <input type="text" id="modalTelTutor" placeholder="521..." style="margin-top: 0; font-size: 12px; padding: 8px;">
             </div>
-
-            <!-- Sección de Ficha Descriptiva IA -->
-            <div style="margin-top: 15px; background: #faf5ff; border: 2px dashed #7c3aed; padding: 12px; border-radius: 8px;">
+            <div style="margin-top: 15px; background: #faf5ff; border: 2px dashed #7c3aed; padding: 12px; border-radius: 10px;">
                 <b style="color: #7c3aed; font-size: 12px; display: block; margin-bottom: 4px;">✨ Ficha Descriptiva Trimestral (NEM)</b>
-                <p style="font-size: 11px; color: #64748b; margin-bottom: 8px;">Genera un informe formal estructurado (Fortalezas, Áreas de mejora y Sugerencias) basado en las notas anteriores.</p>
                 <button class="btn-action" id="btnGenerarFichaAI" style="background: #7c3aed; width: 100%; margin-bottom: 8px;">🤖 Redactar Ficha con IA</button>
-                <textarea id="modalFichaDescriptiva" rows="6" placeholder="La ficha descriptiva generada aparecerá aquí..." style="font-size: 11px; background: white;"></textarea>
+                <textarea id="modalFichaDescriptiva" rows="5" placeholder="Resultado..." style="font-size: 11px; background: white;"></textarea>
             </div>
-
             <div style="display: flex; gap: 6px; margin-top: 15px; flex-wrap: wrap;">
-                <button class="btn-action" id="btnGuardarExpediente" style="flex: 1;">💾 Guardar Todo</button>
+                <button class="btn-action" id="btnGuardarExpediente" style="flex: 1;">💾 Guardar</button>
                 <button class="btn-action btn-whatsapp" id="btnEnviarWpAlumno" style="flex: 1;">💬 Enviar WhatsApp</button>
             </div>
-            <button class="btn-reset" id="btnCerrarModal" style="width: 100%; margin-top: 8px;">❌ Cerrar Ventana</button>
+            <button class="btn-reset" id="btnCerrarModal" style="width: 100%; margin-top: 8px;">❌ Cerrar</button>
         </div>
     </div>
 
-    <script type="module">
-        import { GoogleGenAI } from "@google/genai";
-
-        const GEMINI_API_KEY = "AQ.Ab8RN6JgUT8G3H7-BUNxUr_muyOF9VlC5syHn3uM_Gi6UPkwRA";
-        const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+    <script>
+        const GEMINI_API_KEY = "AQ.Ab8RN6Ilw9ZwfYZU4PdQLNoJoOPCrTNYvieXOAVakozRRIcRaA";
 
         let gradoSeleccionado = "";
         let campoSeleccionado = "";
         let metodologiaSeleccionada = "";
         let escenarioSeleccionado = "";
         let duracionSeleccionada = "";
-        let tonoSeleccionado = "Formal / Rigurosa SEP";
+        let enfoqueSeleccionado = "Formal / Rigurosa SEP";
         let ejesSeleccionados = [];
+        let campoExamenSeleccionado = "Lenguajes";
         let tabActiva = 'recientes';
+        let tabActivaExamen = 'recientes';
         let alumnoEditandoIndex = null;
         let tareaActivaId = null;
+        let idUltimaPlaneacion = null;
+        let idUltimoExamen = null;
+
+        let editandoPlaneacionActivo = false;
+        let editandoExamenActivo = false;
+
+        async function llamarConReintentos(promptText, maxIntentos = 3) {
+            let intento = 0;
+            while (intento < maxIntentos) {
+                try {
+                    intento++;
+                    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`;
+                    
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: promptText }] }]
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Error en servidor: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    if (data.candidates && data.candidates[0].content.parts[0].text) {
+                        return data.candidates[0].content.parts[0].text;
+                    }
+                } catch (err) {
+                    if (intento >= maxIntentos) throw err;
+                    await new Promise(resolve => setTimeout(resolve, 1500 * intento));
+                }
+            }
+            throw new Error("No se pudo conectar tras varios intentos.");
+        }
+
+        function cambiarPantalla(idPantalla) {
+            const pantallas = ['pantallaInicio', 'pantallaApp', 'pantallaAsistencia', 'pantallaReporteAsistencia', 'pantallaAlumnos', 'pantallaRuleta', 'pantallaTareas', 'pantallaExamenes'];
+            pantallas.forEach(p => {
+                const el = document.getElementById(p);
+                if(el) el.style.display = (p === idPantalla) ? 'block' : 'none';
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function bindSingleSelectGroup(groupId, callback) {
+            const container = document.getElementById(groupId);
+            if (!container) return;
+            container.addEventListener('click', (e) => {
+                const card = e.target.closest('.option-card');
+                if (!card) return;
+                Array.from(container.querySelectorAll('.option-card')).forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                callback(card.dataset.val || card.dataset.campo || card.innerText);
+            });
+        }
 
         document.addEventListener("DOMContentLoaded", function() {
             renderizarHistorial();
+            renderizarHistorialExamenes();
             cargarSugerenciasTemporada();
             inicializarAsistenciaDigital();
             renderizarGestionAlumnos();
             inicializarControlTareas();
 
-            // Cargar grado y grupo guardados
+            bindSingleSelectGroup('grupoGrado', val => gradoSeleccionado = val);
+            bindSingleSelectGroup('grupoCampo', val => campoSeleccionado = val);
+            bindSingleSelectGroup('grupoMetodologia', val => metodologiaSeleccionada = val);
+            bindSingleSelectGroup('grupoEscenario', val => escenarioSeleccionado = val);
+            bindSingleSelectGroup('grupoDuracion', val => duracionSeleccionada = val);
+            bindSingleSelectGroup('grupoEnfoque', val => enfoqueSeleccionado = val);
+            bindSingleSelectGroup('grupoCampoExamen', val => campoExamenSeleccionado = val);
+
+            const grupoEjes = document.getElementById('grupoEjes');
+            if (grupoEjes) {
+                grupoEjes.addEventListener('click', (e) => {
+                    const card = e.target.closest('.option-card');
+                    if (!card) return;
+                    card.classList.toggle('multi-selected');
+                    const txt = card.innerText;
+                    const idx = ejesSeleccionados.indexOf(txt);
+                    if (idx > -1) ejesSeleccionados.splice(idx, 1);
+                    else ejesSeleccionados.push(txt);
+                });
+            }
+
             const gradoGrupoGuardado = localStorage.getItem('aula360_grado_grupo') || '';
             const grupoSalonGuardado = localStorage.getItem('aula360_grupo_salon') || '';
             document.getElementById('inputGradoGrupo').value = gradoGrupoGuardado;
@@ -1319,473 +765,237 @@
                 localStorage.setItem('aula360_grado_grupo', this.value);
                 actualizarTextosGradoGrupo();
             });
-
             document.getElementById('inputGrupoSalon').addEventListener('input', function() {
                 localStorage.setItem('aula360_grupo_salon', this.value);
                 actualizarTextosGradoGrupo();
             });
 
-            // Navegación de pantallas
-            document.getElementById('btnIrCrear').addEventListener('click', function() {
-                document.getElementById('pantallaInicio').style.display = 'none';
-                document.getElementById('pantallaApp').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
+            document.getElementById('btnIrCrear').addEventListener('click', () => cambiarPantalla('pantallaApp'));
+            document.getElementById('btnVolverInicioApp').addEventListener('click', () => cambiarPantalla('pantallaInicio'));
+            document.getElementById('tituloVolverInicio').addEventListener('click', () => cambiarPantalla('pantallaInicio'));
 
-            document.getElementById('btnVolverInicioApp').addEventListener('click', function() {
-                document.getElementById('pantallaApp').style.display = 'none';
-                document.getElementById('pantallaInicio').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
+            document.getElementById('btnInicioAsistencia').addEventListener('click', () => cambiarPantalla('pantallaAsistencia'));
+            document.getElementById('btnCerrarAsistencia').addEventListener('click', () => cambiarPantalla('pantallaInicio'));
+            document.getElementById('btnCerrarAsistenciaBotton').addEventListener('click', () => cambiarPantalla('pantallaInicio'));
+            document.getElementById('volverDesdeAsistencia').addEventListener('click', () => cambiarPantalla('pantallaInicio'));
 
-            document.getElementById('btnInicioAsistencia').addEventListener('click', function() {
-                document.getElementById('pantallaInicio').style.display = 'none';
-                document.getElementById('pantallaAsistencia').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-
-            document.getElementById('btnInicioAlumnos').addEventListener('click', function() {
-                document.getElementById('pantallaInicio').style.display = 'none';
-                document.getElementById('pantallaAlumnos').style.display = 'block';
+            document.getElementById('btnInicioAlumnos').addEventListener('click', () => {
+                cambiarPantalla('pantallaAlumnos');
                 renderizarGestionAlumnos();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
             });
+            document.getElementById('btnCerrarAlumnos').addEventListener('click', () => cambiarPantalla('pantallaInicio'));
+            document.getElementById('btnCerrarAlumnosBtn').addEventListener('click', () => cambiarPantalla('pantallaInicio'));
 
-            document.getElementById('btnInicioTareas').addEventListener('click', function() {
-                document.getElementById('pantallaInicio').style.display = 'none';
-                document.getElementById('pantallaTareas').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
+            document.getElementById('btnInicioTareas').addEventListener('click', () => cambiarPantalla('pantallaTareas'));
+            document.getElementById('btnCerrarTareas').addEventListener('click', () => cambiarPantalla('pantallaInicio'));
+            document.getElementById('btnCerrarTareasBtn').addEventListener('click', () => cambiarPantalla('pantallaInicio'));
 
-            document.getElementById('btnInicioExamenes').addEventListener('click', function() {
-                document.getElementById('pantallaInicio').style.display = 'none';
-                document.getElementById('pantallaExamenes').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
+            document.getElementById('btnInicioExamenes').addEventListener('click', () => cambiarPantalla('pantallaExamenes'));
+            document.getElementById('btnCerrarExamenes').addEventListener('click', () => cambiarPantalla('pantallaInicio'));
 
-            document.getElementById('btnInicioRuleta').addEventListener('click', function() {
-                document.getElementById('pantallaInicio').style.display = 'none';
-                document.getElementById('pantallaRuleta').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
+            document.getElementById('btnInicioRuleta').addEventListener('click', () => cambiarPantalla('pantallaRuleta'));
+            document.getElementById('btnCerrarRuleta').addEventListener('click', () => cambiarPantalla('pantallaInicio'));
+            document.getElementById('btnCerrarRuletaBtn').addEventListener('click', () => cambiarPantalla('pantallaInicio'));
 
-            document.getElementById('btnInicioReporte').addEventListener('click', function() {
-                document.getElementById('pantallaInicio').style.display = 'none';
-                document.getElementById('pantallaReporteAsistencia').style.display = 'block';
+            document.getElementById('btnInicioReporte').addEventListener('click', () => {
+                cambiarPantalla('pantallaReporteAsistencia');
                 generarReporteAcumulado();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+            document.getElementById('btnCerrarReporte').addEventListener('click', () => cambiarPantalla('pantallaInicio'));
+            document.getElementById('btnCerrarReporteBtn').addEventListener('click', () => cambiarPantalla('pantallaInicio'));
+
+            document.getElementById('btnIrHistorial').addEventListener('click', () => {
+                cambiarPantalla('pantallaApp');
+                setTimeout(() => {
+                    const hist = document.querySelector('.history-container');
+                    if(hist) hist.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
             });
 
-            document.getElementById('btnCerrarAsistencia').addEventListener('click', function() {
-                document.getElementById('pantallaAsistencia').style.display = 'none';
-                document.getElementById('pantallaInicio').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('tabRecientes').addEventListener('click', () => cambiarTab('recientes'));
+            document.getElementById('tabFavoritos').addEventListener('click', () => cambiarTab('favoritos'));
+
+            document.getElementById('tabRecientesExamen').addEventListener('click', () => cambiarTabExamen('recientes'));
+            document.getElementById('tabFavoritosExamen').addEventListener('click', () => cambiarTabExamen('favoritos'));
+
+            document.getElementById('btnExcelLista').addEventListener('click', () => exportarTablaACSV('tablaAlumnosCuerpo', ['#', 'Nombre', 'Asistencia'], 'lista'));
+            document.getElementById('btnExcelMensual').addEventListener('click', () => exportarTablaACSV('tablaReporteCuerpo', ['#', 'Nombre', 'Asist.', 'Ret.', 'Faltas'], 'reporte'));
+            document.getElementById('btnExcelTareas').addEventListener('click', () => exportarTablaACSV('tablaTareasCuerpo', ['#', 'Nombre', 'Estatus'], 'tareas'));
+
+            document.getElementById('btnGenerarExamenAI').addEventListener('click', generarExamenConIA);
+            document.getElementById('btnImprimirExamen').addEventListener('click', () => imprimirReporteEspecifico('imprimiendo-examen'));
+            document.getElementById('btnCopiarExamen').addEventListener('click', () => {
+                navigator.clipboard.writeText(document.getElementById('areaExamenImpresion').innerText).then(() => alert("¡Copiado!"));
             });
 
-            document.getElementById('btnCerrarAsistenciaBotton').addEventListener('click', function() {
-                document.getElementById('pantallaAsistencia').style.display = 'none';
-                document.getElementById('pantallaInicio').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
+            // EDICIÓN DIRECTA EN PANTALLA (TOGGLE) PARA PLANEACIÓN
+            document.getElementById('btnEditarPlaneacionToggle').addEventListener('click', function() {
+                if (!idUltimaPlaneacion) return alert("Genera o selecciona una planeación primero.");
+                const tarjeta = document.getElementById('areaImpresion');
+                editandoPlaneacionActivo = !editandoPlaneacionActivo;
 
-            document.getElementById('btnCerrarAlumnos').addEventListener('click', function() {
-                document.getElementById('pantallaAlumnos').style.display = 'none';
-                document.getElementById('pantallaInicio').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
+                tarjeta.contentEditable = editandoPlaneacionActivo;
+                tarjeta.classList.toggle('editando-activo', editandoPlaneacionActivo);
 
-            document.getElementById('btnCerrarAlumnosBtn').addEventListener('click', function() {
-                document.getElementById('pantallaAlumnos').style.display = 'none';
-                document.getElementById('pantallaInicio').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-
-            document.getElementById('btnCerrarTareas').addEventListener('click', function() {
-                document.getElementById('pantallaTareas').style.display = 'none';
-                document.getElementById('pantallaInicio').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-
-            document.getElementById('btnCerrarTareasBtn').addEventListener('click', function() {
-                document.getElementById('pantallaTareas').style.display = 'none';
-                document.getElementById('pantallaInicio').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-
-            document.getElementById('btnCerrarExamenes').addEventListener('click', function() {
-                document.getElementById('pantallaExamenes').style.display = 'none';
-                document.getElementById('pantallaInicio').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-
-            document.getElementById('btnCerrarRuleta').addEventListener('click', function() {
-                document.getElementById('pantallaRuleta').style.display = 'none';
-                document.getElementById('pantallaInicio').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-
-            document.getElementById('btnCerrarRuletaBtn').addEventListener('click', function() {
-                document.getElementById('pantallaRuleta').style.display = 'none';
-                document.getElementById('pantallaInicio').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-
-            document.getElementById('btnCerrarReporte').addEventListener('click', function() {
-                document.getElementById('pantallaReporteAsistencia').style.display = 'none';
-                document.getElementById('pantallaInicio').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-
-            document.getElementById('btnCerrarReporteBtn').addEventListener('click', function() {
-                document.getElementById('pantallaReporteAsistencia').style.display = 'none';
-                document.getElementById('pantallaInicio').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-
-            document.getElementById('volverDesdeAsistencia').addEventListener('click', function() {
-                document.getElementById('pantallaAsistencia').style.display = 'none';
-                document.getElementById('pantallaInicio').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-
-            document.getElementById('btnIrHistorial').addEventListener('click', function() {
-                document.getElementById('pantallaInicio').style.display = 'none';
-                document.getElementById('pantallaApp').style.display = 'block';
-                const hist = document.querySelector('.history-container');
-                if(hist) hist.scrollIntoView({ behavior: 'smooth' });
-            });
-
-            document.getElementById('tituloVolverInicio').addEventListener('click', function() {
-                document.getElementById('pantallaApp').style.display = 'none';
-                document.getElementById('pantallaInicio').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-
-            // --- IMPORTAR ALUMNOS DESDE FOTO CON IA ---
-            document.getElementById('btnSubirFotoLista').addEventListener('click', function() {
-                document.getElementById('inputFotoLista').click();
-            });
-
-            document.getElementById('inputFotoLista').addEventListener('change', async function(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-
-                const btnSubir = document.getElementById('btnSubirFotoLista');
-                btnSubir.innerText = "🤖 Leyendo lista en la foto...";
-                btnSubir.disabled = true;
-
-                try {
-                    // Convertir imagen a Base64
-                    const reader = new FileReader();
-                    reader.onload = async function(e) {
-                        const base64Data = e.target.result.split(',')[1];
-                        const mimeType = file.type;
-
-                        const promptVision = `Analiza esta imagen que contiene una lista de alumnos de una escuela primaria.
-Extrae únicamente los nombres completos de los alumnos que aparecen en la lista.
-Responde ÚNICAMENTE con un objeto JSON válido (sin formato markdown ni texto adicional) con la siguiente estructura:
-{
-  "alumnos": ["Nombre del Alumno 1", "Nombre del Alumno 2", "Nombre del Alumno 3"]
-}`;
-
-                        try {
-                            const response = await ai.models.generateContent({
-                                model: 'gemini-3.8-flash',
-                                contents: [
-                                    {
-                                        inlineData: {
-                                            data: base64Data,
-                                            mimeType: mimeType
-                                        }
-                                    },
-                                    promptVision
-                                ]
-                            });
-
-                            let textResponse = response.text;
-                            textResponse = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
-                            const datosJson = JSON.parse(textResponse);
-
-                            if (datosJson.alumnos && Array.isArray(datosJson.alumnos) && datosJson.alumnos.length > 0) {
-                                let alumnosActuales = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
-                                
-                                // Añadir los nuevos alumnos detectados
-                                datosJson.alumnos.forEach(nombre => {
-                                    if(nombre && nombre.trim() !== "") {
-                                        alumnosActuales.push(nombre.trim());
-                                    }
-                                });
-
-                                localStorage.setItem('aula360_alumnos', JSON.stringify(alumnosActuales));
-                                renderizarGestionAlumnos();
-                                alert(`¡Se han importado ${datosJson.alumnos.length} alumnos con éxito desde la foto!`);
-                            } else {
-                                alert("No se pudieron detectar nombres claros en la imagen. Intenta con otra foto más iluminada.");
-                            }
-
-                        } catch (err) {
-                            console.error(err);
-                            alert("Error al procesar la imagen con la IA: " + err.message);
-                        } finally {
-                            btnSubir.innerText = "🤖 Leer Lista con IA";
-                            btnSubir.disabled = false;
-                            event.target.value = "";
-                        }
-                    };
-                    reader.readAsDataURL(file);
-
-                } catch (error) {
-                    console.error(error);
-                    alert("Error al leer el archivo de imagen.");
-                    btnSubir.innerText = "🤖 Leer Lista con IA";
-                    btnSubir.disabled = false;
+                if (editandoPlaneacionActivo) {
+                    this.innerText = "💾 Guardar Cambios";
+                    this.style.background = "#16a34a";
+                    tarjeta.focus();
+                } else {
+                    this.innerText = "✏️ Editar";
+                    this.style.background = "#f59e0b";
+                    actualizarHistorialCompleto(idUltimaPlaneacion, tarjeta.innerHTML, 'aula360_historial');
+                    alert("¡Cambios guardados correctamente!");
                 }
             });
 
-            // --- EXPORTAR A EXCEL (CSV) ---
-            document.getElementById('btnExcelLista').addEventListener('click', function() {
-                exportarTablaACSV('tablaAlumnosCuerpo', ['#', 'Nombre del Alumno(a)', 'Asistencia'], 'lista_asistencia');
+            // EDICIÓN DIRECTA EN PANTALLA (TOGGLE) PARA EXAMEN
+            document.getElementById('btnEditarExamenToggle').addEventListener('click', function() {
+                if (!idUltimoExamen) return alert("Genera o selecciona un examen primero.");
+                const tarjeta = document.getElementById('areaExamenImpresion');
+                editandoExamenActivo = !editandoExamenActivo;
+
+                tarjeta.contentEditable = editandoExamenActivo;
+                tarjeta.classList.toggle('editando-activo', editandoExamenActivo);
+
+                if (editandoExamenActivo) {
+                    this.innerText = "💾 Guardar Cambios";
+                    this.style.background = "#16a34a";
+                    tarjeta.focus();
+                } else {
+                    this.innerText = "✏️ Editar";
+                    this.style.background = "#f59e0b";
+                    actualizarHistorialCompleto(idUltimoExamen, tarjeta.innerHTML, 'aula360_historial_examenes');
+                    alert("¡Examen guardado correctamente!");
+                }
             });
 
-            document.getElementById('btnExcelMensual').addEventListener('click', function() {
-                exportarTablaACSV('tablaReporteCuerpo', ['#', 'Nombre del Alumno(a)', 'Asistencias', 'Retardos', 'Faltas'], 'reporte_mensual');
-            });
-
-            document.getElementById('btnExcelTareas').addEventListener('click', function() {
-                exportarTablaACSV('tablaTareasCuerpo', ['#', 'Nombre del Alumno(a)', 'Estatus Tarea'], 'control_tareas');
-            });
-
-            // --- GENERAR EXAMEN CON IA ---
-            document.getElementById('btnGenerarExamenAI').addEventListener('click', generarExamenConIA);
-            document.getElementById('btnImprimirExamen').addEventListener('click', function() {
-                imprimirReporteEspecifico('imprimiendo-examen');
-            });
-            document.getElementById('btnCopiarExamen').addEventListener('click', function() {
-                const texto = document.getElementById('areaExamenImpresion').innerText;
-                navigator.clipboard.writeText(texto).then(() => alert("¡Examen copiado al portapapeles!"));
-            });
-
-            // --- LÓGICA DE LA RULETA DE PARTICIPACIÓN ---
             document.getElementById('btnGirarRuleta').addEventListener('click', function() {
                 let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
-                if (alumnos.length === 0) {
-                    alert("No hay alumnos registrados en la lista. Agrégalos primero en 'Lista de Grupo y Expedientes'.");
-                    return;
-                }
-
+                if (alumnos.length === 0) return alert("No hay alumnos.");
                 const displayBox = document.getElementById('nombreSeleccionadoRuleta');
-                const btnGirar = document.getElementById('btnGirarRuleta');
-                btnGirar.disabled = true;
-
-                let contador = 0;
-                let ciclosMax = 25;
-                let velocidad = 50;
-
-                function animarGiro() {
-                    let randomIndex = Math.floor(Math.random() * alumnos.length);
-                    displayBox.innerText = alumnos[randomIndex];
-                    contador++;
-
-                    if (contador < ciclosMax) {
-                        velocidad += 15;
-                        setTimeout(animarGiro, velocidad);
-                    } else {
-                        let ganadorIndex = Math.floor(Math.random() * alumnos.length);
-                        displayBox.innerText = "🎉 " + alumnos[ganadorIndex] + " 🎉";
-                        btnGirar.disabled = false;
+                const btnG = document.getElementById('btnGirarRuleta');
+                btnG.disabled = true;
+                let c = 0;
+                function girar() {
+                    displayBox.innerText = alumnos[Math.floor(Math.random() * alumnos.length)];
+                    c++;
+                    if (c < 20) setTimeout(girar, 60 + c * 5);
+                    else {
+                        displayBox.innerText = "🎉 " + alumnos[Math.floor(Math.random() * alumnos.length)] + " 🎉";
+                        btnG.disabled = false;
                     }
                 }
-
-                animarGiro();
+                girar();
             });
 
-            // --- SISTEMA DE RESPALDO Y RESTAURACIÓN ---
             document.getElementById('btnExportarRespaldo').addEventListener('click', function() {
                 let backupData = {};
                 for (let i = 0; i < localStorage.length; i++) {
                     let key = localStorage.key(i);
-                    if (key && key.startsWith('aula360_')) {
-                        backupData[key] = localStorage.getItem(key);
-                    }
+                    if (key && key.startsWith('aula360_')) backupData[key] = localStorage.getItem(key);
                 }
-
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
-                const fechaHoy = new Date().toISOString().split('T')[0];
-                const downloadAnchor = document.createElement('a');
-                downloadAnchor.setAttribute("href", dataStr);
-                downloadAnchor.setAttribute("download", `respaldo_aula360_${fechaHoy}.json`);
-                document.body.appendChild(downloadAnchor);
-                downloadAnchor.click();
-                downloadAnchor.remove();
+                const a = document.createElement('a');
+                a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
+                a.download = `respaldo_aula360_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a); a.click(); a.remove();
             });
 
-            document.getElementById('btnImportarRespaldo').addEventListener('click', function() {
-                document.getElementById('inputArchivoRespaldo').click();
-            });
-
-            document.getElementById('inputArchivoRespaldo').addEventListener('change', function(event) {
-                const file = event.target.files[0];
+            document.getElementById('btnImportarRespaldo').addEventListener('click', () => document.getElementById('inputArchivoRespaldo').click());
+            document.getElementById('inputArchivoRespaldo').addEventListener('change', function(e) {
+                const file = e.target.files[0];
                 if (!file) return;
-
-                const reader = new FileReader();
-                reader.onload = function(e) {
+                const r = new FileReader();
+                r.onload = function(evt) {
                     try {
-                        const backupData = JSON.parse(e.target.result);
-                        if (confirm("⚠️ ¿Estás seguro de restaurar este respaldo? Se sobrescribirán los datos actuales en este dispositivo.")) {
-                            for (let key in backupData) {
-                                if (key.startsWith('aula360_')) {
-                                    localStorage.setItem(key, backupData[key]);
-                                }
-                            }
-                            alert("¡Respaldo restaurado con éxito!");
-                            location.reload();
+                        const d = JSON.parse(evt.target.result);
+                        if (confirm("¿Restaurar respaldo?")) {
+                            for (let k in d) if (k.startsWith('aula360_')) localStorage.setItem(k, d[k]);
+                            alert("¡Restaurado!"); location.reload();
                         }
-                    } catch (error) {
-                        alert("El archivo seleccionado no es un respaldo válido de Aula360.");
-                    }
+                    } catch(err) { alert("Archivo inválido."); }
                 };
-                reader.readAsText(file);
+                r.readAsText(file);
             });
 
-            // Agregar nuevo alumno con nombre y teléfono
             document.getElementById('btnAgregarAlumno').addEventListener('click', function() {
-                const nombreInput = document.getElementById('inputNuevoAlumno');
-                const telInput = document.getElementById('inputNuevoTel');
-                const nombre = nombreInput.value.trim();
-                const tel = telInput.value.trim();
-
-                if(!nombre) {
-                    alert("Escribe el nombre del alumno.");
-                    return;
-                }
-
+                const nInput = document.getElementById('inputNuevoAlumno');
+                const tInput = document.getElementById('inputNuevoTel');
+                const nombre = nInput.value.trim();
+                const tel = tInput.value.trim();
+                if(!nombre) return alert("Escribe el nombre.");
                 let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
                 let telefonos = JSON.parse(localStorage.getItem('aula360_telefonos')) || {};
-                
-                let nuevoIndex = alumnos.length;
-                alumnos.push(nombre);
-                telefonos[nuevoIndex] = tel;
-
+                let idx = alumnos.length;
+                alumnos.push(nombre); telefonos[idx] = tel;
                 localStorage.setItem('aula360_alumnos', JSON.stringify(alumnos));
                 localStorage.setItem('aula360_telefonos', JSON.stringify(telefonos));
-
-                nombreInput.value = "";
-                telInput.value = "";
+                nInput.value = ""; tInput.value = "";
                 renderizarGestionAlumnos();
                 cargarTablaAsistenciaPorFecha(document.getElementById('inputFechaAsistencia').value);
             });
 
-            // Modal de Expediente
-            document.getElementById('btnCerrarModal').addEventListener('click', function() {
-                document.getElementById('modalExpediente').style.display = 'none';
-            });
-
+            document.getElementById('btnCerrarModal').addEventListener('click', () => document.getElementById('modalExpediente').style.display = 'none');
             document.getElementById('btnGuardarExpediente').addEventListener('click', function() {
                 if (alumnoEditandoIndex !== null) {
-                    let expedientes = JSON.parse(localStorage.getItem('aula360_expedientes')) || {};
+                    let exp = JSON.parse(localStorage.getItem('aula360_expedientes')) || {};
                     let fichas = JSON.parse(localStorage.getItem('aula360_fichas')) || {};
-                    let telefonos = JSON.parse(localStorage.getItem('aula360_telefonos')) || {};
-
-                    expedientes[alumnoEditandoIndex] = document.getElementById('modalNotasExpediente').value;
+                    let tel = JSON.parse(localStorage.getItem('aula360_telefonos')) || {};
+                    exp[alumnoEditandoIndex] = document.getElementById('modalNotasExpediente').value;
                     fichas[alumnoEditandoIndex] = document.getElementById('modalFichaDescriptiva').value;
-                    telefonos[alumnoEditandoIndex] = document.getElementById('modalTelTutor').value.trim();
-
-                    localStorage.setItem('aula360_expedientes', JSON.stringify(expedientes));
+                    tel[alumnoEditandoIndex] = document.getElementById('modalTelTutor').value.trim();
+                    localStorage.setItem('aula360_expedientes', JSON.stringify(exp));
                     localStorage.setItem('aula360_fichas', JSON.stringify(fichas));
-                    localStorage.setItem('aula360_telefonos', JSON.stringify(telefonos));
-
+                    localStorage.setItem('aula360_telefonos', JSON.stringify(tel));
                     document.getElementById('modalExpediente').style.display = 'none';
                     renderizarGestionAlumnos();
-                    alert("¡Expediente y ficha descriptiva guardados correctamente!");
+                    alert("¡Guardado!");
                 }
             });
 
-            // Generar Ficha Descriptiva con IA
             document.getElementById('btnGenerarFichaAI').addEventListener('click', generarFichaDescriptivaAI);
-
-            // Enviar WhatsApp directo al tutor desde el modal
             document.getElementById('btnEnviarWpAlumno').addEventListener('click', function() {
                 if (alumnoEditandoIndex !== null) {
                     let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
                     let nota = document.getElementById('modalNotasExpediente').value.trim();
                     let ficha = document.getElementById('modalFichaDescriptiva').value.trim();
                     let tel = document.getElementById('modalTelTutor').value.trim();
-                    let nombreAlumno = alumnos[alumnoEditandoIndex] || "Alumno";
-
-                    if (!tel) {
-                        alert("Por favor ingresa un número de teléfono de WhatsApp válido.");
-                        return;
-                    }
-
-                    let contenidoEnvio = ficha ? ficha : nota;
-                    if (!contenidoEnvio) {
-                        alert("No hay notas ni ficha descriptiva para enviar.");
-                        return;
-                    }
-
-                    let mensaje = `🏫 *REPORTE ESCOLAR - AULA360* 🇲🇽\n`;
-                    mensaje += `Estimado tutor de: *${nombreAlumno}*\n\n`;
-                    mensaje += `${contenidoEnvio}\n\n`;
-                    mensaje += `_Atentamente, Docente de Grupo._`;
-
-                    const urlWp = `https://api.whatsapp.com/send?phone=${encodeURIComponent(tel)}&text=${encodeURIComponent(mensaje)}`;
-                    window.open(urlWp, '_blank');
+                    let nombre = alumnos[alumnoEditandoIndex] || "Alumno";
+                    if (!tel) return alert("Ingresa WhatsApp.");
+                    let contenido = ficha || nota;
+                    window.open(`https://api.whatsapp.com/send?phone=${encodeURIComponent(tel)}&text=${encodeURIComponent(`*REPORTE AULA360*\nAlumno: ${nombre}\n\n${contenido}`)}`, '_blank');
                 }
             });
 
-            // Selector de fecha cambia la vista del pase de lista
-            document.getElementById('inputFechaAsistencia').addEventListener('change', function() {
-                cargarTablaAsistenciaPorFecha(this.value);
-            });
-
-            // Selector de tareas cambia el registro activo
-            document.getElementById('selectTareaActual').addEventListener('change', function() {
-                tareaActivaId = this.value;
+            document.getElementById('inputFechaAsistencia').addEventListener('change', (e) => cargarTablaAsistenciaPorFecha(e.target.value));
+            document.getElementById('selectTareaActual').addEventListener('change', function(e) {
+                tareaActivaId = e.target.value;
                 localStorage.setItem('aula360_tarea_activa_id', tareaActivaId);
-                
-                let listaTareas = JSON.parse(localStorage.getItem('aula360_lista_tareas')) || [];
-                let tareaEncontrada = listaTareas.find(t => t.id == tareaActivaId);
-                let nombreTarea = tareaEncontrada ? tareaEncontrada.nombre : "Control de Tareas";
-                
-                document.getElementById('tituloImpresionTarea').innerText = "TAREA: " + nombreTarea;
+                let lista = JSON.parse(localStorage.getItem('aula360_lista_tareas')) || [];
+                let t = lista.find(x => x.id == tareaActivaId);
+                document.getElementById('tituloImpresionTarea').innerText = "TAREA: " + (t ? t.nombre : "Control");
                 cargarTablaTareas();
             });
 
-            // Botón para crear nueva tarea
             document.getElementById('btnNuevaTareaPrompt').addEventListener('click', function() {
-                let nombreNuevo = prompt("Escribe el nombre de la nueva tarea o proyecto (ej. Maqueta del Sistema Solar):");
+                let nombreNuevo = prompt("Nombre de la nueva tarea:");
                 if (nombreNuevo && nombreNuevo.trim() !== "") {
-                    let listaTareas = JSON.parse(localStorage.getItem('aula360_lista_tareas')) || [];
+                    let lista = JSON.parse(localStorage.getItem('aula360_lista_tareas')) || [];
                     let nuevoId = 'tarea_' + Date.now();
-                    
-                    listaTareas.push({ id: nuevoId, nombre: nombreNuevo.trim() });
-                    localStorage.setItem('aula360_lista_tareas', JSON.stringify(listaTareas));
-                    
+                    lista.push({ id: nuevoId, nombre: nombreNuevo.trim() });
+                    localStorage.setItem('aula360_lista_tareas', JSON.stringify(lista));
                     tareaActivaId = nuevoId;
                     localStorage.setItem('aula360_tarea_activa_id', tareaActivaId);
-                    
                     poblarSelectTareas();
                     document.getElementById('tituloImpresionTarea').innerText = "TAREA: " + nombreNuevo.trim();
                     cargarTablaTareas();
                 }
             });
 
-            // Botones de impresión dedicados
-            document.getElementById('btnImprimir').addEventListener('click', function() {
-                imprimirReporteEspecifico('imprimiendo-planeacion');
-            });
-
-            document.getElementById('btnImprimirListaDiaria').addEventListener('click', function() {
-                imprimirReporteEspecifico('imprimiendo-lista');
-            });
-
-            document.getElementById('btnImprimirMensual').addEventListener('click', function() {
-                imprimirReporteEspecifico('imprimiendo-mensual');
-            });
-
-            document.getElementById('btnImprimirTareasPDF').addEventListener('click', function() {
-                imprimirReporteEspecifico('imprimiendo-tareas');
-            });
+            document.getElementById('btnImprimir').addEventListener('click', () => imprimirReporteEspecifico('imprimiendo-planeacion'));
+            document.getElementById('btnImprimirListaDiaria').addEventListener('click', () => imprimirReporteEspecifico('imprimiendo-lista'));
+            document.getElementById('btnImprimirMensual').addEventListener('click', () => imprimirReporteEspecifico('imprimiendo-mensual'));
+            document.getElementById('btnImprimirTareasPDF').addEventListener('click', () => imprimirReporteEspecifico('imprimiendo-tareas'));
 
             document.getElementById('btnGenerarAI').addEventListener('click', generarPlaneacionConIA);
             document.getElementById('btnGenerarRubrica').addEventListener('click', generarRubricaAI);
@@ -1793,973 +1003,528 @@ Responde ÚNICAMENTE con un objeto JSON válido (sin formato markdown ni texto a
             document.getElementById('btnWhatsapp').addEventListener('click', compartirWhatsApp);
             document.getElementById('btnNuevaPlan').addEventListener('click', nuevaPlaneacion);
             document.getElementById('btnClearHistory').addEventListener('click', limpiarHistorial);
-
-            document.getElementById('escuelaInput').value = localStorage.getItem('aula360_escuela') || '';
-            document.getElementById('cctInput').value = localStorage.getItem('aula360_cct') || '';
-            document.getElementById('docenteInput').value = localStorage.getItem('aula360_docente') || '';
-            document.getElementById('zonaInput').value = localStorage.getItem('aula360_zona') || '';
+            document.getElementById('btnClearHistoryExamen').addEventListener('click', limpiarHistorialExamenes);
 
             ['escuelaInput', 'cctInput', 'docenteInput', 'zonaInput'].forEach(id => {
-                document.getElementById(id).addEventListener('input', function() {
-                    localStorage.setItem('aula360_escuela', document.getElementById('escuelaInput').value);
-                    localStorage.setItem('aula360_cct', document.getElementById('cctInput').value);
-                    localStorage.setItem('aula360_docente', document.getElementById('docenteInput').value);
-                    localStorage.setItem('aula360_zona', document.getElementById('zonaInput').value);
-                });
+                const el = document.getElementById(id);
+                if(el) {
+                    el.value = localStorage.getItem('aula360_' + id.replace('Input','')) || '';
+                    el.addEventListener('input', function() {
+                        localStorage.setItem('aula360_' + id.replace('Input',''), this.value);
+                    });
+                }
             });
         });
 
-        // --- FUNCIÓN PARA EXPORTAR TABLAS A EXCEL (CSV) ---
         function exportarTablaACSV(tbodyId, cabeceras, nombreArchivo) {
-            const tbody = document.getElementById(tbodyId);
-            const filas = tbody.querySelectorAll('tr');
-            
-            let csvContent = "\uFEFF" + cabeceras.join(",") + "\n";
-
+            const filas = document.getElementById(tbodyId).querySelectorAll('tr');
+            let csv = "\uFEFF" + cabeceras.join(",") + "\n";
             filas.forEach(fila => {
                 const celdas = fila.querySelectorAll('td');
                 if (celdas.length > 0) {
-                    let filaDatos = [];
-                    celdas.forEach((celda, i) => {
-                        let texto = "";
-                        const input = celda.querySelector('input');
-                        const btn = celda.querySelector('button');
-                        if (input) {
-                            texto = input.value;
-                        } else if (btn) {
-                            texto = btn.innerText;
-                        } else {
-                            texto = celda.innerText;
-                        }
-                        texto = texto.replace(/"/g, '""').replace(/[\n\r]+/g, ' ');
-                        filaDatos.push(`"${texto}"`);
+                    let datos = [];
+                    celdas.forEach(c => {
+                        let t = c.querySelector('input') ? c.querySelector('input').value : (c.querySelector('button') ? c.querySelector('button').innerText : c.innerText);
+                        datos.push(`"${t.replace(/"/g, '""')}"`);
                     });
-                    csvContent += filaDatos.join(",") + "\n";
+                    csv += datos.join(",") + "\n";
                 }
             });
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.setAttribute('href', url);
-            a.setAttribute('download', `${nombreArchivo}_${new Date().toISOString().split('T')[0]}.csv`);
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+            a.download = `${nombreArchivo}_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a); a.click(); a.remove();
         }
 
-        // --- GENERADOR DE EXÁMENES CON IA ---
         async function generarExamenConIA() {
             const grado = document.getElementById('selectGradoExamen').value;
+            let numOp = document.getElementById('inputOpMultiple').value || 5;
+            let numAb = document.getElementById('inputAbiertas').value || 2;
             const tema = document.getElementById('inputTemaExamen').value.trim();
-            const escuela = localStorage.getItem('aula360_escuela') || "Escuela Primaria";
-
-            if (!tema) {
-                alert("Por favor escribe el tema o contenido a evaluar.");
-                return;
-            }
-
-            const btnGen = document.getElementById('btnGenerarExamenAI');
-            const resBox = document.getElementById('resultadoExamen');
-            const contExamen = document.getElementById('resExamenContenido');
-
-            btnGen.innerText = "🤖 Redactando examen...";
-            resBox.style.display = "block";
-            document.getElementById('resExamenTituloEscuela').innerText = escuela.toUpperCase();
-            document.getElementById('resExamenTituloTema').innerText = "EVALUACIÓN: " + tema.toUpperCase();
-            contExamen.innerText = "La IA está diseñando las preguntas y opciones de respuesta...";
-
-            const promptExamen = `Actúa como un experto docente de educación primaria en México especialista en evaluación formativa. 
-Diseña un examen de opción múltiple formal y riguroso para ${grado} sobre el siguiente tema: "${tema}".
-El examen debe constar de 5 preguntas claras con 4 opciones de respuesta cada una (A, B, C, D).
-Al final, incluye una sección clara titulada "HOJA DE RESPUESTAS" indicando la respuesta correcta de cada pregunta.
-Utiliza formato de texto limpio, sin bloques de código markdown ni saludos iniciales.`;
-
+            if (!tema) return alert("Escribe el tema.");
+            const btn = document.getElementById('btnGenerarExamenAI');
+            const res = document.getElementById('resultadoExamen');
+            const cont = document.getElementById('resExamenContenido');
+            btn.innerText = "🤖 Redactando examen..."; btn.disabled = true;
+            res.style.display = "block";
+            document.getElementById('resExamenTituloEscuela').innerText = (localStorage.getItem('aula360_escuela') || "ESCUELA PRIMARIA").toUpperCase();
+            document.getElementById('resExamenTituloTema').innerText = `EVALUACIÓN (${campoExamenSeleccionado.toUpperCase()}): ${tema.toUpperCase()}`;
+            cont.innerText = "Generando...";
             try {
-                const response = await ai.models.generateContent({
-                    model: 'gemini-3.8-flash',
-                    contents: promptExamen
-                });
-
-                let textoExamen = response.text ? response.text.trim() : "";
-                if (!textoExamen) throw new Error("Respuesta vacía");
-
-                contExamen.innerText = textoExamen;
-                btnGen.innerText = "🤖 Generar Examen con IA";
-
-            } catch (error) {
-                console.error(error);
-                alert("Error al generar el examen: " + error.message);
-                contExamen.innerText = "Error en la generación. Intenta de nuevo.";
-                btnGen.innerText = "🤖 Generar Examen con IA";
-            }
+                const prompt = `Diseña un examen para ${grado} sobre "${tema}" (${campoExamenSeleccionado}) con ${numOp} de opción múltiple y ${numAb} abiertas con respuestas. Sin markdown.`;
+                const r = await llamarConReintentos(prompt);
+                let contenidoHtml = limpiarMarkdown(r.trim());
+                cont.innerHTML = contenidoHtml;
+                idUltimoExamen = guardarEnHistorialExamenes(grado, campoExamenSeleccionado, tema, document.getElementById('areaExamenImpresion').innerHTML);
+            } catch (err) { cont.innerHTML = "Error al conectar."; }
+            btn.innerText = "🤖 Generar Examen con IA"; btn.disabled = false;
         }
 
         function actualizarTextosGradoGrupo() {
             let g = document.getElementById('inputGradoGrupo').value.trim();
             let grp = document.getElementById('inputGrupoSalon').value.trim();
-            let textoCompleto = (g || grp) ? `${g} ${grp}`.trim() : "Grado y Grupo no especificado";
-            
-            const elLista = document.getElementById('etiquetaGradoGrupoLista');
-            const elMensual = document.getElementById('etiquetaGradoGrupoMensual');
-            const elTarea = document.getElementById('etiquetaGradoGrupoTarea');
-            if(elLista) elLista.innerText = "Grado y Grupo: " + textoCompleto;
-            if(elMensual) elMensual.innerText = "Grado y Grupo: " + textoCompleto;
-            if(elTarea) elTarea.innerText = "Grado y Grupo: " + textoCompleto;
+            let texto = (g || grp) ? `${g} ${grp}`.trim() : "Grado y Grupo no especificado";
+            ['etiquetaGradoGrupoLista', 'etiquetaGradoGrupoMensual', 'etiquetaGradoGrupoTarea'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.innerText = "Grado y Grupo: " + texto;
+            });
         }
 
         function inicializarControlTareas() {
-            let listaTareas = JSON.parse(localStorage.getItem('aula360_lista_tareas')) || [];
-            if (listaTareas.length === 0) {
-                let tareaInicialId = 'tarea_' + Date.now();
-                listaTareas = [{ id: tareaInicialId, nombre: 'Primera Tarea / Actividad' }];
-                localStorage.setItem('aula360_lista_tareas', JSON.stringify(listaTareas));
-                tareaActivaId = tareaInicialId;
+            let lista = JSON.parse(localStorage.getItem('aula360_lista_tareas')) || [];
+            if (lista.length === 0) {
+                let id = 'tarea_' + Date.now();
+                lista = [{ id: id, nombre: 'Primera Tarea' }];
+                localStorage.setItem('aula360_lista_tareas', JSON.stringify(lista));
+                tareaActivaId = id;
             } else {
-                tareaActivaId = localStorage.getItem('aula360_tarea_activa_id') || listaTareas[0].id;
+                tareaActivaId = localStorage.getItem('aula360_tarea_activa_id') || lista[0].id;
             }
             localStorage.setItem('aula360_tarea_activa_id', tareaActivaId);
-
             poblarSelectTareas();
-            
-            let tareaEncontrada = listaTareas.find(t => t.id == tareaActivaId);
-            let nombreTarea = tareaEncontrada ? tareaEncontrada.nombre : "Control de Tareas";
-            document.getElementById('tituloImpresionTarea').innerText = "TAREA: " + nombreTarea;
-            
             cargarTablaTareas();
         }
 
         function poblarSelectTareas() {
-            let listaTareas = JSON.parse(localStorage.getItem('aula360_lista_tareas')) || [];
+            let lista = JSON.parse(localStorage.getItem('aula360_lista_tareas')) || [];
             const select = document.getElementById('selectTareaActual');
             select.innerHTML = "";
-
-            listaTareas.forEach(t => {
+            lista.forEach(t => {
                 const opt = document.createElement('option');
-                opt.value = t.id;
-                opt.innerText = t.nombre;
+                opt.value = t.id; opt.innerText = t.nombre;
                 if (t.id == tareaActivaId) opt.selected = true;
                 select.appendChild(opt);
             });
         }
 
         function cargarTablaTareas() {
-            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, (_, i) => `Alumno(a) ${i + 1}`);
-            let tareaKey = 'aula360_reg_' + tareaActivaId;
-            let registroTareas = JSON.parse(localStorage.getItem(tareaKey)) || {};
-
+            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, (_, i) => `Alumno ${i + 1}`);
+            let reg = JSON.parse(localStorage.getItem('aula360_reg_' + tareaActivaId)) || {};
             const tbody = document.getElementById('tablaTareasCuerpo');
             tbody.innerHTML = "";
-
-            alumnos.forEach((nombre, index) => {
-                let estado = registroTareas[index] || 'E';
-
+            alumnos.forEach((nombre, idx) => {
+                let est = reg[idx] || 'E';
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td style="text-align: left; font-weight: 500;">${nombre}</td>
-                    <td>
-                        <button class="btn-tarea ${estado === 'E' ? 'entregado' : 'pendiente'}" data-index="${index}" onclick="cambiarEstadoTarea(this)">
-                            ${estado === 'E' ? '✅ Entregó' : '❌ Pendiente'}
-                        </button>
-                    </td>
-                `;
+                tr.innerHTML = `<td>${idx + 1}</td><td style="text-align: left;">${nombre}</td><td><button class="btn-tarea ${est === 'E' ? 'entregado' : 'pendiente'}" data-index="${idx}">${est === 'E' ? '✅ Entregó' : '❌ Pendiente'}</button></td>`;
                 tbody.appendChild(tr);
             });
-
+            tbody.querySelectorAll('.btn-tarea').forEach(b => {
+                b.addEventListener('click', function() {
+                    let idx = this.getAttribute('data-index');
+                    let key = 'aula360_reg_' + tareaActivaId;
+                    let reg = JSON.parse(localStorage.getItem(key)) || {};
+                    let sig = (reg[idx] || 'E') === 'E' ? 'P' : 'E';
+                    reg[idx] = sig;
+                    localStorage.setItem(key, JSON.stringify(reg));
+                    this.className = `btn-tarea ${sig === 'E' ? 'entregado' : 'pendiente'}`;
+                    this.innerText = sig === 'E' ? '✅ Entregó' : '❌ Pendiente';
+                    actualizarEstadisticasTareas();
+                });
+            });
             actualizarEstadisticasTareas();
         }
 
-        window.cambiarEstadoTarea = function(btn) {
-            let idx = btn.getAttribute('data-index');
-            let tareaKey = 'aula360_reg_' + tareaActivaId;
-            let registroTareas = JSON.parse(localStorage.getItem(tareaKey)) || {};
-
-            let actual = registroTareas[idx] || 'E';
-            let siguiente = actual === 'E' ? 'P' : 'E';
-
-            registroTareas[idx] = siguiente;
-            localStorage.setItem(tareaKey, JSON.stringify(registroTareas));
-
-            btn.className = `btn-tarea ${siguiente === 'E' ? 'entregado' : 'pendiente'}`;
-            btn.innerText = siguiente === 'E' ? '✅ Entregó' : '❌ Pendiente';
-
-            actualizarEstadisticasTareas();
-        };
-
         function actualizarEstadisticasTareas() {
-            let tareaKey = 'aula360_reg_' + tareaActivaId;
-            let registroTareas = JSON.parse(localStorage.getItem(tareaKey)) || {};
+            let reg = JSON.parse(localStorage.getItem('aula360_reg_' + tareaActivaId)) || {};
             let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, () => "");
-
-            let entregas = 0, pendientes = 0;
-            alumnos.forEach((_, index) => {
-                let est = registroTareas[index] || 'E';
-                if(est === 'E') entregas++;
-                if(est === 'P') pendientes++;
-            });
-
-            document.getElementById('statEntregas').innerText = entregas;
-            document.getElementById('statPendientes').innerText = pendientes;
+            let ent = 0, pen = 0;
+            alumnos.forEach((_, idx) => { if((reg[idx] || 'E') === 'E') ent++; else pen++; });
+            document.getElementById('statEntregas').innerText = ent;
+            document.getElementById('statPendientes').innerText = pen;
         }
 
         async function generarFichaDescriptivaAI() {
             let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
-            let nombreAlumno = alumnos[alumnoEditandoIndex] || "Alumno";
-            let notasTrimestre = document.getElementById('modalNotasExpediente').value.trim();
-
-            if (!notasTrimestre) {
-                alert("Por favor escribe algunas notas previas en el expediente para que la IA tenga base en qué redactar.");
-                return;
-            }
-
-            const btnFicha = document.getElementById('btnGenerarFichaAI');
-            const textareaFicha = document.getElementById('modalFichaDescriptiva');
-            
-            btnFicha.innerText = "🤖 Redactando ficha...";
-            textareaFicha.value = "La IA está procesando las observaciones pedagógicas...";
-
-            const promptFicha = `Actúa como un experto docente de educación primaria en México alineado a la Nueva Escuela Mexicana (NEM). 
-A partir de las siguientes observaciones y notas de seguimiento del alumno "${nombreAlumno}":
-"${notasTrimestre}"
-
-Redacta una Ficha Descriptiva Trimestral formal y profesional estructurada exactamente en las siguientes 3 secciones:
-1. Fortalezas y Logros de Aprendizaje
-2. Áreas de Mejora u Obstáculos (incluyendo si aplica aspectos BAP o atención al rezago)
-3. Sugerencias de Apoyo para el Hogar y la Escuela
-
-Utiliza un tono empático, técnico pedagógico y constructivo. Ve directo al contenido sin saludos iniciales.`;
-
+            let nombre = alumnos[alumnoEditandoIndex] || "Alumno";
+            let notas = document.getElementById('modalNotasExpediente').value.trim();
+            if (!notas) return alert("Escribe notas primero.");
+            const btn = document.getElementById('btnGenerarFichaAI');
+            const txt = document.getElementById('modalFichaDescriptiva');
+            btn.innerText = "🤖 Redactando..."; btn.disabled = true;
             try {
-                const response = await ai.models.generateContent({
-                    model: 'gemini-3.8-flash',
-                    contents: promptFicha
-                });
-
-                let resultadoFicha = response.text ? response.text.trim() : "";
-                if(!resultadoFicha) throw new Error("Respuesta vacía");
-
-                textareaFicha.value = resultadoFicha;
-                btnFicha.innerText = "✨ Redactar Ficha con IA";
-
-            } catch (error) {
-                console.error(error);
-                alert("Error al generar la ficha descriptiva: " + error.message);
-                textareaFicha.value = "Error en la generación. Intenta de nuevo.";
-                btnFicha.innerText = "✨ Redactar Ficha con IA";
-            }
+                const prompt = `A partir de: "${notas}", redacta Ficha Descriptiva Trimestral para ${nombre} (Fortalezas, Áreas de mejora, Sugerencias). Directo al contenido.`;
+                const r = await llamarConReintentos(prompt);
+                txt.value = r.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#/g, '').trim();
+            } catch (err) { txt.value = "Error al generar."; }
+            finally { btn.innerText = "🤖 Redactar Ficha con IA"; btn.disabled = false; }
         }
 
-        function imprimirReporteEspecifico(claseImpresion) {
+        function imprimirReporteEspecifico(clase) {
             const cuerpo = document.getElementById('cuerpoApp');
-            cuerpo.className = claseImpresion;
-
-            if (claseImpresion === 'imprimiendo-planeacion') {
-                const textoRubricaEl = document.getElementById('textoRubrica');
-                const seccionRubricaImpresion = document.getElementById('seccionRubricaImpresion');
-                const resRubrica = document.getElementById('resRubrica');
-
-                if (textoRubricaEl) {
-                    const textoRubricaActual = textoRubricaEl.innerText;
-                    if (textoRubricaActual && textoRubricaActual.trim() !== '' && textoRubricaActual !== '🤖 La IA está diseñando la rúbrica personalizada para este proyecto...') {
-                        if(resRubrica) resRubrica.innerText = textoRubricaActual;
-                        if(seccionRubricaImpresion) seccionRubricaImpresion.style.display = 'block';
-                    }
+            cuerpo.className = clase;
+            if (clase === 'imprimiendo-planeacion') {
+                const tr = document.getElementById('textoRubrica').innerHTML;
+                if (tr && !tr.includes('Generando')) {
+                    document.getElementById('resRubrica').innerHTML = tr;
+                    document.getElementById('seccionRubricaImpresion').style.display = 'block';
                 }
             }
-
-            if (claseImpresion === 'imprimiendo-lista') {
-                const fechaVal = document.getElementById('inputFechaAsistencia').value;
-                document.getElementById('tituloImpresionLista').innerText = "LISTA DE ASISTENCIA - " + fechaVal;
+            if (clase === 'imprimiendo-lista') {
+                document.getElementById('tituloImpresionLista').innerText = "LISTA DE ASISTENCIA - " + document.getElementById('inputFechaAsistencia').value;
             }
-
-            setTimeout(() => {
-                window.print();
-                cuerpo.className = "";
-            }, 250);
+            setTimeout(() => { window.print(); cuerpo.className = ""; }, 250);
         }
 
         function renderizarGestionAlumnos() {
-            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, (_, i) => `Alumno(a) ${i + 1}`);
+            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, (_, i) => `Alumno ${i + 1}`);
             let expedientes = JSON.parse(localStorage.getItem('aula360_expedientes')) || {};
             let fichas = JSON.parse(localStorage.getItem('aula360_fichas')) || {};
-            let telefonos = JSON.parse(localStorage.getItem('aula360_telefonos')) || {};
-
+            let tel = JSON.parse(localStorage.getItem('aula360_telefonos')) || {};
             const tbody = document.getElementById('tablaGestionAlumnosCuerpo');
             tbody.innerHTML = "";
-
-            alumnos.forEach((nombre, index) => {
-                let tieneNota = (expedientes[index] && expedientes[index].trim() !== "") || (fichas[index] && fichas[index].trim() !== "");
-                let tel = telefonos[index] || "";
+            alumnos.forEach((nombre, idx) => {
+                let nota = (expedientes[idx] && expedientes[idx].trim()) || (fichas[idx] && fichas[idx].trim());
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td style="text-align: left;">
-                        <input type="text" class="input-nombre-alumno" value="${nombre}" data-index="${index}">
-                    </td>
-                    <td>
-                        <input type="text" class="input-tel-alumno" value="${tel}" data-index="${index}" placeholder="S/N">
-                    </td>
-                    <td>
-                        <button class="btn-expediente" onclick="abrirExpediente(${index})">
-                            ${tieneNota ? '📝 Ver Expediente' : '➕ Agregar'}
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn-reset" style="width: auto; padding: 4px 6px; background: #fee2e2; color: #b91c1c;" onclick="eliminarAlumno(${index})">🗑️</button>
-                    </td>
-                `;
+                tr.innerHTML = `<td>${idx + 1}</td><td style="text-align: left;"><input type="text" class="input-nombre-alumno" value="${nombre}" data-index="${idx}"></td><td><input type="text" class="input-tel-alumno" value="${tel[idx] || ''}" data-index="${idx}" placeholder="S/N"></td><td><button class="btn-expediente" data-idx="${idx}">${nota ? '📝 Ver' : '➕ Agregar'}</button></td><td><button class="btn-reset btn-del-alumno" data-idx="${idx}" style="width: auto; padding: 4px; background: #fee2e2; color: #b91c1c;">🗑️</button></td>`;
                 tbody.appendChild(tr);
             });
 
-            document.querySelectorAll('.input-nombre-alumno').forEach(input => {
-                input.addEventListener('input', function() {
-                    let idx = this.getAttribute('data-index');
-                    alumnos[idx] = this.value;
-                    localStorage.setItem('aula360_alumnos', JSON.stringify(alumnos));
+            tbody.querySelectorAll('.btn-expediente').forEach(b => {
+                b.addEventListener('click', function() {
+                    let idx = parseInt(this.dataset.idx);
+                    alumnoEditandoIndex = idx;
+                    document.getElementById('modalNombreAlumno').innerText = "Expediente de: " + alumnos[idx];
+                    document.getElementById('modalNotasExpediente').value = expedientes[idx] || "";
+                    document.getElementById('modalFichaDescriptiva').value = fichas[idx] || "";
+                    document.getElementById('modalTelTutor').value = tel[idx] || "";
+                    document.getElementById('modalExpediente').style.display = 'flex';
                 });
             });
 
-            document.querySelectorAll('.input-tel-alumno').forEach(input => {
-                input.addEventListener('input', function() {
-                    let idx = this.getAttribute('data-index');
-                    telefonos[idx] = this.value;
-                    localStorage.setItem('aula360_telefonos', JSON.stringify(telefonos));
+            tbody.querySelectorAll('.btn-del-alumno').forEach(b => {
+                b.addEventListener('click', function() {
+                    let idx = parseInt(this.dataset.idx);
+                    if (confirm(`¿Eliminar a ${alumnos[idx]}?`)) {
+                        alumnos.splice(idx, 1);
+                        localStorage.setItem('aula360_alumnos', JSON.stringify(alumnos));
+                        renderizarGestionAlumnos();
+                    }
                 });
             });
+
+            document.querySelectorAll('.input-nombre-alumno').forEach(i => i.addEventListener('input', function() {
+                let a = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
+                a[this.getAttribute('data-index')] = this.value;
+                localStorage.setItem('aula360_alumnos', JSON.stringify(a));
+            }));
+            document.querySelectorAll('.input-tel-alumno').forEach(i => i.addEventListener('input', function() {
+                let t = JSON.parse(localStorage.getItem('aula360_telefonos')) || {};
+                t[this.getAttribute('data-index')] = this.value;
+                localStorage.setItem('aula360_telefonos', JSON.stringify(t));
+            }));
         }
-
-        window.abrirExpediente = function(index) {
-            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
-            let expedientes = JSON.parse(localStorage.getItem('aula360_expedientes')) || {};
-            let fichas = JSON.parse(localStorage.getItem('aula360_fichas')) || {};
-            let telefonos = JSON.parse(localStorage.getItem('aula360_telefonos')) || {};
-            
-            alumnoEditandoIndex = index;
-            document.getElementById('modalNombreAlumno').innerText = "Expediente de: " + (alumnos[index] || `Alumno ${index + 1}`);
-            document.getElementById('modalNotasExpediente').value = expedientes[index] || "";
-            document.getElementById('modalFichaDescriptiva').value = fichas[index] || "";
-            document.getElementById('modalTelTutor').value = telefonos[index] || "";
-            document.getElementById('modalExpediente').style.display = 'flex';
-        };
-
-        window.eliminarAlumno = function(index) {
-            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
-            if (confirm(`¿Estás seguro de eliminar a ${alumnos[index]} de la lista?`)) {
-                alumnos.splice(index, 1);
-                localStorage.setItem('aula360_alumnos', JSON.stringify(alumnos));
-                renderizarGestionAlumnos();
-                cargarTablaAsistenciaPorFecha(document.getElementById('inputFechaAsistencia').value);
-                cargarTablaTareas();
-            }
-        };
 
         function inicializarAsistenciaDigital() {
-            const hoyIso = new Date().toISOString().split('T')[0];
-            const inputFecha = document.getElementById('inputFechaAsistencia');
-            inputFecha.value = hoyIso;
-            cargarTablaAsistenciaPorFecha(hoyIso);
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('inputFechaAsistencia').value = hoy;
+            cargarTablaAsistenciaPorFecha(hoy);
         }
 
-        function cargarTablaAsistenciaPorFecha(fechaStr) {
-            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, (_, i) => `Alumno(a) ${i + 1}`);
-            let fechaKey = 'aula360_asis_' + fechaStr;
-            let asistenciaDia = JSON.parse(localStorage.getItem(fechaKey)) || {};
-
+        function cargarTablaAsistenciaPorFecha(fecha) {
+            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, (_, i) => `Alumno ${i + 1}`);
+            let asis = JSON.parse(localStorage.getItem('aula360_asis_' + fecha)) || {};
             const tbody = document.getElementById('tablaAlumnosCuerpo');
             tbody.innerHTML = "";
-
-            alumnos.forEach((nombre, index) => {
-                let estado = asistenciaDia[index] || 'P';
-
+            alumnos.forEach((nombre, idx) => {
+                let est = asis[idx] || 'P';
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td style="text-align: left; font-weight: 500;">${nombre}</td>
-                    <td>
-                        <button class="btn-asis ${estado === 'P' ? 'presente' : estado === 'R' ? 'retardo' : 'falta'}" data-index="${index}" data-fecha="${fechaStr}" onclick="cambiarEstadoAsistenciaHistorial(this)">
-                            ${estado === 'P' ? 'Presente' : estado === 'R' ? 'Retardo' : 'Falta'}
-                        </button>
-                    </td>
-                `;
+                tr.innerHTML = `<td>${idx + 1}</td><td style="text-align: left;">${nombre}</td><td><button class="btn-asis ${est === 'P' ? 'presente' : est === 'R' ? 'retardo' : 'falta'}" data-index="${idx}">${est === 'P' ? 'Presente' : est === 'R' ? 'Retardo' : 'Falta'}</button></td>`;
                 tbody.appendChild(tr);
             });
-
-            actualizarEstadisticasAsistenciaFecha(fechaStr);
+            tbody.querySelectorAll('.btn-asis').forEach(b => {
+                b.addEventListener('click', function() {
+                    let idx = this.getAttribute('data-index');
+                    let key = 'aula360_asis_' + fecha;
+                    let asis = JSON.parse(localStorage.getItem(key)) || {};
+                    let sig = (asis[idx] || 'P') === 'P' ? 'R' : (asis[idx] === 'R' ? 'F' : 'P');
+                    asis[idx] = sig;
+                    localStorage.setItem(key, JSON.stringify(asis));
+                    this.className = `btn-asis ${sig === 'P' ? 'presente' : sig === 'R' ? 'retardo' : 'falta'}`;
+                    this.innerText = sig === 'P' ? 'Presente' : (sig === 'R' ? 'Retardo' : 'Falta');
+                    actualizarEstadisticasAsistencia(fecha);
+                });
+            });
+            actualizarEstadisticasAsistencia(fecha);
         }
 
-        window.cambiarEstadoAsistenciaHistorial = function(btn) {
-            let idx = btn.getAttribute('data-index');
-            let fechaStr = document.getElementById('inputFechaAsistencia').value;
-            let fechaKey = 'aula360_asis_' + fechaStr;
-            let asistenciaDia = JSON.parse(localStorage.getItem(fechaKey)) || {};
-
-            let actual = asistenciaDia[idx] || 'P';
-            let siguiente = actual === 'P' ? 'R' : actual === 'R' ? 'F' : 'P';
-
-            asistenciaDia[idx] = siguiente;
-            localStorage.setItem(fechaKey, JSON.stringify(asistenciaDia));
-
-            btn.className = `btn-asis ${siguiente === 'P' ? 'presente' : siguiente === 'R' ? 'retardo' : 'falta'}`;
-            btn.innerText = siguiente === 'P' ? 'Presente' : siguiente === 'R' ? 'Retardo' : 'Falta';
-
-            actualizarEstadisticasAsistenciaFecha(fechaStr);
-        };
-
-        function actualizarEstadisticasAsistenciaFecha(fechaStr) {
-            let fechaKey = 'aula360_asis_' + fechaStr;
-            let asistenciaDia = JSON.parse(localStorage.getItem(fechaKey)) || {};
+        function actualizarEstadisticasAsistencia(fecha) {
+            let asis = JSON.parse(localStorage.getItem('aula360_asis_' + fecha)) || {};
             let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, () => "");
-
             let p = 0, r = 0, f = 0;
-            alumnos.forEach((_, index) => {
-                let est = asistenciaDia[index] || 'P';
-                if(est === 'P') p++;
-                if(est === 'R') r++;
-                if(est === 'F') f++;
+            alumnos.forEach((_, idx) => {
+                let st = asis[idx] || 'P';
+                if(st === 'P') p++; else if(st === 'R') r++; else f++;
             });
-
             document.getElementById('statPresentes').innerText = p;
             document.getElementById('statRetardos').innerText = r;
             document.getElementById('statFaltas').innerText = f;
         }
 
         function generarReporteAcumulado() {
-            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, (_, i) => `Alumno(a) ${i + 1}`);
-            
-            let acumulado = {};
-            alumnos.forEach((_, idx) => { acumulado[idx] = { P: 0, R: 0, F: 0 }; });
-
+            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, (_, i) => `Alumno ${i + 1}`);
+            let acum = {};
+            alumnos.forEach((_, idx) => acum[idx] = { P: 0, R: 0, F: 0 });
             for (let i = 0; i < localStorage.length; i++) {
                 let key = localStorage.key(i);
                 if (key && key.startsWith('aula360_asis_')) {
-                    let registroDia = JSON.parse(localStorage.getItem(key)) || {};
-                    alumnos.forEach((_, idx) => {
-                        let estado = registroDia[idx] || 'P';
-                        if (acumulado[idx][estado] !== undefined) {
-                            acumulado[idx][estado]++;
-                        }
-                    });
+                    let reg = JSON.parse(localStorage.getItem(key)) || {};
+                    alumnos.forEach((_, idx) => { if(acum[idx][reg[idx] || 'P'] !== undefined) acum[idx][reg[idx] || 'P']++; });
                 }
             }
-
             const tbody = document.getElementById('tablaReporteCuerpo');
             tbody.innerHTML = "";
-
-            alumnos.forEach((nombre, index) => {
-                let datos = acumulado[index];
+            alumnos.forEach((nombre, idx) => {
+                let d = acum[idx];
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td style="text-align: left; font-weight: 500;">${nombre}</td>
-                    <td style="color: #15803d; font-weight: bold;">${datos.P}</td>
-                    <td style="color: #a16207; font-weight: bold;">${datos.R}</td>
-                    <td style="color: #b91c1c; font-weight: bold;">${datos.F}</td>
-                `;
+                tr.innerHTML = `<td>${idx + 1}</td><td style="text-align: left;">${nombre}</td><td style="color: #15803d; font-weight: bold;">${d.P}</td><td style="color: #a16207; font-weight: bold;">${d.R}</td><td style="color: #b91c1c; font-weight: bold;">${d.F}</td>`;
                 tbody.appendChild(tr);
             });
         }
 
         function cargarSugerenciasTemporada() {
-            const mesActual = new Date().getMonth();
+            const mes = new Date().getMonth();
             const contenedor = document.getElementById('contenedorSugerenciasTemporada');
-            let sugerencias = [];
-
-            switch (mesActual) {
-                case 8:
-                    sugerencias = [
-                        { texto: "Nuestra identidad y orgullo: Rescate de las raíces históricas y culturales de México", label: "🇲🇽 Fiestas Patrias" },
-                        { texto: "El respeto a los símbolos patrios y la convivencia pacífica en la escuela", label: "🤝 Convivencia Escolar" }
-                    ];
-                    break;
-                case 9:
-                    sugerencias = [
-                        { texto: "Nuestras voces y raíces: Rescate y difusión de mitos, leyendas y ofrendas tradicionales", label: "🎃 Tradiciones de Día de Muertos" },
-                        { texto: "Alimentación saludable y el consumo de productos locales frente al cambio de estación", label: "🥗 Salud Estacional" },
-                        { texto: "El cuidado y rescate del agua en la comunidad escolar y el hogar", label: "💧 Cuidado del Agua" }
-                    ];
-                    break;
-                case 10:
-                    sugerencias = [
-                        { texto: "Cosmovisión, altares y ofrendas: Valorando el significado histórico y cultural del Día de Muertos", label: "🕯️ Día de Muertos" },
-                        { texto: "La Revolución Mexicana: Personajes, derechos sociales y transformaciones comunitarias", label: "🚂 Revolución Mexicana" }
-                    ];
-                    break;
-                case 11:
-                    sugerencias = [
-                        { texto: "La importancia de la empatía, la solidaridad y la convivencia armónica decembrina", label: "⭐ Empatía y Solidaridad" },
-                        { texto: "Uso responsable de recursos y festejo sustentable en nuestra comunidad", label: "♻️ Consumo Sustentable" }
-                    ];
-                    break;
-                case 1:
-                    sugerencias = [
-                        { texto: "La salud emocional y física: Prevención de enfermedades respiratorias y hábitos de higiene", label: "🩺 Salud e Higiene" },
-                        { texto: "Nuestra Constitución y la importancia de las leyes para una convivencia justa", label: "⚖️ Constitución Mexicana" }
-                    ];
-                    break;
-                case 2:
-                    sugerencias = [
-                        { texto: "Igualdad de género y reconocimiento de los derechos y aportaciones de las mujeres en la historia", label: "♀️ Igualdad de Género" },
-                        { texto: "El cuidado del medio ambiente y el Día Mundial del Agua en nuestra localidad", label: "💧 Día Mundial del Agua" }
-                    ];
-                    break;
-                case 4:
-                    sugerencias = [
-                        { texto: "La biodiversidad de nuestra región y el cuidado de los ecosistemas locales", label: "🌱 Ecosistemas y Biodiversidad" },
-                        { texto: "Reconocimiento y valoración del trabajo de las familias y la comunidad escolar", label: "👨‍👩‍👧‍👦 Comunidad" }
-                    ];
-                    break;
-                default:
-                    sugerencias = [
-                        { texto: "Proyecto comunitario para la solución de problemas ambientales locales", label: "🌍 Cuidado Ambiental" },
-                        { texto: "Fomento a la lectura de textos literarios regionales y escritura creativa", label: "📖 Fomento a la Lectura" },
-                        { texto: "Resolución pacífica de conflictos cotidianos en el aula", label: "🕊️ Cultura de Paz" }
-                    ];
-                    break;
-            }
-
+            let sugs = mes === 8 ? [{texto: "Rescate de raíces históricas y culturales", label: "🇲🇽 Fiestas Patrias"}] : [{texto: "Proyecto comunitario ambiental", label: "🌍 Cuidado Ambiental"}];
             contenedor.innerHTML = "";
-            sugerencias.forEach(sug => {
+            sugs.forEach(s => {
                 const chip = document.createElement('span');
                 chip.className = "chip-sugerencia chip-temporada";
-                chip.innerHTML = `${sug.label}`;
-                chip.title = sug.texto;
-                chip.addEventListener('click', function() {
-                    document.getElementById('temaInput').value = sug.texto;
-                });
+                chip.innerText = s.label;
+                chip.onclick = () => document.getElementById('temaInput').value = s.texto;
                 contenedor.appendChild(chip);
             });
         }
 
-        window.selectCard = function(element, grupo) {
-            const cards = element.parentNode.getElementsByClassName('option-card');
-            for (let i = 0; i < cards.length; i++) {
-                cards[i].classList.remove('selected');
-            }
-            element.classList.add('selected');
-            
-            if (grupo === 'grado') gradoSeleccionado = element.innerText;
-            if (grupo === 'campo') campoSeleccionado = element.innerText;
-            if (grupo === 'metodologia') metodologiaSeleccionada = element.innerText;
-            if (grupo === 'escenario') escenarioSeleccionado = element.innerText;
-            if (grupo === 'duracion') duracionSeleccionada = element.innerText;
-            if (grupo === 'tono') tonoSeleccionado = element.innerText;
-        };
-
-        window.toggleEje = function(element) {
-            element.classList.toggle('multi-selected');
-            const textoEje = element.innerText;
-            const index = ejesSeleccionados.indexOf(textoEje);
-            if (index > -1) {
-                ejesSeleccionados.splice(index, 1);
-            } else {
-                ejesSeleccionados.push(textoEje);
-            }
-        };
+        function limpiarMarkdown(str) {
+            if (!str) return '';
+            return str.replace(/```html/g, '').replace(/```json/g, '').replace(/```/g, '')
+                .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\*(.*?)\*/g, '<i>$1</i>')
+                .replace(/### (.*?)\n/g, '<h3 style="color:#1e3a8a; margin:10px 0 4px 0;">$1</h3>')
+                .replace(/## (.*?)\n/g, '<h2 style="color:#1e3a8a; margin:12px 0 6px 0;">$1</h2>')
+                .replace(/# (.*?)\n/g, '<h1 style="color:#1e3a8a; margin:14px 0 8px 0;">$1</h1>')
+                .replace(/• /g, '&bull; ');
+        }
 
         async function generarPlaneacionConIA() {
             const tema = document.getElementById('temaInput').value.trim();
-            const resultadoBox = document.getElementById('resultado');
             const escuela = document.getElementById('escuelaInput').value.trim() || "Escuela Primaria";
             const cct = document.getElementById('cctInput').value.trim() || "S/C";
-            const docente = document.getElementById('docenteInput').value.trim() || "Docente de Grupo";
+            const docente = document.getElementById('docenteInput').value.trim() || "Docente";
             const zona = document.getElementById('zonaInput').value.trim() || "S/Z";
+            const btn = document.getElementById('btnGenerarAI');
 
-            if (!gradoSeleccionado || !campoSeleccionado || !metodologiaSeleccionada || !escenarioSeleccionado || !duracionSeleccionada || !tema) {
-                alert("Por favor completa todas las opciones y escribe un tema.");
+            if (!gradoSeleccionado || !campoSeleccionado || !tema) {
+                alert("Selecciona Grado, Campo y escribe un Tema.");
                 return;
             }
 
+            btn.innerText = "⏳ Generando Planeación..."; btn.disabled = true;
             document.getElementById('resEscuela').innerText = escuela;
             document.getElementById('resCct').innerText = cct;
             document.getElementById('resDocente').innerText = docente;
             document.getElementById('resZona').innerText = zona;
-
-            resultadoBox.style.display = "block";
-            const rubricaBox = document.getElementById('rubricaBox');
-            const seccionRubricaImpresion = document.getElementById('seccionRubricaImpresion');
-            if(rubricaBox) rubricaBox.style.display = "none";
-            if(seccionRubricaImpresion) seccionRubricaImpresion.style.display = "none";
-            document.getElementById('resRubrica').innerText = "-";
-
+            document.getElementById('resultado').style.display = "block";
             document.getElementById('resGrado').innerText = gradoSeleccionado;
-            document.getElementById('resDuracion').innerText = duracionSeleccionada;
-            document.getElementById('resEscenario').innerText = escenarioSeleccionado;
+            document.getElementById('resDuracion').innerText = duracionSeleccionada || "1 Semana";
+            document.getElementById('resEscenario').innerText = escenarioSeleccionado || "Aula";
             document.getElementById('resCampo').innerText = campoSeleccionado;
-            document.getElementById('resMetodologia').innerText = metodologiaSeleccionada;
+            document.getElementById('resMetodologia').innerText = metodologiaSeleccionada || "Proyectos Comunitarios";
             document.getElementById('resTema').innerText = tema;
-            
-            document.getElementById('resLibro').innerText = "La IA está analizando los datos y redactando...";
-            document.getElementById('resProposito').innerText = "Generando propósito...";
-            document.getElementById('resReto').innerText = "Preguntas guía...";
-            document.getElementById('resEjes').innerText = "Ejes articuladores...";
-            document.getElementById('resMateriales').innerText = "Materiales...";
-            document.getElementById('resSecuencia').innerHTML = "<b>Secuencia didáctica...</b>";
-            document.getElementById('resEvaluacion').innerText = "Evaluación...";
 
-            const ejesTexto = ejesSeleccionados.length > 0 ? ejesSeleccionados.join(", ") : "Pensamiento Crítico, Inclusión";
-
-            let instruccionesTono = "";
-            if (tonoSeleccionado.includes("Formal")) {
-                instruccionesTono = "Utiliza un lenguaje técnico administrativo formal y riguroso de la SEP, ideal para revisión de supervisión escolar.";
-            } else if (tonoSeleccionado.includes("Práctica")) {
-                instruccionesTono = "Enfoca la planeación en actividades lúdicas, dinámicas y de manipulación directa de materiales por parte de los alumnos.";
-            } else {
-                instruccionesTono = "Enfoca la planeación de manera inclusiva, integrando sugerencias específicas de adecuaciones para alumnos con rezago o Barreras para el Aprendizaje (BAP).";
-            }
-
-            const prompt = `Actúa como un experto asesor técnico pedagógico de educación primaria en México especialista en la Nueva Escuela Mexicana (NEM). 
-Redacta una planeación didáctica formal con base en los siguientes datos exactos:
-- Grado escolar: ${gradoSeleccionado}
-- Campo formativo: ${campoSeleccionado}
-- Metodología NEM: ${metodologiaSeleccionada}
-- Escenario: ${escenarioSeleccionado}
-- Duración estimada: ${duracionSeleccionada}
-- Ejes articuladores: ${ejesTexto}
-- Tema o Proyecto: ${tema}
-- Estilo / Tono Pedagógico: ${instruccionesTono}
-
-IMPORTANTE: Responde ÚNICAMENTE con un objeto JSON válido (sin código markdown ni explicaciones externas) que contenga la estructura exacta:
-{
-  "libro": "Nombre oficial del libro de texto gratuito de la SEP adecuado para este grado",
-  "proposito": "Propósito pedagógico claro y reflexivo",
-  "reto": "Preguntas guía y reto detonante contextualizado",
-  "materiales": "Lista detallada de materiales y recursos didácticos",
-  "secuencia": "Secuencia didáctica detallada dividida en Inicio, Desarrollo y Cierre utilizando etiquetas HTML básicas como <br> y <b>",
-  "evaluacion": "Descripción de la evaluación formativa"
-}`;
+            const ejesTexto = ejesSeleccionados.length > 0 ? ejesSeleccionados.join(", ") : "Pensamiento Crítico";
+            const prompt = `Actúa como asesor NEM. Redacta apartados para planeación utilizando un tono y enfoque pedagógico de tipo "${enfoqueSeleccionado}":\n- Grado: ${gradoSeleccionado}\n- Campo: ${campoSeleccionado}\n- Metodología: ${metodologiaSeleccionada || "Proyectos Comunitarios"}\n- Tema: ${tema}\n- Ejes: ${ejesTexto}\n\nResponde ÚNICAMENTE con JSON:\n{\n  "libro": "Libro SEP",\n  "proposito": "Propósito",\n  "reto": "Preguntas guía",\n  "materiales": "Materiales",\n  "secuencia": "Secuencia con <b>Inicio:</b> ..., <b>Desarrollo:</b> ..., <b>Cierre:</b> ...",\n  "evaluacion": "Evaluación"\n}`;
 
             try {
-                const response = await ai.models.generateContent({
-                    model: 'gemini-3.8-flash',
-                    contents: prompt
-                });
-
-                let textResponse = response.text;
-                textResponse = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
-                
-                const planData = JSON.parse(textResponse);
-
-                document.getElementById('resLibro').innerText = planData.libro;
-                document.getElementById('resProposito').innerText = planData.proposito;
-                document.getElementById('resReto').innerText = planData.reto;
-                document.getElementById('resEjes').innerText = "• " + (ejesSeleccionados.length > 0 ? ejesSeleccionados.join("\n• ") : "Pensamiento Crítico\n• Inclusión");
-                document.getElementById('resMateriales').innerText = planData.materiales;
-                document.getElementById('resSecuencia').innerHTML = planData.secuencia;
-                document.getElementById('resEvaluacion').innerText = planData.evaluacion;
-
-                const htmlContenidoCompleto = document.getElementById('areaImpresion').innerHTML;
-                guardarEnHistorial(gradoSeleccionado, campoSeleccionado, tema, duracionSeleccionada, htmlContenidoCompleto, "");
-
-            } catch (error) {
-                console.error(error);
-                alert("Error de conexión con la IA: " + error.message);
-                document.getElementById('resProposito').innerText = "Error en la generación. Inténtalo de nuevo.";
-            }
+                const r = await llamarConReintentos(prompt);
+                let textClean = r.replace(/```json/g, '').replace(/```/g, '').trim();
+                let d = JSON.parse(textClean);
+                document.getElementById('resLibro').innerHTML = limpiarMarkdown(d.libro);
+                document.getElementById('resProposito').innerHTML = limpiarMarkdown(d.proposito);
+                document.getElementById('resReto').innerHTML = limpiarMarkdown(d.reto);
+                document.getElementById('resEjes').innerText = "• " + (ejesSeleccionados.length > 0 ? ejesSeleccionados.join("\n• ") : "Pensamiento Crítico");
+                document.getElementById('resMateriales').innerHTML = limpiarMarkdown(d.materiales);
+                document.getElementById('resSecuencia').innerHTML = limpiarMarkdown(d.secuencia);
+                document.getElementById('resEvaluacion').innerHTML = limpiarMarkdown(d.evaluacion);
+                idUltimaPlaneacion = guardarEnHistorial(gradoSeleccionado, campoSeleccionado, tema, duracionSeleccionada || "1 Semana", document.getElementById('areaImpresion').innerHTML);
+            } catch (err) { alert("Error al conectar: " + err.message); }
+            btn.innerText = "✨ Generar Planeación Inteligente"; btn.disabled = false;
         }
 
         async function generarRubricaAI() {
             const tema = document.getElementById('resTema').innerText;
-            const grado = document.getElementById('resGrado').innerText;
-
-            if (!tema || tema === '-') {
-                alert("Primero debes generar una planeación didáctica.");
-                return;
-            }
-
-            const rubricaBox = document.getElementById('rubricaBox');
-            const textoRubrica = document.getElementById('textoRubrica');
-            const seccionRubricaImpresion = document.getElementById('seccionRubricaImpresion');
-            const resRubrica = document.getElementById('resRubrica');
-
-            if(rubricaBox) rubricaBox.style.display = "block";
-            if(textoRubrica) textoRubrica.innerText = "🤖 La IA está diseñando la rúbrica personalizada para este proyecto...";
-
-            const promptRubrica = `Actúa como especialista en evaluación formativa de la Nueva Escuela Mexicana (NEM). 
-Diseña una Rúbrica o Lista de Cotejo detallada y específica para ${grado} sobre el proyecto titulado: "${tema}".
-Incluye 3 indicadores de logro clave con sus descriptores por niveles de desempeño (En proceso, Satisfactorio, Sobresaliente).
-Formatea el resultado de manera clara utilizando viñetas y negritas. No incluyas introducción ni saludos, ve directo al instrumento de evaluación.`;
-
+            const btn = document.getElementById('btnGenerarRubrica');
+            const box = document.getElementById('rubricaBox');
+            const txt = document.getElementById('textoRubrica');
+            btn.innerText = "⌛ Generando Rúbrica..."; btn.disabled = true;
+            box.style.display = 'block'; txt.innerHTML = "Generando...";
             try {
-                const response = await ai.models.generateContent({
-                    model: 'gemini-3.8-flash',
-                    contents: promptRubrica
-                });
-
-                let resultadoRubrica = response.text ? response.text.trim() : "";
-                
-                if(!resultadoRubrica) {
-                    throw new Error("Respuesta vacía de la IA");
-                }
-
-                if(textoRubrica) textoRubrica.innerText = resultadoRubrica;
-                if(resRubrica) resRubrica.innerText = resultadoRubrica;
-                if(seccionRubricaImpresion) seccionRubricaImpresion.style.display = "block";
-
-                actualizarHistorialRubrica(resultadoRubrica);
-
-            } catch (error) {
-                console.error(error);
-                alert("Error al generar la rúbrica con la IA: " + error.message);
-                if(textoRubrica) textoRubrica.innerText = "Error en la generación. Intenta de nuevo.";
-            }
+                const prompt = `Diseña Rúbrica Analítica para "${tema}" adaptada a un enfoque "${enfoqueSeleccionado}". Responde en HTML PURO con <table> y 4 niveles.`;
+                const r = await llamarConReintentos(prompt);
+                let html = limpiarMarkdown(r.trim());
+                txt.innerHTML = html;
+                document.getElementById('resRubrica').innerHTML = html;
+                document.getElementById('seccionRubricaImpresion').style.display = 'block';
+                if (idUltimaPlaneacion) actualizarHistorialCompleto(idUltimaPlaneacion, document.getElementById('areaImpresion').innerHTML, 'aula360_historial');
+            } catch(e) { txt.innerHTML = "Error."; }
+            btn.innerText = "📊 Generar Rúbrica o Lista de Cotejo con IA"; btn.disabled = false;
         }
 
-        window.cambiarTab = function(tipo) {
+        function cambiarTab(tipo) {
             tabActiva = tipo;
             document.getElementById('tabRecientes').classList.toggle('active', tipo === 'recientes');
             document.getElementById('tabFavoritos').classList.toggle('active', tipo === 'favoritos');
             renderizarHistorial();
-        };
-
-        function guardarEnHistorial(grado, campo, tema, duracion, contenidoHtml, rubricaTexto) {
-            let historial = JSON.parse(localStorage.getItem('aula360_historial')) || [];
-            const nuevaEntrada = {
-                id: Date.now(),
-                titulo: tema + " (" + grado + ")",
-                detalles: campo + " | " + duracion,
-                fecha: new Date().toLocaleDateString(),
-                html: contenidoHtml,
-                rubrica: rubricaTexto,
-                favorito: false
-            };
-
-            historial.unshift(nuevaEntrada);
-            if (historial.length > 15) historial.pop();
-            localStorage.setItem('aula360_historial', JSON.stringify(historial));
-            renderizarHistorial();
         }
 
-        function actualizarHistorialRubrica(rubricaTexto) {
-            let historial = JSON.parse(localStorage.getItem('aula360_historial')) || [];
-            if (historial.length > 0) {
-                historial[0].html = document.getElementById('areaImpresion').innerHTML;
-                historial[0].rubrica = rubricaTexto;
-                localStorage.setItem('aula360_historial', JSON.stringify(historial));
-            }
+        function cambiarTabExamen(tipo) {
+            tabActivaExamen = tipo;
+            document.getElementById('tabRecientesExamen').classList.toggle('active', tipo === 'recientes');
+            document.getElementById('tabFavoritosExamen').classList.toggle('active', tipo === 'favoritos');
+            renderizarHistorialExamenes();
         }
 
-        window.toggleFavorito = function(id) {
-            let historial = JSON.parse(localStorage.getItem('aula360_historial')) || [];
-            historial = historial.map(item => {
-                if (item.id === id) item.favorito = !item.favorito;
-                return item;
-            });
-            localStorage.setItem('aula360_historial', JSON.stringify(historial));
+        function guardarEnHistorial(grado, campo, tema, duracion, html) {
+            let hist = JSON.parse(localStorage.getItem('aula360_historial')) || [];
+            let nuevoId = Date.now();
+            hist.unshift({ id: nuevoId, titulo: `${tema} (${grado})`, detalles: `${campo} | ${duracion}`, fecha: new Date().toLocaleDateString(), html: html, favorito: false });
+            if (hist.length > 15) hist.pop();
+            localStorage.setItem('aula360_historial', JSON.stringify(hist));
             renderizarHistorial();
-        };
+            return nuevoId;
+        }
+
+        function guardarEnHistorialExamenes(grado, campo, tema, html) {
+            let hist = JSON.parse(localStorage.getItem('aula360_historial_examenes')) || [];
+            let nuevoId = Date.now();
+            hist.unshift({ id: nuevoId, titulo: `Examen: ${tema} (${grado})`, detalles: `${campo}`, fecha: new Date().toLocaleDateString(), html: html, favorito: false });
+            if (hist.length > 15) hist.pop();
+            localStorage.setItem('aula360_historial_examenes', JSON.stringify(hist));
+            renderizarHistorialExamenes();
+            return nuevoId;
+        }
+
+        function actualizarHistorialCompleto(id, html, storageKey) {
+            let hist = JSON.parse(localStorage.getItem(storageKey)) || [];
+            hist = hist.map(x => { if(x.id === id) x.html = html; return x; });
+            localStorage.setItem(storageKey, JSON.stringify(hist));
+            if (storageKey === 'aula360_historial') renderizarHistorial();
+            else renderizarHistorialExamenes();
+        }
 
         function renderizarHistorial() {
-            let historial = JSON.parse(localStorage.getItem('aula360_historial')) || [];
-            const contenedor = document.getElementById('historialLista');
-            const btnLimpiar = document.getElementById('btnClearHistory');
-
-            let listaMostrar = historial;
-            if (tabActiva === 'favoritos') {
-                listaMostrar = historial.filter(item => item.favorito);
+            let hist = JSON.parse(localStorage.getItem('aula360_historial')) || [];
+            let lista = tabActiva === 'favoritos' ? hist.filter(x => x.favorito) : hist;
+            const cont = document.getElementById('historialLista');
+            const btnClear = document.getElementById('btnClearHistory');
+            if (lista.length === 0) { 
+                cont.innerHTML = `<p style="font-size: 12px; color: #64748b; text-align: center;">Sin elementos.</p>`; 
+                btnClear.style.display = 'none';
+                return; 
             }
-
-            if (listaMostrar.length === 0) {
-                contenedor.innerHTML = `<p style="font-size: 12px; color: #64748b; text-align: center;">No hay planeaciones ${tabActiva === 'favoritos' ? 'favoritas' : 'guardadas'} aún.</p>`;
-                if(btnLimpiar) btnLimpiar.style.display = historial.length > 0 ? 'block' : 'none';
-                return;
-            }
-
-            contenedor.innerHTML = "";
-
-            listaMostrar.forEach(item => {
-                const divItem = document.createElement('div');
-                divItem.className = 'history-item';
-
-                const divInfo = document.createElement('div');
-                divInfo.className = 'history-info';
-                divInfo.innerHTML = `<span>${item.titulo}</span><br><small style="color: #475569;">${item.detalles} (${item.fecha})</small>`;
-
-                const divActions = document.createElement('div');
-                divActions.className = 'history-actions';
-
-                const btnFav = document.createElement('button');
-                btnFav.className = 'btn-fav';
-                btnFav.innerHTML = item.favorito ? '⭐' : '☆';
-                btnFav.addEventListener('click', function() {
-                    toggleFavorito(item.id);
-                });
-
-                const btnVer = document.createElement('button');
-                btnVer.className = 'btn-hist-action';
-                btnVer.innerText = "👁️ Ver";
-                btnVer.addEventListener('click', function() {
-                    document.getElementById('pantallaInicio').style.display = 'none';
-                    document.getElementById('pantallaApp').style.display = 'block';
-                    cargarItemHistorial(item);
-                });
-
-                const btnPdfHist = document.createElement('button');
-                btnPdfHist.className = 'btn-hist-action secondary';
-                btnPdfHist.innerText = "🖨️ PDF";
-                btnPdfHist.addEventListener('click', function() {
-                    document.getElementById('pantallaInicio').style.display = 'none';
-                    document.getElementById('pantallaApp').style.display = 'block';
-                    cargarItemHistorial(item);
-                    setTimeout(() => imprimirReporteEspecifico('imprimiendo-planeacion'), 300);
-                });
-
-                divActions.appendChild(btnFav);
-                divActions.appendChild(btnVer);
-                divActions.appendChild(btnPdfHist);
-
-                divItem.appendChild(divInfo);
-                divItem.appendChild(divActions);
-
-                contenedor.appendChild(divItem);
+            btnClear.style.display = 'block';
+            cont.innerHTML = "";
+            lista.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `<div class="history-info"><span>${item.titulo}</span><br><small>${item.detalles} (${item.fecha})</small></div><div class="history-actions"><button class="btn-fav" data-id="${item.id}">${item.favorito ? '⭐' : '☆'}</button><button class="btn-hist-action btn-ver-hist" data-id="${item.id}">👁️ Ver</button></div>`;
+                div.style.textAlign = 'left';
+                cont.appendChild(div);
             });
-
-            if(btnLimpiar) btnLimpiar.style.display = 'block';
+            cont.querySelectorAll('.btn-fav').forEach(b => {
+                b.addEventListener('click', function() {
+                    let hist = JSON.parse(localStorage.getItem('aula360_historial')) || [];
+                    let id = parseInt(this.dataset.id);
+                    hist = hist.map(x => { if(x.id === id) x.favorito = !x.favorito; return x; });
+                    localStorage.setItem('aula360_historial', JSON.stringify(hist));
+                    renderizarHistorial();
+                });
+            });
+            cont.querySelectorAll('.btn-ver-hist').forEach(b => {
+                b.addEventListener('click', function() {
+                    let hist = JSON.parse(localStorage.getItem('aula360_historial')) || [];
+                    let item = hist.find(x => x.id === parseInt(this.dataset.id));
+                    if(item) {
+                        idUltimaPlaneacion = item.id;
+                        document.getElementById('areaImpresion').innerHTML = item.html;
+                        document.getElementById('resultado').style.display = 'block';
+                        if (item.html.includes('seccionRubricaImpresion') && item.html.includes('style="display:block;"')) {
+                            document.getElementById('seccionRubricaImpresion').style.display = 'block';
+                        }
+                    }
+                });
+            });
         }
 
-        function cargarItemHistorial(item) {
-            document.getElementById('areaImpresion').innerHTML = item.html;
-            
-            const seccionRubrica = document.getElementById('seccionRubricaImpresion');
-            const rubricaBox = document.getElementById('rubricaBox');
-            const resRubrica = document.getElementById('resRubrica');
-            const textoRubrica = document.getElementById('textoRubrica');
-
-            if (item.rubrica && item.rubrica.trim() !== '' && item.rubrica !== '-') {
-                if(resRubrica) resRubrica.innerText = item.rubrica;
-                if(textoRubrica) textoRubrica.innerText = item.rubrica;
-                if(seccionRubrica) seccionRubrica.style.display = 'block';
-                if(rubricaBox) rubricaBox.style.display = 'block';
-            } else {
-                if(seccionRubrica) seccionRubrica.style.display = 'none';
-                if(rubricaBox) rubricaBox.style.display = 'none';
+        function renderizarHistorialExamenes() {
+            let hist = JSON.parse(localStorage.getItem('aula360_historial_examenes')) || [];
+            let lista = tabActivaExamen === 'favoritos' ? hist.filter(x => x.favorito) : hist;
+            const cont = document.getElementById('historialExamenLista');
+            const btnClear = document.getElementById('btnClearHistoryExamen');
+            if (lista.length === 0) { 
+                cont.innerHTML = `<p style="font-size: 12px; color: #64748b; text-align: center;">Sin exámenes guardados.</p>`; 
+                btnClear.style.display = 'none';
+                return; 
             }
-
-            document.getElementById('resultado').style.display = 'block';
-            window.scrollTo({ top: document.getElementById('resultado').offsetTop, behavior: 'smooth' });
-        }
-
-        function compartirWhatsApp() {
-            const escuela = document.getElementById('resEscuela').innerText;
-            const cct = document.getElementById('resCct').innerText;
-            const docente = document.getElementById('resDocente').innerText;
-            const zona = document.getElementById('resZona').innerText;
-            const grado = document.getElementById('resGrado').innerText;
-            const duracion = document.getElementById('resDuracion').innerText;
-            const escenario = document.getElementById('resEscenario').innerText;
-            const campo = document.getElementById('resCampo').innerText;
-            const metodologia = document.getElementById('resMetodologia').innerText;
-            const tema = document.getElementById('resTema').innerText;
-            const libro = document.getElementById('resLibro').innerText;
-            const proposito = document.getElementById('resProposito').innerText;
-            const reto = document.getElementById('resReto').innerText;
-            const ejes = document.getElementById('resEjes').innerText;
-            const materiales = document.getElementById('resMateriales').innerText;
-            
-            const secuenciaHTML = document.getElementById('resSecuencia').innerHTML;
-            const secuenciaLimpia = secuenciaHTML
-                .replace(/<br\s*[\/]?>/gi, '\n')
-                .replace(/<\/b>/gi, '*')
-                .replace(/<b>/gi, '*')
-                .replace(/<[^>]+>/g, '');
-
-            let mensajeWp = `📘 *AULA360 - PLANEACIÓN DIDÁCTICA (NEM)* 🇲🇽\n`;
-            mensajeWp += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-            
-            mensajeWp += `🏫 *DATOS INSTITUCIONALES*\n`;
-            mensajeWp += `• *Escuela:* ${escuela}\n`;
-            mensajeWp += `• *C.C.T.:* ${cct}\n`;
-            mensajeWp += `• *Docente:* ${docente}\n`;
-            mensajeWp += `• *Zona Escolar:* ${zona}\n\n`;
-
-            mensajeWp += `📋 *GENERALIDADES*\n`;
-            mensajeWp += `• *Grado:* ${grado}\n`;
-            mensajeWp += `• *Campo Formativo:* ${campo}\n`;
-            mensajeWp += `• *Metodología:* ${metodologia}\n`;
-            mensajeWp += `• *Escenario:* ${escenario}\n`;
-            mensajeWp += `• *Duración:* ${duracion}\n\n`;
-
-            mensajeWp += `📌 *TEMA / PROYECTO*\n`;
-            mensajeWp += `_${tema}_\n\n`;
-
-            mensajeWp += `📖 *Libro SEP:* ${libro}\n\n`;
-            
-            mensajeWp += `🎯 *1. Propósito del Proyecto:*\n${proposito}\n\n`;
-            
-            mensajeWp += `💡 *2. Preguntas Guía y Reto:*\n_${reto}_\n\n`;
-            
-            mensajeWp += `🔗 *3. Ejes Articuladores:*\n${ejes}\n\n`;
-            
-            mensajeWp += `🛠️ *4. Materiales y Recursos:*\n${materiales}\n\n`;
-            
-            mensajeWp += `📝 *5. Secuencia Didáctica:*\n${secuenciaLimpia}\n\n`;
-
-            const rubricaElem = document.getElementById('resRubrica');
-            const seccionRubrica = document.getElementById('seccionRubricaImpresion');
-            if (rubricaElem && rubricaElem.innerText.trim() !== '-' && seccionRubrica && seccionRubrica.style.display !== 'none') {
-                mensajeWp += `📊 *7. Rúbrica / Lista de Cotejo:*\n${rubricaElem.innerText}\n\n`;
-            }
-
-            mensajeWp += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-            mensajeWp += `_Generado con Aula360 - IA NEM_`;
-
-            const urlWp = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensajeWp)}`;
-            window.open(urlWp, '_blank');
-        }
-
-        function copiarContenido() {
-            const area = document.getElementById('areaImpresion');
-            let texto = area.innerText;
-            
-            const rubricaElem = document.getElementById('resRubrica');
-            const seccionRubrica = document.getElementById('seccionRubricaImpresion');
-            if (rubricaElem && rubricaElem.innerText.trim() !== '-' && seccionRubrica && seccionRubrica.style.display !== 'none') {
-                texto += "\n\n7. RÚBRICA / LISTA DE COTEJO DE EVALUACIÓN FORMATIVA:\n" + rubricaElem.innerText;
-            }
-
-            navigator.clipboard.writeText(texto).then(() => {
-                const btn = document.getElementById('btnCopiar');
-                btn.innerText = "✅ ¡Copiado!";
-                btn.style.background = "#0d9488";
-                setTimeout(() => {
-                    btn.innerText = "📋 Copiar";
-                    btn.style.background = "#1e3a8a";
-                }, 2000);
-            }).catch(err => {
-                alert("Error al copiar al portapapeles");
+            btnClear.style.display = 'block';
+            cont.innerHTML = "";
+            lista.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `<div class="history-info"><span>${item.titulo}</span><br><small>${item.detalles} (${item.fecha})</small></div><div class="history-actions"><button class="btn-fav-ex" data-id="${item.id}">${item.favorito ? '⭐' : '☆'}</button><button class="btn-hist-action btn-ver-ex" data-id="${item.id}">👁️ Ver</button></div>`;
+                div.style.textAlign = 'left';
+                cont.appendChild(div);
+            });
+            cont.querySelectorAll('.btn-fav-ex').forEach(b => {
+                b.addEventListener('click', function() {
+                    let hist = JSON.parse(localStorage.getItem('aula360_historial_examenes')) || [];
+                    let id = parseInt(this.dataset.id);
+                    hist = hist.map(x => { if(x.id === id) x.favorito = !x.favorito; return x; });
+                    localStorage.setItem('aula360_historial_examenes', JSON.stringify(hist));
+                    renderizarHistorialExamenes();
+                });
+            });
+            cont.querySelectorAll('.btn-ver-ex').forEach(b => {
+                b.addEventListener('click', function() {
+                    let hist = JSON.parse(localStorage.getItem('aula360_historial_examenes')) || [];
+                    let item = hist.find(x => x.id === parseInt(this.dataset.id));
+                    if(item) {
+                        idUltimoExamen = item.id;
+                        document.getElementById('areaExamenImpresion').innerHTML = item.html;
+                        document.getElementById('resultadoExamen').style.display = 'block';
+                        window.scrollTo({ top: document.getElementById('resultadoExamen').offsetTop, behavior: 'smooth' });
+                    }
+                });
             });
         }
 
         function limpiarHistorial() {
-            if(confirm("¿Estás seguro de borrar el historial? (Los favoritos se conservarán)")) {
-                let historial = JSON.parse(localStorage.getItem('aula360_historial')) || [];
-                historial = historial.filter(item => item.favorito);
-                localStorage.setItem('aula360_historial', JSON.stringify(historial));
+            if(confirm("¿Borrar historial de planeaciones?")) {
+                let hist = JSON.parse(localStorage.getItem('aula360_historial')) || [];
+                localStorage.setItem('aula360_historial', JSON.stringify(hist.filter(x => x.favorito)));
                 renderizarHistorial();
+            }
+        }
+
+        function limpiarHistorialExamenes() {
+            if(confirm("¿Borrar historial de exámenes?")) {
+                let hist = JSON.parse(localStorage.getItem('aula360_historial_examenes')) || [];
+                localStorage.setItem('aula360_historial_examenes', JSON.stringify(hist.filter(x => x.favorito)));
+                renderizarHistorialExamenes();
             }
         }
 
         function nuevaPlaneacion() {
             document.getElementById('resultado').style.display = 'none';
-            const rubricaBox = document.getElementById('rubricaBox');
-            const seccionRubricaImpresion = document.getElementById('seccionRubricaImpresion');
-            if(rubricaBox) rubricaBox.style.display = 'none';
-            if(seccionRubricaImpresion) seccionRubricaImpresion.style.display = 'none';
             document.getElementById('temaInput').value = '';
+            idUltimaPlaneacion = null;
+        }
 
-            const cards = document.getElementsByClassName('option-card');
-            for (let i = 0; i < cards.length; i++) {
-                cards[i].classList.remove('selected');
-                cards[i].classList.remove('multi-selected');
-            }
-            gradoSeleccionado = "";
-            campoSeleccionado = "";
-            metodologiaSeleccionada = "";
-            escenarioSeleccionado = "";
-            duracionSeleccionada = "";
-            ejesSeleccionados = [];
+        function compartirWhatsApp() {
+            window.open(`[https://api.whatsapp.com/send?text=](https://api.whatsapp.com/send?text=)` + encodeURIComponent(document.getElementById('areaImpresion').innerText), '_blank');
+        }
 
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        function copiarContenido() {
+            navigator.clipboard.writeText(document.getElementById('areaImpresion').innerText).then(() => alert("¡Copiado!"));
         }
     </script>
 </body>
