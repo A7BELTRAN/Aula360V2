@@ -93,7 +93,6 @@
         .formal-section:last-of-type { border-bottom: none; }
         .formal-section b { color: var(--secondary); display: block; margin-bottom: 3px; font-size: 13px; }
 
-        /* Estilo cuando está en modo edición directa */
         .editando-activo {
             outline: 2px dashed #f59e0b !important;
             background: #fffbeb !important;
@@ -391,10 +390,17 @@
                 </div>
             </div>
 
-            <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;">
+            <div style="display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap;">
                 <input type="text" id="inputNuevoAlumno" placeholder="Nombre completo..." style="margin-top: 0; flex: 2; min-width: 150px;">
                 <input type="text" id="inputNuevoTel" placeholder="WhatsApp" style="margin-top: 0; flex: 1; min-width: 110px;">
                 <button class="btn-action" id="btnAgregarAlumno" style="flex: 0 0 90px; margin-top: 0;">➕ Añadir</button>
+            </div>
+
+            <!-- ESCANEAR ALUMNOS CON FOTO (IA) -->
+            <div style="margin-bottom: 12px; background: #faf5ff; border: 2px dashed #7c3aed; padding: 10px; border-radius: 10px; text-align: center;">
+                <b style="color: #7c3aed; font-size: 11px; display: block; margin-bottom: 4px;">📸 Agregar lista completa con una foto (IA)</b>
+                <input type="file" id="inputFotoListaAlumnos" accept="image/*" style="display: none;">
+                <button class="btn-action" id="btnEscanearListaFoto" style="background: #7c3aed; width: 100%; margin-top: 0; font-size: 11px; padding: 8px;">📷 Subir Foto de Lista de Alumnos</button>
             </div>
 
             <div style="max-height: 350px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 10px;">
@@ -551,7 +557,6 @@
                 <div class="option-card card-eje" style="grid-column: span 2;">Apropiación de las culturas a través de la lectura y la escritura</div>
             </div>
 
-            <!-- SECCIÓN 7. TONO / ENFOQUE PEDAGÓGICO REAGREGADA -->
             <div class="step-title">7. Tono / Enfoque Pedagógico de la IA</div>
             <div class="grid-options grid-3" id="grupoEnfoque">
                 <div class="option-card selected" data-val="Formal / Rigurosa SEP">Formal / Rigurosa SEP</div>
@@ -679,6 +684,7 @@
             while (intento < maxIntentos) {
                 try {
                     intento++;
+                    // Usando gemini-3.8-flash (Modelo activo actual)
                     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`;
                     
                     const response = await fetch(url, {
@@ -693,6 +699,40 @@
                         throw new Error(`Error en servidor: ${response.status}`);
                     }
                     
+                    const data = await response.json();
+                    if (data.candidates && data.candidates[0].content.parts[0].text) {
+                        return data.candidates[0].content.parts[0].text;
+                    }
+                } catch (err) {
+                    if (intento >= maxIntentos) throw err;
+                    await new Promise(resolve => setTimeout(resolve, 1500 * intento));
+                }
+            }
+            throw new Error("No se pudo conectar tras varios intentos.");
+        }
+
+        async function llamarConReintentosVision(promptText, base64Image, mimeType, maxIntentos = 3) {
+            let intento = 0;
+            while (intento < maxIntentos) {
+                try {
+                    intento++;
+                    // Usando gemini-3.8-flash para visión
+                    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`;
+                    
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [
+                                    { text: promptText },
+                                    { inline_data: { mime_type: mimeType, data: base64Image } }
+                                ]
+                            }]
+                        })
+                    });
+
+                    if (!response.ok) throw new Error(`Error en servidor: ${response.status}`);
                     const data = await response.json();
                     if (data.candidates && data.candidates[0].content.parts[0].text) {
                         return data.candidates[0].content.parts[0].text;
@@ -828,7 +868,6 @@
                 navigator.clipboard.writeText(document.getElementById('areaExamenImpresion').innerText).then(() => alert("¡Copiado!"));
             });
 
-            // EDICIÓN DIRECTA EN PANTALLA (TOGGLE) PARA PLANEACIÓN
             document.getElementById('btnEditarPlaneacionToggle').addEventListener('click', function() {
                 if (!idUltimaPlaneacion) return alert("Genera o selecciona una planeación primero.");
                 const tarjeta = document.getElementById('areaImpresion');
@@ -849,7 +888,6 @@
                 }
             });
 
-            // EDICIÓN DIRECTA EN PANTALLA (TOGGLE) PARA EXAMEN
             document.getElementById('btnEditarExamenToggle').addEventListener('click', function() {
                 if (!idUltimoExamen) return alert("Genera o selecciona un examen primero.");
                 const tarjeta = document.getElementById('areaExamenImpresion');
@@ -935,6 +973,64 @@
                 cargarTablaAsistenciaPorFecha(document.getElementById('inputFechaAsistencia').value);
             });
 
+            // ESCANEAR ALUMNOS CON FOTO (IA)
+            const inputFotoAlumnos = document.createElement('input');
+            inputFotoAlumnos.type = 'file';
+            inputFotoAlumnos.id = 'inputFotoListaAlumnos';
+            inputFotoAlumnos.accept = 'image/*';
+            inputFotoAlumnos.style.display = 'none';
+            document.body.appendChild(inputFotoAlumnos);
+
+            const btnEscanear = document.getElementById('btnEscanearListaFoto');
+            if (btnEscanear) {
+                btnEscanear.addEventListener('click', () => inputFotoAlumnos.click());
+            }
+
+            inputFotoAlumnos.addEventListener('change', async function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const btn = document.getElementById('btnEscanearListaFoto');
+                if(btn) { btn.innerText = "⏳ Leyendo lista con IA..."; btn.disabled = true; }
+
+                const reader = new FileReader();
+                reader.onload = async function(evt) {
+                    try {
+                        const base64Data = evt.target.result.split(',')[1];
+                        const mimeType = file.type;
+                        const prompt = "Extrae todos los nombres completos de alumnos que aparecen en esta imagen. Responde ÚNICAMENTE en formato JSON plano con un arreglo de strings, ejemplo: [\"Juan Pérez\", \"María López\"]. Sin markdown ni explicaciones adicionales.";
+                        
+                        const respuestaIA = await llamarConReintentosVision(prompt, base64Data, mimeType);
+                        let cleanJson = respuestaIA.replace(/```json/g, '').replace(/```/g, '').trim();
+                        let nuevosNombres = JSON.parse(cleanJson);
+
+                        if (Array.isArray(nuevosNombres) && nuevosNombres.length > 0) {
+                            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
+                            let telefonos = JSON.parse(localStorage.getItem('aula360_telefonos')) || {};
+                            
+                            nuevosNombres.forEach((nombre) => {
+                                let idx = alumnos.length;
+                                alumnos.push(nombre.trim());
+                                telefonos[idx] = "";
+                            });
+
+                            localStorage.setItem('aula360_alumnos', JSON.stringify(alumnos));
+                            localStorage.setItem('aula360_telefonos', JSON.stringify(telefonos));
+                            renderizarGestionAlumnos();
+                            cargarTablaAsistenciaPorFecha(document.getElementById('inputFechaAsistencia').value);
+                            alert(`¡Se añadieron ${nuevosNombres.length} alumnos con éxito!`);
+                        } else {
+                            alert("No se pudieron detectar nombres claros en la imagen.");
+                        }
+                    } catch (err) {
+                        alert("Error al procesar la imagen: " + err.message);
+                    } finally {
+                        if(btn) { btn.innerText = "📷 Subir Foto de Lista de Alumnos"; btn.disabled = false; }
+                        this.value = "";
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+
             document.getElementById('btnCerrarModal').addEventListener('click', () => document.getElementById('modalExpediente').style.display = 'none');
             document.getElementById('btnGuardarExpediente').addEventListener('click', function() {
                 if (alumnoEditandoIndex !== null) {
@@ -954,6 +1050,7 @@
             });
 
             document.getElementById('btnGenerarFichaAI').addEventListener('click', generarFichaDescriptivaAI);
+            
             document.getElementById('btnEnviarWpAlumno').addEventListener('click', function() {
                 if (alumnoEditandoIndex !== null) {
                     let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
@@ -961,9 +1058,10 @@
                     let ficha = document.getElementById('modalFichaDescriptiva').value.trim();
                     let tel = document.getElementById('modalTelTutor').value.trim();
                     let nombre = alumnos[alumnoEditandoIndex] || "Alumno";
-                    if (!tel) return alert("Ingresa WhatsApp.");
+                    if (!tel) return alert("Ingresa un número de WhatsApp.");
                     let contenido = ficha || nota;
-                    window.open(`https://api.whatsapp.com/send?phone=${encodeURIComponent(tel)}&text=${encodeURIComponent(`*REPORTE AULA360*\nAlumno: ${nombre}\n\n${contenido}`)}`, '_blank');
+                    let textoFinal = `*REPORTE AULA360*\nAlumno: ${nombre}\n\n${contenido}`;
+                    window.open(`https://api.whatsapp.com/send?phone=${encodeURIComponent(tel)}&text=${encodeURIComponent(textoFinal)}`, '_blank');
                 }
             });
 
@@ -1000,7 +1098,15 @@
             document.getElementById('btnGenerarAI').addEventListener('click', generarPlaneacionConIA);
             document.getElementById('btnGenerarRubrica').addEventListener('click', generarRubricaAI);
             document.getElementById('btnCopiar').addEventListener('click', copiarContenido);
-            document.getElementById('btnWhatsapp').addEventListener('click', compartirWhatsApp);
+            
+            // WHATSAPP PLANEACIÓN
+            document.getElementById('btnWhatsapp').addEventListener('click', function() {
+                let textoPlaneacion = document.getElementById('areaImpresion').innerText;
+                let mensajeFinal = `*PLANEACIÓN DIDÁCTICA - AULA360*\n\n` + textoPlaneacion;
+                navigator.clipboard.writeText(mensajeFinal).catch(() => {});
+                window.open(`https://api.whatsapp.com/send?text=` + encodeURIComponent(mensajeFinal), '_blank');
+            });
+
             document.getElementById('btnNuevaPlan').addEventListener('click', nuevaPlaneacion);
             document.getElementById('btnClearHistory').addEventListener('click', limpiarHistorial);
             document.getElementById('btnClearHistoryExamen').addEventListener('click', limpiarHistorialExamenes);
@@ -1098,10 +1204,16 @@
         }
 
         function cargarTablaTareas() {
-            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, (_, i) => `Alumno ${i + 1}`);
+            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
             let reg = JSON.parse(localStorage.getItem('aula360_reg_' + tareaActivaId)) || {};
             const tbody = document.getElementById('tablaTareasCuerpo');
             tbody.innerHTML = "";
+            
+            if (alumnos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" style="padding: 15px; color: #64748b; text-align: center;">No hay alumnos registrados. Añádelos en Grupo y Alumnos.</td></tr>`;
+                return;
+            }
+
             alumnos.forEach((nombre, idx) => {
                 let est = reg[idx] || 'E';
                 const tr = document.createElement('tr');
@@ -1126,7 +1238,7 @@
 
         function actualizarEstadisticasTareas() {
             let reg = JSON.parse(localStorage.getItem('aula360_reg_' + tareaActivaId)) || {};
-            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, () => "");
+            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
             let ent = 0, pen = 0;
             alumnos.forEach((_, idx) => { if((reg[idx] || 'E') === 'E') ent++; else pen++; });
             document.getElementById('statEntregas').innerText = ent;
@@ -1166,12 +1278,18 @@
         }
 
         function renderizarGestionAlumnos() {
-            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, (_, i) => `Alumno ${i + 1}`);
+            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
             let expedientes = JSON.parse(localStorage.getItem('aula360_expedientes')) || {};
             let fichas = JSON.parse(localStorage.getItem('aula360_fichas')) || {};
             let tel = JSON.parse(localStorage.getItem('aula360_telefonos')) || {};
             const tbody = document.getElementById('tablaGestionAlumnosCuerpo');
             tbody.innerHTML = "";
+            
+            if (alumnos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="padding: 20px; color: #64748b; text-align: center;">No hay alumnos registrados. Añádelos manualmente o con foto.</td></tr>`;
+                return;
+            }
+
             alumnos.forEach((nombre, idx) => {
                 let nota = (expedientes[idx] && expedientes[idx].trim()) || (fichas[idx] && fichas[idx].trim());
                 const tr = document.createElement('tr');
@@ -1221,7 +1339,7 @@
         }
 
         function cargarTablaAsistenciaPorFecha(fecha) {
-            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, (_, i) => `Alumno ${i + 1}`);
+            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
             let asis = JSON.parse(localStorage.getItem('aula360_asis_' + fecha)) || {};
             const tbody = document.getElementById('tablaAlumnosCuerpo');
             tbody.innerHTML = "";
@@ -1249,7 +1367,7 @@
 
         function actualizarEstadisticasAsistencia(fecha) {
             let asis = JSON.parse(localStorage.getItem('aula360_asis_' + fecha)) || {};
-            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, () => "");
+            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
             let p = 0, r = 0, f = 0;
             alumnos.forEach((_, idx) => {
                 let st = asis[idx] || 'P';
@@ -1261,7 +1379,7 @@
         }
 
         function generarReporteAcumulado() {
-            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || Array.from({length: 20}, (_, i) => `Alumno ${i + 1}`);
+            let alumnos = JSON.parse(localStorage.getItem('aula360_alumnos')) || [];
             let acum = {};
             alumnos.forEach((_, idx) => acum[idx] = { P: 0, R: 0, F: 0 });
             for (let i = 0; i < localStorage.length; i++) {
@@ -1284,7 +1402,40 @@
         function cargarSugerenciasTemporada() {
             const mes = new Date().getMonth();
             const contenedor = document.getElementById('contenedorSugerenciasTemporada');
-            let sugs = mes === 8 ? [{texto: "Rescate de raíces históricas y culturales", label: "🇲🇽 Fiestas Patrias"}] : [{texto: "Proyecto comunitario ambiental", label: "🌍 Cuidado Ambiental"}];
+            let sugs = [];
+
+            if (mes === 8 || mes === 9) {
+                sugs = [
+                    { texto: "Rescate de raíces históricas y culturales", label: "🇲🇽 Fiestas Patrias" },
+                    { texto: "Tradiciones y leyendas de nuestra comunidad", label: "💀 Día de Muertos" },
+                    { texto: "Hábitos de higiene y prevención de salud", label: "🍏 Vida Saludable" }
+                ];
+            } else if (mes === 10 || mes === 11) {
+                sugs = [
+                    { texto: "Valoración de la biodiversidad local", label: "🌳 Cuidado Ambiental" },
+                    { texto: "Cooperación y solidaridad comunitaria", label: "🤝 Convivencia Escolar" },
+                    { texto: "Rescate de costumbres decembrinas", label: "🎄 Tradiciones Locales" }
+                ];
+            } else if (mes === 0 || mes === 1) {
+                sugs = [
+                    { texto: "Estilos de vida activos y saludables", label: "🏃‍♂️ Actividad Física" },
+                    { texto: "La importancia del agua y recursos naturales", label: "💧 Cuidado del Agua" },
+                    { texto: "Igualdad de género y respeto en el aula", label: "⚖️ Inclusión e Igualdad" }
+                ];
+            } else if (mes === 2 || mes === 3) {
+                sugs = [
+                    { texto: "Cuidado y preservación de ecosistemas locales", label: "🌱 Primavera y Naturaleza" },
+                    { texto: "Fomento a la lectura y creación literaria", label: "📖 Día del Libro" },
+                    { texto: "Derechos y deberes de niñas y niños", label: "🛡️ Derechos Infancia" }
+                ];
+            } else {
+                sugs = [
+                    { texto: "Proyecto comunitario para el manejo de residuos", label: "♻️ Reciclaje Escolar" },
+                    { texto: "Evaluación comunitaria y logros del ciclo", label: "🎓 Cierre de Ciclo" },
+                    { texto: "Ciencia y tecnología para resolver problemas", label: "🔬 Feria de Ciencias" }
+                ];
+            }
+
             contenedor.innerHTML = "";
             sugs.forEach(s => {
                 const chip = document.createElement('span');
@@ -1517,10 +1668,6 @@
             document.getElementById('resultado').style.display = 'none';
             document.getElementById('temaInput').value = '';
             idUltimaPlaneacion = null;
-        }
-
-        function compartirWhatsApp() {
-            window.open(`[https://api.whatsapp.com/send?text=](https://api.whatsapp.com/send?text=)` + encodeURIComponent(document.getElementById('areaImpresion').innerText), '_blank');
         }
 
         function copiarContenido() {
