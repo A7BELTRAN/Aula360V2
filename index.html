@@ -157,85 +157,29 @@
         .btn-girar-ruleta { background: #db2777; color: white; border: none; width: 100%; padding: 18px; border-radius: 14px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 6px 15px rgba(219, 39, 119, 0.3); transition: transform 0.1s ease; }
         .btn-girar-ruleta:active { transform: scale(0.98); }
 
-        /* --- CORRECCIÓN DE IMPRESIÓN Y PDF PARA iOS / SAFARI Y ANDROID --- */
+        /* --- ESTILOS DE IMPRESIÓN ROBUSTOS PARA IOS Y ANDROID --- */
         @media print {
             * {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
-            html, body {
+            body {
                 background: white !important;
                 color: black !important;
-                height: auto !important;
-                overflow: visible !important;
-                padding: 0 !important;
                 margin: 0 !important;
+                padding: 0 !important;
             }
-            body * {
-                visibility: hidden;
-            }
-            .container {
+            .container, .formal-card {
                 max-width: 100% !important;
                 width: 100% !important;
                 box-shadow: none !important;
+                border: none !important;
                 margin: 0 !important;
                 padding: 0 !important;
             }
-            body.imprimiendo-planeacion #areaImpresion, 
-            body.imprimiendo-planeacion #areaImpresion * { 
-                visibility: visible !important; 
-            }
-            body.imprimiendo-planeacion #areaImpresion { 
-                position: absolute !important; 
-                left: 0 !important; 
-                top: 0 !important; 
-                width: 100% !important; 
-                border: none !important; 
-                box-shadow: none !important; 
-            }
-
-            body.imprimiendo-lista #seccionImprimirLista, 
-            body.imprimiendo-lista #seccionImprimirLista * { 
-                visibility: visible !important; 
-            }
-            body.imprimiendo-lista #seccionImprimirLista { 
-                position: absolute !important; 
-                left: 0 !important; 
-                top: 0 !important; 
-                width: 100% !important; 
-            }
-
-            body.imprimiendo-mensual #seccionImprimirMensual, 
-            body.imprimiendo-mensual #seccionImprimirMensual * { 
-                visibility: visible !important; 
-            }
-            body.imprimiendo-mensual #seccionImprimirMensual { 
-                position: absolute !important; 
-                left: 0 !important; 
-                top: 0 !important; 
-                width: 100% !important; 
-            }
-
-            body.imprimiendo-tareas #seccionImprimirTareas, 
-            body.imprimiendo-tareas #seccionImprimirTareas * { 
-                visibility: visible !important; 
-            }
-            body.imprimiendo-tareas #seccionImprimirTareas { 
-                position: absolute !important; 
-                left: 0 !important; 
-                top: 0 !important; 
-                width: 100% !important; 
-            }
-
-            body.imprimiendo-examen #areaExamenImpresion, 
-            body.imprimiendo-examen #areaExamenImpresion * { 
-                visibility: visible !important; 
-            }
-            body.imprimiendo-examen #areaExamenImpresion { 
-                position: absolute !important; 
-                left: 0 !important; 
-                top: 0 !important; 
-                width: 100% !important; 
+            /* Ocultar elementos que no deben imprimirse */
+            .btn-group, .btn-volver-app, .btn-rubrica-container, .history-container, .dash-card, .hero-banner, h1, .subtitle, .step-title, button {
+                display: none !important;
             }
         }
     </style>
@@ -927,7 +871,7 @@
             document.getElementById('btnExcelTareas').addEventListener('click', () => exportarTablaACSV('tablaTareasCuerpo', ['#', 'Nombre', 'Estatus'], 'tareas'));
 
             document.getElementById('btnGenerarExamenAI').addEventListener('click', generarExamenConIA);
-            document.getElementById('btnImprimirExamen').addEventListener('click', () => imprimirReporteEspecifico('imprimiendo-examen'));
+            document.getElementById('btnImprimirExamen').addEventListener('click', () => imprimirReporteEspecifico('areaExamenImpresion'));
             document.getElementById('btnCopiarExamen').addEventListener('click', () => {
                 navigator.clipboard.writeText(document.getElementById('areaExamenImpresion').innerText).then(() => alert("¡Copiado!"));
             });
@@ -1154,10 +1098,10 @@
                 }
             });
 
-            document.getElementById('btnImprimir').addEventListener('click', () => imprimirReporteEspecifico('imprimiendo-planeacion'));
-            document.getElementById('btnImprimirListaDiaria').addEventListener('click', () => imprimirReporteEspecifico('imprimiendo-lista'));
-            document.getElementById('btnImprimirMensual').addEventListener('click', () => imprimirReporteEspecifico('imprimiendo-mensual'));
-            document.getElementById('btnImprimirTareasPDF').addEventListener('click', () => imprimirReporteEspecifico('imprimiendo-tareas'));
+            document.getElementById('btnImprimir').addEventListener('click', () => imprimirReporteEspecifico('areaImpresion'));
+            document.getElementById('btnImprimirListaDiaria').addEventListener('click', () => imprimirReporteEspecifico('seccionImprimirLista'));
+            document.getElementById('btnImprimirMensual').addEventListener('click', () => imprimirReporteEspecifico('seccionImprimirMensual'));
+            document.getElementById('btnImprimirTareasPDF').addEventListener('click', () => imprimirReporteEspecifico('seccionImprimirTareas'));
 
             document.getElementById('btnGenerarAI').addEventListener('click', generarPlaneacionConIA);
             document.getElementById('btnGenerarRubrica').addEventListener('click', generarRubricaAI);
@@ -1325,20 +1269,62 @@
             finally { btn.innerText = "🤖 Redactar Ficha con IA"; btn.disabled = false; }
         }
 
-        function imprimirReporteEspecifico(clase) {
-            const cuerpo = document.getElementById('cuerpoApp');
-            cuerpo.className = clase;
-            if (clase === 'imprimiendo-planeacion') {
+        // --- MÉTODO DE IMPRESIÓN DIRECTO SEGURO PARA iOS Y ANDROID ---
+        function imprimirReporteEspecifico(elementId) {
+            if (elementId === 'areaImpresion') {
                 const tr = document.getElementById('textoRubrica').innerHTML;
                 if (tr && !tr.includes('Generando')) {
                     document.getElementById('resRubrica').innerHTML = tr;
                     document.getElementById('seccionRubricaImpresion').style.display = 'block';
                 }
             }
-            if (clase === 'imprimiendo-lista') {
+            if (elementId === 'seccionImprimirLista') {
                 document.getElementById('tituloImpresionLista').innerText = "LISTA DE ASISTENCIA - " + document.getElementById('inputFechaAsistencia').value;
             }
-            setTimeout(() => { window.print(); cuerpo.className = ""; }, 250);
+
+            const elementoOriginal = document.getElementById(elementId);
+            if (!elementoOriginal) return;
+
+            // Creamos una ventana emergente / iframe oculto para imprimir exactamente el contenido deseado limpio en iOS
+            const contenidoHtml = elementoOriginal.innerHTML;
+            const ventanaImpresion = window.open('', '_blank', 'height=600,width=800');
+            
+            ventanaImpresion.document.write(`
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Imprimir - Aula360</title>
+                    <style>
+                        body { font-family: system-ui, -apple-system, sans-serif; padding: 20px; color: #1e293b; background: white; }
+                        .formal-card { background: #ffffff; border: 2px solid #cbd5e1; border-radius: 12px; overflow: hidden; text-align: left; }
+                        .formal-header { background: #1e3a8a; color: white; padding: 12px 16px; text-align: center; font-weight: bold; font-size: 13px; }
+                        .formal-grid { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #cbd5e1; font-size: 12px; }
+                        .formal-cell { padding: 8px 10px; border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; }
+                        .formal-cell:nth-child(2n) { border-right: none; }
+                        .formal-cell b { color: #1e3a8a; display: block; margin-bottom: 2px; }
+                        .formal-section { padding: 10px 14px; border-bottom: 1px solid #e2e8f0; font-size: 12px; line-height: 1.4; }
+                        .formal-section:last-of-type { border-bottom: none; }
+                        .formal-section b { color: #0d9488; display: block; margin-bottom: 3px; font-size: 13px; }
+                        .tabla-asistencia-digital { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 15px; }
+                        .tabla-asistencia-digital th, .tabla-asistencia-digital td { border: 1px solid #cbd5e1; padding: 6px; text-align: center; }
+                        .tabla-asistencia-digital th { background: #1e3a8a; color: white; }
+                    </style>
+                </head>
+                <body>
+                    ${contenidoHtml}
+                    <script>
+                        window.onload = function() {
+                            setTimeout(function() {
+                                window.print();
+                                window.close();
+                            }, 300);
+                        };
+                    <\/script>
+                </body>
+                </html>
+            `);
+            ventanaImpresion.document.close();
         }
 
         function renderizarGestionAlumnos() {
