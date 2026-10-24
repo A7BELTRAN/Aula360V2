@@ -157,20 +157,86 @@
         .btn-girar-ruleta { background: #db2777; color: white; border: none; width: 100%; padding: 18px; border-radius: 14px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 6px 15px rgba(219, 39, 119, 0.3); transition: transform 0.1s ease; }
         .btn-girar-ruleta:active { transform: scale(0.98); }
 
+        /* --- CORRECCIÓN DE IMPRESIÓN Y PDF PARA iOS / SAFARI Y ANDROID --- */
         @media print {
-            body { background: white; padding: 0; }
-            .container { max-width: 100%; box-shadow: none; padding: 0; }
-            body * { visibility: hidden; }
-            body.imprimiendo-planeacion #areaImpresion, body.imprimiendo-planeacion #areaImpresion * { visibility: visible; }
-            body.imprimiendo-planeacion #areaImpresion { position: absolute; left: 0; top: 0; width: 100%; border: none !important; box-shadow: none !important; }
-            body.imprimiendo-lista #seccionImprimirLista, body.imprimiendo-lista #seccionImprimirLista * { visibility: visible; }
-            body.imprimiendo-lista #seccionImprimirLista { position: absolute; left: 0; top: 0; width: 100%; }
-            body.imprimiendo-mensual #seccionImprimirMensual, body.imprimiendo-mensual #seccionImprimirMensual * { visibility: visible; }
-            body.imprimiendo-mensual #seccionImprimirMensual { position: absolute; left: 0; top: 0; width: 100%; }
-            body.imprimiendo-tareas #seccionImprimirTareas, body.imprimiendo-tareas #seccionImprimirTareas * { visibility: visible; }
-            body.imprimiendo-tareas #seccionImprimirTareas { position: absolute; left: 0; top: 0; width: 100%; }
-            body.imprimiendo-examen #areaExamenImpresion, body.imprimiendo-examen #areaExamenImpresion * { visibility: visible; }
-            body.imprimiendo-examen #areaExamenImpresion { position: absolute; left: 0; top: 0; width: 100%; }
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            html, body {
+                background: white !important;
+                color: black !important;
+                height: auto !important;
+                overflow: visible !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            body * {
+                visibility: hidden;
+            }
+            .container {
+                max-width: 100% !important;
+                width: 100% !important;
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            body.imprimiendo-planeacion #areaImpresion, 
+            body.imprimiendo-planeacion #areaImpresion * { 
+                visibility: visible !important; 
+            }
+            body.imprimiendo-planeacion #areaImpresion { 
+                position: absolute !important; 
+                left: 0 !important; 
+                top: 0 !important; 
+                width: 100% !important; 
+                border: none !important; 
+                box-shadow: none !important; 
+            }
+
+            body.imprimiendo-lista #seccionImprimirLista, 
+            body.imprimiendo-lista #seccionImprimirLista * { 
+                visibility: visible !important; 
+            }
+            body.imprimiendo-lista #seccionImprimirLista { 
+                position: absolute !important; 
+                left: 0 !important; 
+                top: 0 !important; 
+                width: 100% !important; 
+            }
+
+            body.imprimiendo-mensual #seccionImprimirMensual, 
+            body.imprimiendo-mensual #seccionImprimirMensual * { 
+                visibility: visible !important; 
+            }
+            body.imprimiendo-mensual #seccionImprimirMensual { 
+                position: absolute !important; 
+                left: 0 !important; 
+                top: 0 !important; 
+                width: 100% !important; 
+            }
+
+            body.imprimiendo-tareas #seccionImprimirTareas, 
+            body.imprimiendo-tareas #seccionImprimirTareas * { 
+                visibility: visible !important; 
+            }
+            body.imprimiendo-tareas #seccionImprimirTareas { 
+                position: absolute !important; 
+                left: 0 !important; 
+                top: 0 !important; 
+                width: 100% !important; 
+            }
+
+            body.imprimiendo-examen #areaExamenImpresion, 
+            body.imprimiendo-examen #areaExamenImpresion * { 
+                visibility: visible !important; 
+            }
+            body.imprimiendo-examen #areaExamenImpresion { 
+                position: absolute !important; 
+                left: 0 !important; 
+                top: 0 !important; 
+                width: 100% !important; 
+            }
         }
     </style>
 </head>
@@ -684,7 +750,6 @@
             while (intento < maxIntentos) {
                 try {
                     intento++;
-                    // Usando gemini-3.8-flash (Modelo activo actual)
                     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`;
                     
                     const response = await fetch(url, {
@@ -716,7 +781,6 @@
             while (intento < maxIntentos) {
                 try {
                     intento++;
-                    // Usando gemini-3.8-flash para visión
                     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`;
                     
                     const response = await fetch(url, {
